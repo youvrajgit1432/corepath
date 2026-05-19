@@ -48,10 +48,13 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={handleToggle}
-      className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium text-core-heading shadow-soft transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-core-accent"
+      className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-2 text-sm font-medium text-core-heading shadow-soft transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-core-accent"
       aria-label={mounted ? `Switch to ${theme === "dark" ? "light" : "dark"} mode` : "Theme toggle"}
     >
-      {mounted ? (theme === "dark" ? "☀️ Light mode" : "🌙 Dark mode") : "Theme"}
+      <span aria-hidden="true">{mounted ? (theme === "dark" ? "☀️" : "🌙") : "🌓"}</span>
+      <span className="hidden sm:inline">
+        {mounted ? (theme === "dark" ? "Light mode" : "Dark mode") : "Theme"}
+      </span>
     </button>
   );
 }
