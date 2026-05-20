@@ -124,7 +124,8 @@ export default function QuizShell() {
   }
 
   return (
-    <div className="pt-16 min-h-screen bg-[var(--bg)] px-4 pb-16">
+    <div className="pt-16 min-h-screen bg-[var(--bg)] px-4 pb-16 relative overflow-hidden">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-[var(--surface)]/10 blur-3xl" />
       <div className="mx-auto w-full max-w-4xl">
         <div className="rounded-[2rem] border border-[var(--border)] bg-[var(--surface)]/95 p-6 shadow-soft backdrop-blur-xl">
           <div className="mb-6">

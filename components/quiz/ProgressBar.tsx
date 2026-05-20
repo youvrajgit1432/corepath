@@ -19,7 +19,7 @@ export default function ProgressBar({ total, current, answers }: Props) {
             <div
               key={index}
               className={`quiz-dot h-2 rounded-full transition-all duration-300 ${
-                done ? "bg-core-accent" : active ? "bg-[var(--heading)]" : "bg-[var(--border)]"
+                done ? "bg-core-accent" : active ? "bg-[var(--heading)] animate-pulse" : "bg-[var(--border)]"
               }`}
               style={{ width: active ? 44 : done ? 28 : 20 }}
             />

@@ -66,20 +66,31 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="rounded-card border-core-border p-8 shadow-soft">
+        <div className="rounded-card border-core-border p-8 shadow-soft relative overflow-hidden">
+          <div className="absolute -top-8 -right-8 h-36 w-36 rounded-full bg-core-accent/10 blur-3xl animate-hero-float" />
+          <div className="absolute -bottom-10 left-4 h-24 w-24 rounded-full bg-sky-500/10 blur-3xl animate-hero-float animation-delay-2000" />
+
+          <div className="mb-6 rounded-[1.75rem] border border-white/10 bg-white/5 p-5 shadow-soft transition-transform duration-300 hover:-translate-y-1">
+            <p className="text-xs uppercase tracking-[0.24em] text-core-muted">Fast path preview</p>
+            <p className="mt-3 text-xl font-semibold text-[var(--heading)]">Career recommendations in 10 minutes</p>
+            <p className="mt-2 text-sm text-[var(--muted)] leading-relaxed">
+              Answer a few questions and get a tailored pathway for AI careers with a visual, fast, and memorable experience.
+            </p>
+          </div>
+
           <h2 className="text-2xl font-semibold text-core-heading mb-5">
             What you can do with Corepath
           </h2>
           <ul className="space-y-5 text-core-text">
-            <li className="rounded-3xl border border-white/10 bg-white/5 p-5">
+            <li className="rounded-3xl border border-white/10 bg-white/5 p-5 transition hover:-translate-y-1 hover:bg-white/10">
               <strong className="block text-base font-semibold text-core-heading">Map a career path</strong>
               Learn which roles fit your interests and what skills they require.
             </li>
-            <li className="rounded-3xl border border-white/10 bg-white/5 p-5">
+            <li className="rounded-3xl border border-white/10 bg-white/5 p-5 transition hover:-translate-y-1 hover:bg-white/10">
               <strong className="block text-base font-semibold text-core-heading">Track your progress</strong>
               See recommended learning steps, tools, and milestones in one place.
             </li>
-            <li className="rounded-3xl border border-white/10 bg-white/5 p-5">
+            <li className="rounded-3xl border border-white/10 bg-white/5 p-5 transition hover:-translate-y-1 hover:bg-white/10">
               <strong className="block text-base font-semibold text-core-heading">Get tailored advice</strong>
               Receive career recommendations based on your quiz answers and goals.
             </li>
