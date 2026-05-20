@@ -53,11 +53,11 @@ export function generateStaticParams() {
 }
 
 interface Props {
-  params: { id: string } | Promise<{ id: string }>;
+  params: { id: string };
 }
 
 export default async function CareerDetailPage({ params }: Props) {
-  const { id } = await params;
+  const { id } = params;
   const career = getCareerById(id);
 
   if (!career) notFound();

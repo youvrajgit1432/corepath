@@ -2,9 +2,9 @@ import { MetadataRoute } from "next";
 import { careers } from "../data/careers";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const careerUrls = careers.map((career) => ({
+  const careerUrls: MetadataRoute.Sitemap = careers.map((career) => ({
     url: `https://corepath.io/careers/${career.id}`,
-    changeFrequency: "monthly",
+    changeFrequency: "monthly" as const,
     priority: 0.7,
   }));
 
