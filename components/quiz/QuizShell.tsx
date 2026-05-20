@@ -107,7 +107,7 @@ export default function QuizShell() {
 
   if (finished && topMatch && traitScores) {
     return (
-      <div className="pt-16 min-h-screen bg-core-bg px-4 pb-16">
+      <div className="pt-16 min-h-screen bg-[var(--bg)] px-4 pb-16">
         <div className="mx-auto w-full max-w-5xl">
           <ResultScreen
             topMatch={topMatch}
@@ -124,9 +124,9 @@ export default function QuizShell() {
   }
 
   return (
-    <div className="pt-16 min-h-screen bg-core-bg px-4 pb-16">
+    <div className="pt-16 min-h-screen bg-[var(--bg)] px-4 pb-16">
       <div className="mx-auto w-full max-w-4xl">
-        <div className="rounded-[2rem] border border-core-border bg-core-surface/95 p-6 shadow-soft backdrop-blur-xl">
+        <div className="rounded-[2rem] border border-[var(--border)] bg-[var(--surface)]/95 p-6 shadow-soft backdrop-blur-xl">
           <div className="mb-6">
             <ProgressBar total={total} current={currentIndex} answers={answers} />
           </div>
@@ -138,11 +138,11 @@ export default function QuizShell() {
           <div className="mt-6">
             <div className="min-h-[72px]">
               {selectedAnswer ? (
-                <p className="quiz-feedback rounded-3xl border border-core-border bg-white/10 px-4 py-4 text-sm text-core-heading">
+                <p className="quiz-feedback rounded-3xl border border-[var(--border)] bg-[var(--surface)]/75 px-4 py-4 text-sm text-[var(--heading)]">
                   {currentQuestion.feedbacks[selectedIndex]}
                 </p>
               ) : (
-                <p className="text-sm text-core-muted">Choose the option that feels most like you.</p>
+                <p className="text-sm text-[var(--muted)]">Choose the option that feels most like you.</p>
               )}
             </div>
             <NavigationRow

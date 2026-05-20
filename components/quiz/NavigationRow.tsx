@@ -23,7 +23,7 @@ export default function NavigationRow({
         type="button"
         onClick={onBack}
         disabled={!canGoBack || loading}
-        className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-core-heading transition hover:border-core-accent/60 hover:text-core-accent disabled:opacity-40 disabled:cursor-not-allowed"
+        className="inline-flex items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)]/90 px-5 py-3 text-sm font-semibold text-[var(--heading)] transition hover:border-core-accent/60 hover:text-core-accent disabled:opacity-40 disabled:cursor-not-allowed"
       >
         ← Back
       </button>

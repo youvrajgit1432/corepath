@@ -27,15 +27,15 @@ type Props = {
 
 export default function QuestionCard({ question, selectedIndex, onSelect }: Props) {
   return (
-    <div className="quiz-card-appear rounded-[1.75rem] border border-white/10 bg-black/10 p-6 md:p-8">
+    <div className="quiz-card-appear rounded-[1.75rem] border border-[var(--border)] bg-[var(--surface)] p-6 md:p-8">
       <div className="mb-6 flex flex-col gap-4">
-        <div className="inline-flex h-16 w-16 items-center justify-center rounded-3xl bg-white/10 text-3xl text-core-accent shadow-soft">
+        <div className="inline-flex h-16 w-16 items-center justify-center rounded-3xl bg-[var(--accent-soft)] text-3xl text-core-accent shadow-soft">
           {question.icon}
         </div>
         <div className="space-y-3">
-          <p className="text-sm font-mono uppercase tracking-[0.36em] text-core-muted">Question</p>
-          <h2 className="text-3xl font-semibold leading-tight text-core-heading">{question.text}</h2>
-          <p className="text-sm text-core-muted">{question.sub}</p>
+          <p className="text-sm font-mono uppercase tracking-[0.36em] text-[var(--muted)]">Question</p>
+          <h2 className="text-3xl font-semibold leading-tight text-[var(--heading)]">{question.text}</h2>
+          <p className="text-sm text-[var(--muted)]">{question.sub}</p>
         </div>
       </div>
 
