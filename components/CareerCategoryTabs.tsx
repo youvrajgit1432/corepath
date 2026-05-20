@@ -17,7 +17,7 @@ export default function CareerCategoryTabs({ categories, selected, onSelect }: P
             className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition ${
               selected === cat
                 ? "bg-core-accent text-white shadow-md"
-                : "bg-core-surface/60 text-core-muted hover:bg-core-surface"
+                : "bg-white/10 text-core-muted hover:bg-core-surface"
             }`}
           >
             {cat}

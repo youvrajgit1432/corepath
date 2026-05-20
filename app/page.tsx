@@ -2,6 +2,22 @@ import Link from "next/link";
 import CareerCard from "../components/CareerCard";
 import { careers as allCareers } from "../data/careers";
 
+export const metadata = {
+  title: "AI career guidance for IT students | CorePath",
+  description:
+    "Explore AI-ready career paths, learning roadmaps, and a quick quiz to find your next tech specialization.",
+  alternates: {
+    canonical: "https://corepath.io/",
+  },
+  openGraph: {
+    title: "CorePath | Discover your AI-ready career path",
+    description:
+      "Explore AI-ready career paths, learning roadmaps, and a quick quiz to find your next tech specialization.",
+    url: "https://corepath.io/",
+    type: "website",
+  },
+};
+
 export default function Home() {
   return (
     <main className="page-shell py-16">
@@ -50,7 +66,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="rounded-card border-core-border bg-core-surface/90 p-8 shadow-soft">
+        <div className="rounded-card border-core-border p-8 shadow-soft">
           <h2 className="text-2xl font-semibold text-core-heading mb-5">
             What you can do with Corepath
           </h2>

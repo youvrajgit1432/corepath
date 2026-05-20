@@ -2,6 +2,22 @@
 // Lists all available career paths.
 // Static — no backend call. When API is ready: fetch("/api/careers")
 
+export const metadata = {
+  title: "Explore future-ready careers | CorePath",
+  description:
+    "Browse AI-influenced tech careers, filter by role type, and discover the right path for your next move.",
+  alternates: {
+    canonical: "https://corepath.io/careers",
+  },
+  openGraph: {
+    title: "CorePath Careers | Tech roles and AI career paths",
+    description:
+      "Browse AI-influenced tech careers, filter by role type, and discover the right path for your next move.",
+    url: "https://corepath.io/careers",
+    type: "website",
+  },
+};
+
 "use client";
 
 import { useEffect, useMemo, useState } from "react";

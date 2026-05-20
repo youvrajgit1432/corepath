@@ -79,7 +79,8 @@
 
 @layer components {
   .rounded-card {
-    @apply rounded-[2rem] border border-core-border bg-core-surface/90 shadow-soft backdrop-blur-xl;
+    @apply rounded-[2rem] border border-core-border shadow-soft backdrop-blur-xl;
+    background-color: var(--surface);
   }
 
   .card-panel {

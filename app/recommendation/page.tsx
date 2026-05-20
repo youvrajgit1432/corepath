@@ -1,5 +1,25 @@
 "use client";
 
+export const metadata = {
+  title: "Career recommendations | CorePath",
+  description:
+    "View your personalized career match from CorePath's quiz and discover the roadmap for your top role.",
+  alternates: {
+    canonical: "https://corepath.io/recommendation",
+  },
+  robots: {
+    noindex: true,
+    nofollow: false,
+  },
+  openGraph: {
+    title: "CorePath | Personalized career recommendations",
+    description:
+      "View your personalized career match from CorePath's quiz and discover the roadmap for your top role.",
+    url: "https://corepath.io/recommendation",
+    type: "website",
+  },
+};
+
 // app/recommendation/page.tsx
 // Feature 2: Career Recommendation Output
 // Reads quiz results from URL params (no session/DB needed in MVP).

@@ -44,7 +44,7 @@ export default function CareerFilterBar({
   onClearAll,
 }: Props) {
   return (
-    <div className="w-full rounded-3xl border border-core-border bg-core-surface/90 p-4 shadow-sm">
+    <div className="w-full rounded-3xl border border-core-border bg-core-surface p-4 shadow-sm">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex-1 min-w-0">
           <input
