@@ -241,7 +241,7 @@ export const COLORS = {
 export function getSystemStatus() {
   return {
     system: "Career Recommendation Engine",
-    version: "1.0.0",
+    version: "2.2.0",
     stats: SYSTEM_STATS,
     features: FEATURES,
     traits: Object.keys(TRAITS).length,

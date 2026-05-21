@@ -13,6 +13,19 @@ export default function CareerCard({ career }: Props) {
     transformative: "border-core-accent text-core-accent",
   }[career.aiImpact ?? "moderate"];
 
+  const startupFit = (career.tags || []).some((tag) => /startup/i.test(tag));
+  const bestFor = career.fitTags?.length
+    ? `People who are strongest in ${career.fitTags.join(" and ")}`
+    : `People who prefer deep work around ${career.coreSkill.toLowerCase()}`;
+
+  const avoidIf = career.aiRelationship === "Automation-Heavy"
+    ? "You want a role less likely to be automated."
+    : career.difficulty === "low"
+    ? "You want highly technical specialization."
+    : "You prefer a broader generalist role over a focused specialty.";
+
+  const marketMaturity = career.futureDemand === "Exploding" ? "Emerging" : career.futureDemand === "High Growth" ? "Growing" : "Established";
+
   return (
     <Link
       href={`/careers/${career.id}`}
@@ -42,21 +55,36 @@ export default function CareerCard({ career }: Props) {
         <p className="text-sm text-core-muted leading-relaxed mb-5">{career.tagline}</p>
       </div>
 
-      <div className="grid gap-3 text-xs font-mono text-core-muted">
-        <div className="flex flex-wrap gap-2">
-          <span className="rounded-full border border-core-border px-2.5 py-1">Core skill: {career.coreSkill}</span>
-          <span className="rounded-full border border-core-border px-2.5 py-1">Time: {career.timeToJob}</span>
+      <div className="grid gap-4 text-xs text-core-muted">
+        <div className="grid gap-2 sm:grid-cols-2">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-3">
+            <p className="font-semibold text-core-heading">Core advantage</p>
+            <p className="mt-1">{career.coreSkill}</p>
+          </div>
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-3">
+            <p className="font-semibold text-core-heading">Future signal</p>
+            <p className="mt-1">{marketMaturity}</p>
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {(career.supportingSkills || []).slice(0, 4).map((skill) => (
-            <span key={skill} className="rounded-full border border-core-border px-2.5 py-1">
-              {skill}
-            </span>
-          ))}
+          <span className="rounded-full border border-core-border px-2.5 py-1">{career.timeToJob}</span>
+          {career.remotePotential && (
+            <span className="rounded-full border border-core-border px-2.5 py-1">Remote: {career.remotePotential}</span>
+          )}
+          <span className="rounded-full border border-core-border px-2.5 py-1">
+            {startupFit ? "Startup-friendly" : "Enterprise-ready"}
+          </span>
         </div>
 
-        <p className="text-sm text-core-text/80">{career.aiImpactNote}</p>
+        <p className="text-sm leading-relaxed text-core-text/80">{career.aiImpactNote}</p>
+
+        <div className="rounded-3xl border border-white/10 bg-white/5 p-4">
+          <p className="text-[0.7rem] uppercase tracking-[0.24em] text-core-muted">Best for</p>
+          <p className="mt-2 text-sm text-core-heading">{bestFor}</p>
+          <p className="mt-3 text-[0.7rem] uppercase tracking-[0.24em] text-core-muted">Avoid if</p>
+          <p className="mt-2 text-sm text-core-heading">{avoidIf}</p>
+        </div>
       </div>
     </Link>
   );

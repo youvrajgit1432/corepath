@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { calculateResults, calculateTraitScores } from "../../data/quiz";
 import { careers, type Career } from "../../data/careers";
@@ -129,6 +128,13 @@ export default function QuizShell() {
       <div className="mx-auto w-full max-w-4xl">
         <div className="rounded-[2rem] border border-[var(--border)] bg-[var(--surface)]/95 p-6 shadow-soft backdrop-blur-xl">
           <div className="mb-6">
+            <div className="mb-4 rounded-3xl border border-[var(--border)] bg-white/5 p-6">
+              <p className="text-xs uppercase tracking-[0.26em] text-core-muted">Career cognition analysis</p>
+              <h2 className="mt-3 text-2xl font-semibold text-[var(--heading)]">Understand how your thinking style maps to future specialization.</h2>
+              <p className="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+                This is not a personality quiz. It is a focused analysis of the way you solve problems, handle ambiguity, and build long-term advantage in AI-era careers.
+              </p>
+            </div>
             <ProgressBar total={total} current={currentIndex} answers={answers} />
           </div>
           <QuestionCard
@@ -143,7 +149,7 @@ export default function QuizShell() {
                   {currentQuestion.feedbacks[selectedIndex]}
                 </p>
               ) : (
-                <p className="text-sm text-[var(--muted)]">Choose the option that feels most like you.</p>
+                <p className="text-sm text-[var(--muted)]">Choose the option that reflects your real work preferences.</p>
               )}
             </div>
             <NavigationRow

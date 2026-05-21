@@ -17,14 +17,13 @@ type Props = {
 };
 
 const profileLabels: Array<{ key: keyof TraitScores; label: string }> = [
-  { key: "analytical", label: "Analytical" },
+  { key: "analytical", label: "Systems" },
   { key: "creativity", label: "Creative" },
-  { key: "technical-depth", label: "Technical" },
+  { key: "technical-depth", label: "Specialist" },
   { key: "social", label: "Collaborative" },
-  { key: "structure", label: "Organized" },
-  { key: "risk-tolerance", label: "Bold" },
+  { key: "structure", label: "Strategic" },
+  { key: "risk-tolerance", label: "Adaptive" },
   { key: "visual", label: "Visual" },
-  { key: "leadership", label: "Leadership" },
 ];
 
 export default function ResultScreen({ topMatch, allMatches, userProfile, onRetake }: Props) {
@@ -44,27 +43,33 @@ export default function ResultScreen({ topMatch, allMatches, userProfile, onReta
         </div>
         <h1 className="mt-6 text-4xl font-semibold text-[var(--heading)]">{topMatch.title}</h1>
         <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--muted)] mx-auto">
-          {topMatch.tagline || "This match is based on your answers and the way you like to work."}
+          {topMatch.tagline || "This match is based on your answers and the way you prefer to think and make decisions."}
         </p>
       </div>
 
       <div className="mt-8 grid gap-4 md:grid-cols-3">
         <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)]/90 p-5">
-          <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">Match</p>
+          <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">Strategic fit</p>
           <p className="mt-3 text-3xl font-semibold text-[var(--heading)]">{allMatches[0]?.percentage}%</p>
+          <p className="mt-2 text-sm text-core-muted">Alignment with your decision profile</p>
         </div>
         <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)]/90 p-5">
-          <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">Time to job</p>
+          <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">Time to practical leverage</p>
           <p className="mt-3 text-3xl font-semibold text-[var(--heading)]">{topMatch.timeToJob || "Varies"}</p>
+          <p className="mt-2 text-sm text-core-muted">How fast you can build useful skills</p>
         </div>
         <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)]/90 p-5">
           <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">AI relationship</p>
           <p className="mt-3 text-3xl font-semibold text-[var(--heading)]">{topMatch.aiRelationship || "AI-aware"}</p>
+          <p className="mt-2 text-sm text-core-muted">The way AI changes this career</p>
         </div>
       </div>
 
       <div className="mt-8 rounded-3xl border border-[var(--border)] bg-[var(--surface)]/90 p-6">
-        <p className="text-sm font-semibold text-[var(--heading)]">Your strongest working style</p>
+        <p className="text-sm font-semibold text-[var(--heading)]">Your strength profile</p>
+        <p className="mt-3 text-sm text-core-muted leading-relaxed">
+          These are the three dimensions that most strongly shape the path you should follow in the AI era.
+        </p>
         <div className="mt-4 flex flex-wrap gap-3">
           {topTraits.map((trait) => (
             <span
@@ -77,26 +82,23 @@ export default function ResultScreen({ topMatch, allMatches, userProfile, onReta
         </div>
       </div>
 
-      <div className="mt-8">
-        <p className="text-sm font-semibold text-[var(--heading)] mb-4">Other strong matches</p>
-        <div className="space-y-3">
-          {allMatches.slice(1, 4).map((match) => (
-            <Link
-              key={match.careerId}
-              href={`/careers/${match.careerId}`}
-              className="group flex items-center justify-between rounded-3xl border border-[var(--border)] bg-[var(--surface)]/85 p-4 transition hover:border-core-accent/40 hover:bg-[var(--surface)]/90"
-            >
-              <div>
-                <p className="text-sm font-semibold text-[var(--heading)]">{match.career.title}</p>
-                <p className="text-xs text-[var(--muted)]">{match.career.tagline}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-sm font-semibold text-core-accent">{match.percentage}%</p>
-                <p className="text-xs text-[var(--muted)]">match</p>
-              </div>
-            </Link>
-          ))}
-        </div>
+      <div className="mt-8 space-y-4">
+        {allMatches.slice(1, 4).map((match) => (
+          <Link
+            key={match.careerId}
+            href={`/careers/${match.careerId}`}
+            className="group flex items-center justify-between rounded-3xl border border-[var(--border)] bg-[var(--surface)]/85 p-4 transition hover:border-core-accent/40 hover:bg-[var(--surface)]/90"
+          >
+            <div>
+              <p className="text-sm font-semibold text-[var(--heading)]">{match.career.title}</p>
+              <p className="text-xs text-[var(--muted)]">{match.career.tagline}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm font-semibold text-core-accent">{match.percentage}%</p>
+              <p className="text-xs text-[var(--muted)]">match</p>
+            </div>
+          </Link>
+        ))}
       </div>
 
       <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
@@ -105,13 +107,13 @@ export default function ResultScreen({ topMatch, allMatches, userProfile, onReta
           onClick={onRetake}
           className="inline-flex items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)]/90 px-6 py-3 text-sm font-semibold text-[var(--heading)] transition hover:border-core-accent/60"
         >
-          Retake quiz
+          Retake analysis
         </button>
         <Link
           href={`/careers/${topMatch.id}`}
           className="inline-flex items-center justify-center rounded-full bg-core-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-core-accent/90"
         >
-          View roadmap
+          Explore this career
         </Link>
       </div>
     </div>

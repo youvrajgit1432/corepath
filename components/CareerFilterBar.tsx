@@ -17,6 +17,10 @@ interface Props {
   onFutureDemandChange: (v: string) => void;
   aiRelationship: string;
   onAiRelationshipChange: (v: string) => void;
+  remotePotential: string;
+  onRemotePotentialChange: (v: string) => void;
+  startupFriendly: string;
+  onStartupFriendlyChange: (v: string) => void;
   badge: string;
   onBadgeChange: (v: string) => void;
   badges: string[];
@@ -36,6 +40,10 @@ export default function CareerFilterBar({
   onFutureDemandChange,
   aiRelationship,
   onAiRelationshipChange,
+  remotePotential,
+  onRemotePotentialChange,
+  startupFriendly,
+  onStartupFriendlyChange,
   badge,
   onBadgeChange,
   badges,
@@ -51,18 +59,18 @@ export default function CareerFilterBar({
             type="search"
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
-            placeholder="Search careers by title"
+            placeholder="Search careers by title, skill, or impact"
             className="w-full rounded-2xl border border-core-border bg-white/10 px-4 py-3 text-sm text-core-text placeholder-core-muted focus:outline-none focus:ring-2 focus:ring-core-accent"
           />
         </div>
 
-        <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
           <select
             value={aiImpact}
             onChange={(e) => onAiImpactChange(e.target.value)}
             className="rounded-2xl border border-core-border bg-white/10 px-3 py-2 text-sm text-core-text"
           >
-            <option value="any">All AI impact</option>
+            <option value="any">AI impact</option>
             <option value="low">Low</option>
             <option value="moderate">Moderate</option>
             <option value="high">High</option>
@@ -74,10 +82,10 @@ export default function CareerFilterBar({
             onChange={(e) => onDifficultyChange(e.target.value)}
             className="rounded-2xl border border-core-border bg-white/10 px-3 py-2 text-sm text-core-text"
           >
-            <option value="any">All levels</option>
-            <option value="low">Beginner</option>
-            <option value="moderate">Intermediate</option>
-            <option value="high">Advanced</option>
+            <option value="any">Depth preference</option>
+            <option value="low">Beginner-friendly</option>
+            <option value="moderate">Moderate depth</option>
+            <option value="high">Specialist</option>
           </select>
 
           <select
@@ -85,7 +93,7 @@ export default function CareerFilterBar({
             onChange={(e) => onFutureDemandChange(e.target.value)}
             className="rounded-2xl border border-core-border bg-white/10 px-3 py-2 text-sm text-core-text"
           >
-            <option value="any">Any future demand</option>
+            <option value="any">Future demand</option>
             <option value="Exploding">Exploding</option>
             <option value="High Growth">High Growth</option>
             <option value="Stable">Stable</option>
@@ -97,27 +105,47 @@ export default function CareerFilterBar({
             onChange={(e) => onAiRelationshipChange(e.target.value)}
             className="rounded-2xl border border-core-border bg-white/10 px-3 py-2 text-sm text-core-text"
           >
-            <option value="any">Any AI relationship</option>
+            <option value="any">AI relationship</option>
             <option value="AI-Assisted">AI-Assisted</option>
-            <option value="AI-Created">AI-Created</option>
             <option value="AI-Augmented">AI-Augmented</option>
+            <option value="AI-Created">AI-Created</option>
             <option value="Automation-Heavy">Automation-Heavy</option>
             <option value="Human-Centered">Human-Centered</option>
           </select>
 
           <select
-            value={badge}
-            onChange={(e) => onBadgeChange(e.target.value)}
+            value={remotePotential}
+            onChange={(e) => onRemotePotentialChange(e.target.value)}
             className="rounded-2xl border border-core-border bg-white/10 px-3 py-2 text-sm text-core-text"
           >
-            <option value="any">Any badge</option>
-            {badges.map((badgeOption) => (
-              <option key={badgeOption} value={badgeOption}>
-                {badgeOption}
-              </option>
-            ))}
+            <option value="any">Remote potential</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+
+          <select
+            value={startupFriendly}
+            onChange={(e) => onStartupFriendlyChange(e.target.value)}
+            className="rounded-2xl border border-core-border bg-white/10 px-3 py-2 text-sm text-core-text"
+          >
+            <option value="any">Startup-friendly</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
           </select>
         </div>
+      </div>
+
+      <div className="mt-4 grid gap-3 sm:flex sm:flex-wrap">
+        <span className="inline-flex items-center rounded-full border border-core-border bg-white/10 px-3 py-2 text-xs uppercase tracking-[0.25em] text-core-muted">
+          Analytical vs creative
+        </span>
+        <span className="inline-flex items-center rounded-full border border-core-border bg-white/10 px-3 py-2 text-xs uppercase tracking-[0.25em] text-core-muted">
+          Deep work vs collaboration
+        </span>
+        <span className="inline-flex items-center rounded-full border border-core-border bg-white/10 px-3 py-2 text-xs uppercase tracking-[0.25em] text-core-muted">
+          Remote, startup, research-ready
+        </span>
       </div>
 
       {activeFilters.length > 0 && (

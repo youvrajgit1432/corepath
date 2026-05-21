@@ -10,7 +10,8 @@ import SkillTree from "../../../components/SkillTree";
 import { JsonLd } from "../../../components/JsonLd";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const career = getCareerById(params.id);
+  const resolvedParams = await params;
+  const career = getCareerById(resolvedParams.id);
   if (!career) {
     return {
       title: "Career not found | CorePath",
@@ -53,11 +54,12 @@ export function generateStaticParams() {
 }
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function CareerDetailPage({ params }: Props) {
-  const { id } = params;
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
   const career = getCareerById(id);
 
   if (!career) notFound();

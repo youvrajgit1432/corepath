@@ -39,6 +39,8 @@ export default function CareersPage() {
   const [difficulty, setDifficulty] = useState<string>("any");
   const [futureDemand, setFutureDemand] = useState<string>("any");
   const [aiRelationship, setAiRelationship] = useState<string>("any");
+  const [remotePotential, setRemotePotential] = useState<string>("any");
+  const [startupFriendly, setStartupFriendly] = useState<string>("any");
   const [badge, setBadge] = useState<string>("any");
   const [facets, setFacets] = useState<CareerFacets | null>(null);
   const PAGE_SIZE = 9;
@@ -74,6 +76,12 @@ export default function CareersPage() {
       case "aiRelationship":
         setAiRelationship("any");
         break;
+      case "remotePotential":
+        setRemotePotential("any");
+        break;
+      case "startupFriendly":
+        setStartupFriendly("any");
+        break;
       case "badge":
         setBadge("any");
         break;
@@ -89,6 +97,8 @@ export default function CareersPage() {
     setDifficulty("any");
     setFutureDemand("any");
     setAiRelationship("any");
+    setRemotePotential("any");
+    setStartupFriendly("any");
     setBadge("any");
     setVisible(PAGE_SIZE);
   };
@@ -99,13 +109,15 @@ export default function CareersPage() {
     if (category !== "All") filters.push({ key: "category", label: "Category", value: category });
     if (query.trim()) filters.push({ key: "query", label: "Search", value: query });
     if (aiImpact !== "any") filters.push({ key: "aiImpact", label: "AI Impact", value: aiImpact });
-    if (difficulty !== "any") filters.push({ key: "difficulty", label: "Level", value: difficulty });
-    if (futureDemand !== "any") filters.push({ key: "futureDemand", label: "Future Demand", value: futureDemand });
-    if (aiRelationship !== "any") filters.push({ key: "aiRelationship", label: "AI Relationship", value: aiRelationship });
+    if (difficulty !== "any") filters.push({ key: "difficulty", label: "Specialization", value: difficulty });
+    if (futureDemand !== "any") filters.push({ key: "futureDemand", label: "Outlook", value: futureDemand });
+    if (aiRelationship !== "any") filters.push({ key: "aiRelationship", label: "AI relationship", value: aiRelationship });
+    if (remotePotential !== "any") filters.push({ key: "remotePotential", label: "Remote", value: remotePotential });
+    if (startupFriendly !== "any") filters.push({ key: "startupFriendly", label: "Startup", value: startupFriendly });
     if (badge !== "any") filters.push({ key: "badge", label: "Badge", value: badge });
 
     return filters;
-  }, [category, query, aiImpact, difficulty, futureDemand, aiRelationship, badge]);
+  }, [category, query, aiImpact, difficulty, futureDemand, aiRelationship, remotePotential, startupFriendly, badge]);
 
   const filtered = useMemo(() => {
     let list: Career[] = allCareers.slice();
@@ -114,7 +126,7 @@ export default function CareersPage() {
     }
     if (query.trim()) {
       const q = query.toLowerCase();
-      list = list.filter((c) => c.title.toLowerCase().includes(q));
+      list = list.filter((c) => c.title.toLowerCase().includes(q) || c.tagline?.toLowerCase().includes(q));
     }
     if (aiImpact !== "any") {
       list = list.filter((c) => c.aiImpact === aiImpact);
@@ -130,11 +142,21 @@ export default function CareersPage() {
     if (aiRelationship !== "any") {
       list = list.filter((c) => c.aiRelationship === aiRelationship);
     }
+    if (remotePotential !== "any") {
+      list = list.filter((c) => c.remotePotential === remotePotential);
+    }
+    if (startupFriendly !== "any") {
+      const wantsStartup = startupFriendly === "yes";
+      list = list.filter((c) => {
+        const isStartup = (c.tags || []).some((t) => /startup/i.test(t));
+        return wantsStartup ? isStartup : !isStartup;
+      });
+    }
     if (badge !== "any") {
       list = list.filter((c) => deriveBadges(c).includes(badge));
     }
     return list;
-  }, [category, query, aiImpact, difficulty, futureDemand, aiRelationship, badge]);
+  }, [category, query, aiImpact, difficulty, futureDemand, aiRelationship, remotePotential, startupFriendly, badge]);
 
   const visibleItems = filtered.slice(0, visible);
 
@@ -142,27 +164,31 @@ export default function CareersPage() {
     <div className="pt-20 min-h-screen px-6 py-8">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
-          <p className="text-xs font-mono text-core-accent uppercase tracking-widest mb-3">All Paths</p>
+          <p className="text-xs font-mono text-core-accent uppercase tracking-widest mb-3">Career Intelligence</p>
           <h1 className="font-display text-4xl md:text-5xl text-core-heading mb-4">
-            Explore future-ready career specializations.
+            Explore future-ready specialization profiles.
           </h1>
           <p className="text-core-muted max-w-3xl text-lg leading-relaxed">
-            Filter by domain, AI impact, and level. Use search to find a specific role.
+            Use strategic filters to find roles by AI relationship, depth of work, remote potential, and startup alignment.
           </p>
 
           {facets && (
-            <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            <div className="mt-6 grid gap-4 sm:grid-cols-4">
               <div className="rounded-3xl border border-core-border bg-white/5 p-5">
-                <p className="text-xs uppercase tracking-[0.24em] text-core-muted">Total careers</p>
+                <p className="text-xs uppercase tracking-[0.24em] text-core-muted">Total paths</p>
                 <p className="mt-3 text-3xl font-bold text-core-heading">{facets.total}</p>
               </div>
               <div className="rounded-3xl border border-core-border bg-white/5 p-5">
-                <p className="text-xs uppercase tracking-[0.24em] text-core-muted">Exploding growth</p>
+                <p className="text-xs uppercase tracking-[0.24em] text-core-muted">AI-enabled</p>
+                <p className="mt-3 text-3xl font-bold text-core-heading">{(facets.aiRelationship["AI-Augmented"] ?? 0) + (facets.aiRelationship["AI-Assisted"] ?? 0) + (facets.aiRelationship["AI-Created"] ?? 0)}</p>
+              </div>
+              <div className="rounded-3xl border border-core-border bg-white/5 p-5">
+                <p className="text-xs uppercase tracking-[0.24em] text-core-muted">Fast-growth</p>
                 <p className="mt-3 text-3xl font-bold text-core-heading">{facets.futureDemand.Exploding ?? 0}</p>
               </div>
               <div className="rounded-3xl border border-core-border bg-white/5 p-5">
-                <p className="text-xs uppercase tracking-[0.24em] text-core-muted">AI Native</p>
-                <p className="mt-3 text-3xl font-bold text-core-heading">{facets.badges["AI Native"] ?? 0}</p>
+                <p className="text-xs uppercase tracking-[0.24em] text-core-muted">Remote fit</p>
+                <p className="mt-3 text-3xl font-bold text-core-heading">{facets.remotePotential.High ?? 0}</p>
               </div>
             </div>
           )}
@@ -184,6 +210,10 @@ export default function CareersPage() {
             onFutureDemandChange={setFutureDemand}
             aiRelationship={aiRelationship}
             onAiRelationshipChange={setAiRelationship}
+            remotePotential={remotePotential}
+            onRemotePotentialChange={setRemotePotential}
+            startupFriendly={startupFriendly}
+            onStartupFriendlyChange={setStartupFriendly}
             badge={badge}
             onBadgeChange={setBadge}
             badges={AVAILABLE_BADGES}
@@ -209,7 +239,7 @@ export default function CareersPage() {
         )}
 
         {filtered.length === 0 && (
-          <div className="mt-12 text-center text-core-muted">No careers found matching filters.</div>
+          <div className="mt-12 text-center text-core-muted">No careers matched your search and filters.</div>
         )}
       </div>
     </div>
