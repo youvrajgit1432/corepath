@@ -1,11 +1,51 @@
+"use client";
+
+import { useEffect } from "react";
 import { RoadmapStep } from "../data/roadmaps";
+import { logEvent } from "../data/analytics-events";
+import { recordJourneyEvent } from "../data/journey-memory";
 
 interface Props {
   steps: RoadmapStep[];
   coreSkill: string;
+  careerId?: string;
 }
 
-export default function LearningRoadmap({ steps, coreSkill }: Props) {
+export default function LearningRoadmap({ steps, coreSkill, careerId }: Props) {
+  useEffect(() => {
+    logEvent("roadmap_viewed", {
+      careerId,
+      phaseCount: steps.length,
+      coreSkill,
+    });
+
+    if (careerId) {
+      recordJourneyEvent({
+        type: "roadmapInteraction",
+        careerId,
+        interaction: "view",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  }, [careerId, coreSkill, steps.length]);
+
+  const trackRoadmapInteraction = (phase: string | number) => {
+    logEvent("roadmap_interacted", {
+      careerId,
+      phase,
+      interaction: "phase_explored",
+    });
+
+    if (careerId) {
+      recordJourneyEvent({
+        type: "roadmapInteraction",
+        careerId,
+        interaction: "start",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  };
+
   return (
     <div>
       <p className="text-xs font-mono text-core-muted uppercase tracking-widest mb-6">
@@ -79,6 +119,14 @@ export default function LearningRoadmap({ steps, coreSkill }: Props) {
                       <p className="text-sm text-core-text">{step.milestone}</p>
                     </div>
                   </div>
+
+                  <button
+                    type="button"
+                    onClick={() => trackRoadmapInteraction(step.phase)}
+                    className="mt-4 rounded-full border border-core-border px-3 py-2 text-xs font-semibold text-core-muted transition hover:border-core-accent/40 hover:text-core-accent"
+                  >
+                    Mark phase explored
+                  </button>
                 </div>
               </div>
             );

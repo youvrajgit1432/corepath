@@ -43,6 +43,7 @@ export interface Career {
   remotePotential?: "High" | "Medium" | "Low";
   roadmap?: { phase: string; milestones: string[] }[];
   relatedCareerIds?: string[];
+  reality?: Partial<CareerReality>;
 }
 
 export const AVAILABLE_BADGES = [
@@ -88,6 +89,238 @@ export function deriveBadges(career: Career): string[] {
   }
 
   return badges;
+}
+
+export interface CareerReality {
+  realityCheck: string;
+  beginnerMisunderstanding: string;
+  avoidIf: string;
+  typicalFrustrations: string;
+  hiddenDifficulty: string;
+  burnoutSignals: string;
+  longTermTradeoffs: string;
+}
+
+function hasAnyTag(career: Career, terms: string[]) {
+  const tags = (career.tags || []).map((tag) => tag.toLowerCase());
+  const text = `${career.category} ${career.domain} ${career.coreSkill} ${tags.join(" ")}`.toLowerCase();
+  return terms.some((term) => text.includes(term));
+}
+
+function coreFocusPhrase(career: Career) {
+  if (hasAnyTag(career, ["api", "database", "scalability", "performance"])) {
+    return "building reliable application systems";
+  }
+  if (hasAnyTag(career, ["mlops", "monitoring", "devops", "production", "ops"])) {
+    return "operating production AI systems";
+  }
+  if (hasAnyTag(career, ["data", "synthetic", "statistics", "model"])) {
+    return "turning data into dependable intelligence";
+  }
+  if (hasAnyTag(career, ["design", "ux", "visual", "interface"])) {
+    return "creating consistent user experiences";
+  }
+  if (hasAnyTag(career, ["policy", "ethics", "governance", "audit"])) {
+    return "shaping responsible AI decision-making";
+  }
+  if (hasAnyTag(career, ["security", "threat", "compliance", "forensics"])) {
+    return "protecting systems and sensitive data";
+  }
+  if (hasAnyTag(career, ["robotics", "embedded", "edge", "hardware"])) {
+    return "bringing software to constrained hardware environments";
+  }
+  return career.coreSkill ? career.coreSkill.toLowerCase() : "this work";
+}
+
+function getCareerRealityOverrides(id: string): Partial<CareerReality> | undefined {
+  const overrides: Record<string, Partial<CareerReality>> = {
+    "backend-engineer": {
+      realityCheck:
+        "Backend engineering is not only APIs. Long-term growth increasingly requires architecture and systems thinking.",
+      beginnerMisunderstanding:
+        "Many beginners think backend work is just building endpoints; in reality it is designing reliable systems, data flows, and failure recovery.",
+      avoidIf: "You strongly dislike debugging invisible problems or managing system reliability.",
+      typicalFrustrations:
+        "Long incident investigations, stale integrations, and unpredictable deployment failures often slow progress.",
+      hiddenDifficulty:
+        "Keeping distributed services consistent under load is rarely obvious until you own production reliability.",
+      burnoutSignals:
+        "You feel drained by repeated firefighting, late-night tickets, or pressure to keep systems running without clear payoff.",
+      longTermTradeoffs:
+        "This path offers deep technical leverage but can narrow you into systems work rather than broader product strategy.",
+    },
+    "prompt-engineer": {
+      realityCheck:
+        "Prompt engineering is not just writing prompts. Real impact depends on evaluation, iteration, and understanding model behavior.",
+      beginnerMisunderstanding:
+        "Many assume it is creative copywriting; the strongest prompt work is grounded in data, constraints, and measurable outcomes.",
+      avoidIf: "You dislike repeated trial-and-error with AI outputs or working in an environment that values experimentation over certainty.",
+      typicalFrustrations:
+        "Models can behave inconsistently, so progress often involves chasing subtle changes in wording and context.",
+      hiddenDifficulty:
+        "The hardest part is translating real user needs into a predictable, reliable prompt experience.",
+      burnoutSignals:
+        "You feel stuck on small wording changes and lose momentum because the output is never quite right.",
+      longTermTradeoffs:
+        "This role can be a fast entry point, but it may require continuous learning to stay relevant as models shift.",
+    },
+    "llm-ops-engineer": {
+      realityCheck:
+        "LLM Ops is not just monitoring models. It is about operating live AI systems under latency, cost, and safety constraints.",
+      beginnerMisunderstanding:
+        "Many assume the work is mostly infrastructure; in practice it is about reliability, data quality, and model behavior in production.",
+      avoidIf: "You do not like handling production incidents or negotiating tradeoffs between performance, cost, and safety.",
+      typicalFrustrations:
+        "Deployments can fail for reasons outside code—model drift, prompt drift, and service dependencies are common pain points.",
+      hiddenDifficulty:
+        "The hardest work is keeping systems stable while the underlying models and inputs keep changing.",
+      burnoutSignals:
+        "You feel exhausted by repeated firefighting and by trying to make uncertain AI systems behave consistently.",
+      longTermTradeoffs:
+        "This path gives strong operational expertise but may keep you focused on systems reliability rather than product design.",
+    },
+    "ai-ethics-auditor": {
+      realityCheck:
+        "AI ethics auditing is not only policy review. It requires evidence, bias analysis, and cross-team trust to be effective.",
+      beginnerMisunderstanding:
+        "Many assume ethics work is mainly compliance checklists; in reality it is about deep domain knowledge and practical risk management.",
+      avoidIf: "You prefer clear-cut technical problems over ambiguous choices that require negotiation and judgement.",
+      typicalFrustrations:
+        "Recommendations can be hard to enforce when stakeholders prioritize speed or short-term value.",
+      hiddenDifficulty:
+        "The most difficult work is translating ethical principles into concrete controls and business decisions.",
+      burnoutSignals:
+        "You feel frustrated when risks are acknowledged but not addressed, or when ethical guidance is ignored.",
+      longTermTradeoffs:
+        "This path can lead to meaningful impact, but it may also require navigating slow-moving organizational change.",
+    },
+  };
+
+  return overrides[id];
+}
+
+function buildRealityCheck(career: Career): string {
+  const override = getCareerRealityOverrides(career.id)?.realityCheck;
+  if (override) return override;
+
+  const focus = coreFocusPhrase(career);
+  if (career.difficulty === "high") {
+    return `This role is deeper than it appears: it is about ${focus}, not just short-term tasks.`;
+  }
+  if (career.aiImpact === "transformative") {
+    return `The role is shaped by AI change, so success depends on systems thinking and long-term strategy as much as technical skill.`;
+  }
+
+  return `This career depends on ${focus}; day-to-day work is more about systems and tradeoffs than one-off deliverables.`;
+}
+
+function buildBeginnerMisunderstanding(career: Career): string {
+  const override = getCareerRealityOverrides(career.id)?.beginnerMisunderstanding;
+  if (override) return override;
+
+  if (hasAnyTag(career, ["automation", "ops", "monitoring", "reliability"])) {
+    return `Many beginners think this is mostly about tooling. In practice it is about maintaining reliable systems and handling real incidents.`;
+  }
+  if (hasAnyTag(career, ["data", "ml", "synthetic", "statistics"])) {
+    return `Many assume it is mostly model building; the real work is often about data quality, validation, and reproducibility.`;
+  }
+  if (hasAnyTag(career, ["design", "ux", "interface"])) {
+    return `Many believe this is only visual polish; the deeper work is understanding people and designing useful experiences.`;
+  }
+  if (hasAnyTag(career, ["policy", "ethics", "audit"])) {
+    return `Many think this is just writing rules; it is actually about applying ethics to messy real-world systems.`;
+  }
+
+  return `Many people assume the job is mostly the visible part of the role. It often requires much more behind-the-scenes coordination and judgment.`;
+}
+
+function buildAvoidIf(career: Career): string {
+  const override = getCareerRealityOverrides(career.id)?.avoidIf;
+  if (override) return override;
+
+  if (career.aiRelationship === "Automation-Heavy") {
+    return "You strongly dislike debugging invisible problems or working in an area where routine work is likely to become automated.";
+  }
+  if (career.difficulty === "high") {
+    return "You prefer a role with lower technical risk and less emphasis on deep systems ownership.";
+  }
+  if (career.aiImpact === "transformative") {
+    return "You prefer stable, well-defined work over roles that evolve rapidly with AI change.";
+  }
+
+  return `You prefer broader generalist work over a focused specialty in ${coreFocusPhrase(career)}.`;
+}
+
+function buildTypicalFrustrations(career: Career): string {
+  const override = getCareerRealityOverrides(career.id)?.typicalFrustrations;
+  if (override) return override;
+
+  if (hasAnyTag(career, ["monitoring", "infrastructure", "ops", "reliability"])) {
+    return "Frequent production incidents and changing operational constraints can make progress feel slow and reactive.";
+  }
+  if (hasAnyTag(career, ["data", "analytics", "model", "synthetic"])) {
+    return "Data quality issues, opaque model behavior, and shifting requirements often create frustrating rework.";
+  }
+  if (hasAnyTag(career, ["design", "ux", "creative"])) {
+    return "Subjective feedback, shifting stakeholder expectations, and iterative refinement can stall decision-making.";
+  }
+
+  return "Unclear priorities, cross-team handoffs, and hidden complexity can make delivery harder than it looks.";
+}
+
+function buildHiddenDifficulty(career: Career): string {
+  const override = getCareerRealityOverrides(career.id)?.hiddenDifficulty;
+  if (override) return override;
+
+  if (career.category === "Software Engineering") {
+    return `The hardest part is often the interaction between systems, not the individual feature you are building.`;
+  }
+  if (career.category === "AI & Data") {
+    return `The hidden challenge is keeping models and data pipelines stable as requirements change.`;
+  }
+  if (career.category === "Emerging Tech") {
+    return `The role can demand more experimentation and uncertainty than it appears at first glance.`;
+  }
+
+  return `The work usually involves more coordination and long-term maintenance than the title suggests.`;
+}
+
+function buildBurnoutSignals(career: Career): string {
+  const override = getCareerRealityOverrides(career.id)?.burnoutSignals;
+  if (override) return override;
+
+  if (career.aiRelationship === "AI-Augmented" || career.aiImpact === "transformative") {
+    return "You feel burned out when you are constantly chasing unstable AI outputs or changing model behavior.";
+  }
+
+  return "You feel drained when repeated maintenance, unclear feedback, or constant incident work crowds out learning and forward progress.";
+}
+
+function buildLongTermTradeoffs(career: Career): string {
+  const override = getCareerRealityOverrides(career.id)?.longTermTradeoffs;
+  if (override) return override;
+
+  if (career.futureDemand === "Exploding") {
+    return `This path can open strong opportunities, but it may also tie you to a fast-moving niche rather than a broad generalist career.`;
+  }
+  if (career.difficulty === "high") {
+    return `This role can build deep expertise, though it may also limit your ability to switch into less technical or more product-focused work later.`;
+  }
+
+  return `This career is solid for long-term leverage, but you should be aware it may require ongoing specialization to stay current.`;
+}
+
+export function getCareerReality(career: Career): CareerReality {
+  const override = career.reality || {};
+  return {
+    realityCheck: override.realityCheck ?? buildRealityCheck(career),
+    beginnerMisunderstanding: override.beginnerMisunderstanding ?? buildBeginnerMisunderstanding(career),
+    avoidIf: override.avoidIf ?? buildAvoidIf(career),
+    typicalFrustrations: override.typicalFrustrations ?? buildTypicalFrustrations(career),
+    hiddenDifficulty: override.hiddenDifficulty ?? buildHiddenDifficulty(career),
+    burnoutSignals: override.burnoutSignals ?? buildBurnoutSignals(career),
+    longTermTradeoffs: override.longTermTradeoffs ?? buildLongTermTradeoffs(career),
+  };
 }
 
 export interface CareerFacets {

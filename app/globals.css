@@ -71,9 +71,53 @@
     color: #f8fafc;
   }
 
+  ::-moz-focus-inner {
+    border: 0;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
   a {
     color: inherit;
     text-decoration: none;
+  }
+
+  /* Skip-to-content link */
+  .skip-to-content {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .skip-to-content:focus {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    z-index: 9999;
+    width: auto;
+    height: auto;
+    padding: 12px 24px;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+    background: var(--accent);
+    color: #f8fafc;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
   }
 }
 
@@ -213,5 +257,56 @@
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-hero-float,
+  .animate-hero-float.animation-delay-2000,
+  .animate-quiz-pop,
+  .animate-quiz-card-pop,
+  .quiz-card-appear {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .quiz-dot.animate-pulse {
+    animation: none !important;
+  }
+
+  .hero-shell::before {
+    opacity: 0.4;
+  }
+}
+
+/* High contrast focus improvements */
+@media (prefers-contrast: more) {
+  :root {
+    --border: rgba(148, 163, 184, 0.5);
+    --muted: #cbd5e1;
+  }
+
+  [data-theme="light"] {
+    --border: rgba(71, 85, 105, 0.4);
+    --muted: #334155;
+  }
+
+  .border-core-border {
+    border-width: 1.5px;
   }
 }

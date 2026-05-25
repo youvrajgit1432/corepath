@@ -298,6 +298,162 @@ export const quizQuestions: QuizQuestion[] = [
       },
     ],
   },
+  {
+    id: "q11",
+    question: "A product launch hits a live failure and multiple teams are blocked. What feels most natural?",
+    options: [
+      {
+        id: "q11a",
+        label: "I align the teams, assign clear ownership, and keep everyone moving.",
+        traits: { leadership: 2, social: 2, structure: 1 },
+      },
+      {
+        id: "q11b",
+        label: "I dig into the failing service, isolate the root cause, and restore stability.",
+        traits: { analytical: 2, structure: 2, leadership: 1 },
+      },
+      {
+        id: "q11c",
+        label: "I shape a practical fix that avoids repeating the same outage.",
+        traits: { analytical: 2, creativity: 1, structure: 1 },
+      },
+      {
+        id: "q11d",
+        label: "I focus on what users need now and help the team deliver a safe workaround.",
+        traits: { social: 2, structure: 1, analytical: 1 },
+      },
+    ],
+  },
+  {
+    id: "q12",
+    question: "You can join a fast-growing startup with shifting priorities or a steady team with defined processes. Which fits you?",
+    options: [
+      {
+        id: "q12a",
+        label: "I enjoy shaping direction as we go, even if the plan changes often.",
+        traits: { "risk-tolerance": 2, leadership: 1, creativity: 1 },
+      },
+      {
+        id: "q12b",
+        label: "I prefer clear expectations and reliable delivery rhythms.",
+        traits: { structure: 2, analytical: 2, social: 1 },
+      },
+      {
+        id: "q12c",
+        label: "I like ownership without constant unpredictability.",
+        traits: { social: 2, structure: 1, analytical: 1 },
+      },
+      {
+        id: "q12d",
+        label: "I want a small team where I can own the whole system end to end.",
+        traits: { analytical: 2, social: 1, structure: 1 },
+      },
+    ],
+  },
+  {
+    id: "q13",
+    question: "A feature can be shipped quickly or researched more deeply first. What do you do?",
+    options: [
+      {
+        id: "q13a",
+        label: "I build a lightweight experiment and learn from what works in the real world.",
+        traits: { analytical: 2, creativity: 1, "risk-tolerance": 1 },
+      },
+      {
+        id: "q13b",
+        label: "I gather more data, test assumptions, and avoid a false start.",
+        traits: { analytical: 4, structure: 1 },
+      },
+      {
+        id: "q13c",
+        label: "I define a clear hypothesis and move with measured speed.",
+        traits: { leadership: 1, analytical: 1, structure: 1 },
+      },
+      {
+        id: "q13d",
+        label: "I research enough to reduce uncertainty, then ship a practical minimum.",
+        traits: { analytical: 2, creativity: 1, structure: 1 },
+      },
+    ],
+  },
+  {
+    id: "q14",
+    question: "You can own a stable legacy system or lead a greenfield initiative. Which outcome feels more valuable?",
+    options: [
+      {
+        id: "q14a",
+        label: "I invest in the existing system so it runs reliably for years.",
+        traits: { analytical: 2, structure: 2, social: 1 },
+      },
+      {
+        id: "q14b",
+        label: "I shape the new initiative and decide the architecture from scratch.",
+        traits: { analytical: 2, creativity: 1, "risk-tolerance": 1 },
+      },
+      {
+        id: "q14c",
+        label: "I own both the system and the team operating it.",
+        traits: { leadership: 2, structure: 1, analytical: 1 },
+      },
+      {
+        id: "q14d",
+        label: "I prefer a hybrid role that stabilizes the old while building the new.",
+        traits: { analytical: 1, creativity: 1, structure: 2 },
+      },
+    ],
+  },
+  {
+    id: "q15",
+    question: "A new AI feature is proposed but its value is unclear. How do you respond?",
+    options: [
+      {
+        id: "q15a",
+        label: "I define the user problem first, then test whether AI actually helps solve it.",
+        traits: { analytical: 2, creativity: 1, social: 1 },
+      },
+      {
+        id: "q15b",
+        label: "I build the model and see what it can do before choosing the use case.",
+        traits: { analytical: 3, creativity: 1 },
+      },
+      {
+        id: "q15c",
+        label: "I keep the AI piece small and make sure the system is reliable no matter what.",
+        traits: { analytical: 2, structure: 2 },
+      },
+      {
+        id: "q15d",
+        label: "I look for AI signals that add clear efficiency, not just novelty.",
+        traits: { creativity: 2, analytical: 1, structure: 1 },
+      },
+    ],
+  },
+  {
+    id: "q16",
+    question: "When a deadline lands in chaos, what helps you keep moving?",
+    options: [
+      {
+        id: "q16a",
+        label: "I focus on a small set of decisions that unblock the team immediately.",
+        traits: { structure: 2, leadership: 1, analytical: 1 },
+      },
+      {
+        id: "q16b",
+        label: "I pause long enough to check assumptions before making the next move.",
+        traits: { analytical: 2, structure: 1, "risk-tolerance": 1 },
+      },
+      {
+        id: "q16c",
+        label: "I keep people calm, clarify roles, and make the next steps visible.",
+        traits: { leadership: 2, social: 1, structure: 1 },
+      },
+      {
+        id: "q16d",
+        label: "I adapt the plan to what the team can reliably deliver under pressure.",
+        traits: { structure: 2, analytical: 1, social: 1 },
+      },
+    ],
+  },
 ];
 
 export interface ScoreResult {

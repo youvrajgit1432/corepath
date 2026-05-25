@@ -1,5 +1,19 @@
 import Link from "next/link";
 import CareerCard from "../components/CareerCard";
+import GuidedOnboarding from "../components/GuidedOnboarding";
+import CommunitySignalsPanel from "../components/CommunitySignalsPanel";
+import QuickStartPanel from "../components/QuickStartPanel";
+import TrustPanel from "../components/TrustPanel";
+import FeedbackPanel from "../components/FeedbackPanel";
+import JourneyTimelinePanel from "../components/JourneyTimelinePanel";
+import RecentCareerHistoryPanel from "../components/RecentCareerHistoryPanel";
+import CareerProgressPanel from "../components/CareerProgressPanel";
+import AchievementPanel from "../components/AchievementPanel";
+import DailyMissionPanel from "../components/DailyMissionPanel";
+import WeeklyReflectionPanel from "../components/WeeklyReflectionPanel";
+import GoalTrackerPanel from "../components/GoalTrackerPanel";
+import NotificationPanel from "../components/NotificationPanel";
+import FloatingCommandCenter from "../components/FloatingCommandCenter";
 import { careers as allCareers } from "../data/careers";
 
 export const metadata = {
@@ -24,7 +38,11 @@ export default function Home() {
     .slice(0, 4);
 
   return (
-    <main className="page-shell py-16">
+    <main className="page-shell py-16 px-4 sm:px-6 lg:px-8">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <FloatingCommandCenter />
+      </section>
+
       <section className="hero-shell lg:grid lg:grid-cols-[1.15fr_0.85fr] gap-12 items-start">
         <div className="max-w-3xl">
           <p className="section-title">AI-era career intelligence</p>
@@ -105,8 +123,58 @@ export default function Home() {
         </div>
       </section>
 
+      <GuidedOnboarding />
+
+      <section className="mt-16 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <RecentCareerHistoryPanel />
+      </section>
+
+      <section className="mt-16 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <JourneyTimelinePanel />
+      </section>
+
+      <section className="mt-16 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <CareerProgressPanel />
+      </section>
+
+      <section className="mt-16 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AchievementPanel />
+      </section>
+
+      <section className="mt-16 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <DailyMissionPanel />
+      </section>
+
+      <section className="mt-16 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <WeeklyReflectionPanel />
+      </section>
+
+      <section className="mt-16 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <GoalTrackerPanel />
+      </section>
+
+      <section className="mt-16 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <NotificationPanel />
+      </section>
+
       <section className="mt-16">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <CommunitySignalsPanel />
+        </div>
+      </section>
+
+      <section className="mt-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid gap-6 xl:grid-cols-[0.7fr_0.3fr]">
+          <div className="space-y-6">
+            <QuickStartPanel />
+            <TrustPanel />
+          </div>
+          <FeedbackPanel source="home" />
+        </div>
+      </section>
+
+      <section className="mt-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] items-start">
             <div>
               <p className="section-title">Why this matters</p>

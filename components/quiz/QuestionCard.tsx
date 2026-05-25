@@ -1,3 +1,4 @@
+import { memo } from "react";
 import AnswerCard from "./AnswerCard";
 
 type Answer = {
@@ -25,7 +26,7 @@ type Props = {
   onSelect: (index: number) => void;
 };
 
-export default function QuestionCard({ question, selectedIndex, onSelect }: Props) {
+function QuestionCard({ question, selectedIndex, onSelect }: Props) {
   return (
     <div className="quiz-card-appear rounded-[1.75rem] border border-[var(--border)] bg-[var(--surface)] p-6 md:p-8">
       <div className="mb-6 flex flex-col gap-4">
@@ -53,3 +54,5 @@ export default function QuestionCard({ question, selectedIndex, onSelect }: Prop
     </div>
   );
 }
+
+export default memo(QuestionCard);

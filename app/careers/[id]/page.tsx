@@ -4,9 +4,18 @@ import Link from "next/link";
 import { careers, getCareerById, aiImpactLabels, aiImpactColors } from "../../../data/careers";
 import { getRoadmapById } from "../../../data/roadmaps";
 import { getRoadmapForCareer } from "../../../data/roadmaps-generated";
+import { buildCareerEvolution } from "../../../data/career-evolution";
 import AIImpactIndicator from "../../../components/AIImpactIndicator";
+import CareerRealityPanel from "../../../components/CareerRealityPanel";
+import CareerDetailClient from "../../../components/CareerDetailClient";
+import JourneyProfileCard from "../../../components/JourneyProfileCard";
 import LearningRoadmap from "../../../components/LearningRoadmap";
 import SkillTree from "../../../components/SkillTree";
+import SkillGapPanel from "../../../components/SkillGapPanel";
+import ProfileAnalyzerPanel from "../../../components/ProfileAnalyzerPanel";
+import PathExamplesPanel from "../../../components/PathExamplesPanel";
+import CareerWorkspacePanel from "../../../components/CareerWorkspacePanel";
+import AdaptiveRoadmapPanel from "../../../components/AdaptiveRoadmapPanel";
 import { JsonLd } from "../../../components/JsonLd";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -99,11 +108,18 @@ export default async function CareerDetailPage({ params }: Props) {
     .map((relatedId) => getCareerById(relatedId))
     .filter((item): item is NonNullable<typeof item> => Boolean(item))
     .slice(0, 3);
+  const careerEvolution = buildCareerEvolution(career);
 
   return (
-    <div className="pt-16 min-h-screen px-6 py-12">
-      <JsonLd data={breadcrumbSchema} />
-      <div className="max-w-4xl mx-auto">
+    <CareerDetailClient
+      careerId={id}
+      category={career.category}
+      tags={career.tags ?? []}
+      hasRoadmap={Boolean(roadmap?.steps?.length)}
+    >
+      <div className="pt-16 min-h-screen px-4 sm:px-6 py-8 sm:py-12">
+        <JsonLd data={breadcrumbSchema} />
+        <div className="max-w-4xl mx-auto">
         <nav className="text-xs font-mono text-core-muted mb-6">
           <Link href="/careers" className="hover:text-core-accent transition-colors">
             Careers
@@ -112,7 +128,7 @@ export default async function CareerDetailPage({ params }: Props) {
           <span className="text-core-text">{career.title}</span>
         </nav>
 
-        <div className="rounded-card border-core-border bg-core-surface p-8 shadow-soft mb-12">
+        <div className="rounded-card border-core-border bg-core-surface p-4 sm:p-8 shadow-soft mb-8 sm:mb-12">
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-xs font-mono text-core-muted uppercase tracking-widest mb-2">
@@ -130,24 +146,81 @@ export default async function CareerDetailPage({ params }: Props) {
           </div>
         </div>
 
-        <div className="grid gap-10">
-          <section className="rounded-card border-core-border bg-core-surface p-8">
-            <h2 className="text-2xl font-display text-core-heading mb-4">Skill Tree</h2>
+        <CareerRealityPanel career={career} className="mb-10" />
+
+        <SkillGapPanel career={career} className="mb-6" />
+
+        <ProfileAnalyzerPanel career={career} className="mb-6" />
+
+        <PathExamplesPanel career={career} className="mb-6" />
+
+        <CareerWorkspacePanel career={career} showCareersLink={false} />
+
+        <AdaptiveRoadmapPanel
+          steps={roadmap.steps}
+          career={career}
+          className="mb-6"
+        />
+
+        <JourneyProfileCard
+          event={{
+            type: "careerViewed",
+            careerId: career.id,
+            careerCategory: career.category,
+            careerTags: career.tags ?? [],
+            hasRoadmap: Boolean(roadmap?.steps?.length),
+            timestamp: new Date().toISOString(),
+          }}
+          className="mb-6"
+        />
+
+        <div className="grid gap-8 sm:gap-14">
+          <section className="rounded-card border-core-border bg-core-surface p-4 sm:p-8">
+            <h2 className="text-xl sm:text-2xl font-display text-core-heading mb-4">Skill Tree</h2>
             <SkillTree nodes={roadmap.skillTree} />
           </section>
 
-          <section className="rounded-card border-core-border bg-core-surface p-8">
-            <h2 className="text-2xl font-display text-core-heading mb-4">Learning Roadmap</h2>
-            <LearningRoadmap steps={roadmap.steps} coreSkill={career.coreSkill} />
+          <section className="rounded-card border-core-border bg-core-surface p-4 sm:p-8">
+            <h2 className="text-xl sm:text-2xl font-display text-core-heading mb-4">Learning Roadmap</h2>
+            <LearningRoadmap steps={roadmap.steps} coreSkill={career.coreSkill} careerId={career.id} />
           </section>
 
-          <section className="rounded-card border-core-border bg-core-surface p-8">
-            <h2 className="text-2xl font-display text-core-heading mb-4">AI Impact</h2>
+          <section className="rounded-card border-core-border bg-core-surface p-4 sm:p-8">
+            <h2 className="text-xl sm:text-2xl font-display text-core-heading mb-4">AI Impact</h2>
             <AIImpactIndicator level={career.aiImpact} note={career.aiImpactNote} />
           </section>
 
-          <section className="rounded-card border-core-border bg-core-surface p-8">
-            <h2 className="text-2xl font-display text-core-heading mb-4">Related Careers</h2>
+          <section className="rounded-card border-core-border bg-core-surface p-4 sm:p-8">
+            <h2 className="text-xl sm:text-2xl font-display text-core-heading mb-4">Where this path can take you</h2>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="rounded-3xl border border-core-border bg-core-bg/70 p-4">
+                <p className="text-sm font-semibold text-core-heading mb-3">Career evolution</p>
+                <ul className="space-y-2 text-sm text-core-muted">
+                  <li>
+                    <span className="font-semibold text-core-text">Next:</span> {careerEvolution.immediateNextPaths.join(", ")}
+                  </li>
+                  <li>
+                    <span className="font-semibold text-core-text">Mid-career:</span> {careerEvolution.midCareerEvolution.join(", ")}
+                  </li>
+                  <li>
+                    <span className="font-semibold text-core-text">Advanced:</span> {careerEvolution.advancedSpecializationRoutes.join(", ")}
+                  </li>
+                </ul>
+              </div>
+              <div className="rounded-3xl border border-core-border bg-core-bg/70 p-4">
+                <p className="text-sm font-semibold text-core-heading mb-3">Skill ecosystem</p>
+                <p className="text-sm text-core-muted mb-2">
+                  Core: <span className="font-semibold text-core-text">{careerEvolution.skillEcosystem.core}</span>
+                </p>
+                <p className="text-sm text-core-muted mb-2">Supporting: {careerEvolution.skillEcosystem.supporting.join(", ")}</p>
+                <p className="text-sm text-core-muted mb-2">Expansion: {careerEvolution.skillEcosystem.expansion.join(", ")}</p>
+                <p className="text-sm text-core-muted">Transferable: {careerEvolution.skillEcosystem.transferable.join(", ")}</p>
+              </div>
+            </div>
+          </section>
+
+          <section className="rounded-card border-core-border bg-core-surface p-4 sm:p-8">
+            <h2 className="text-xl sm:text-2xl font-display text-core-heading mb-4">Related Careers</h2>
             {relatedCareers.length > 0 ? (
               <div className="grid gap-4 md:grid-cols-3">
                 {relatedCareers.map((related) => (
@@ -169,12 +242,13 @@ export default async function CareerDetailPage({ params }: Props) {
             )}
           </section>
 
-          <section className="rounded-card border-core-border bg-core-surface p-8">
-            <h2 className="text-2xl font-display text-core-heading mb-4">Is this the one for you?</h2>
+          <section className="rounded-card border-core-border bg-core-surface p-4 sm:p-8">
+            <h2 className="text-xl sm:text-2xl font-display text-core-heading mb-4">Is this the one for you?</h2>
             <p className="text-core-muted leading-relaxed mb-6">
-              Compare this role with other AI and tech career paths by taking the CorePath quiz. It’s the fastest way to see whether this specialization matches your strengths and goals.
+              Compare this role with other AI and tech career paths by taking the CorePath quiz. It&rsquo;s the fastest way to see whether this specialization matches your strengths and goals.
             </p>
-            <div className="flex flex-col gap-3 sm:flex-row">
+            {/* Mobile CTA — fixed to bottom */}
+            <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-[var(--bg)]/95 backdrop-blur-md border-t border-[var(--border)] px-4 py-3 flex flex-col gap-3">
               <Link
                 href="/quiz"
                 className="inline-flex items-center justify-center rounded-full bg-core-accent px-6 py-3 text-sm font-semibold text-white hover:bg-core-accent/90 transition"
@@ -187,10 +261,42 @@ export default async function CareerDetailPage({ params }: Props) {
               >
                 Browse all careers
               </Link>
+              {relatedCareers[0] ? (
+                <Link
+                  href={`/careers/compare?careerA=${career.id}&careerB=${relatedCareers[0].id}`}
+                  className="inline-flex items-center justify-center rounded-full border border-core-accent bg-core-accent/5 px-6 py-3 text-sm font-semibold text-core-accent hover:bg-core-accent/10 transition"
+                >
+                  Compare careers
+                </Link>
+              ) : null}
+            </div>
+            {/* Desktop CTA — in-flow */}
+            <div className="hidden md:flex md:flex-row md:gap-3">
+              <Link
+                href="/quiz"
+                className="inline-flex items-center justify-center rounded-full bg-core-accent px-6 py-3 text-sm font-semibold text-white hover:bg-core-accent/90 transition"
+              >
+                Take the career quiz
+              </Link>
+              <Link
+                href="/careers"
+                className="inline-flex items-center justify-center rounded-full border border-core-border bg-white/5 px-6 py-3 text-sm font-semibold text-core-heading hover:bg-white/10 transition"
+              >
+                Browse all careers
+              </Link>
+              {relatedCareers[0] ? (
+                <Link
+                  href={`/careers/compare?careerA=${career.id}&careerB=${relatedCareers[0].id}`}
+                  className="inline-flex items-center justify-center rounded-full border border-core-accent bg-core-accent/5 px-6 py-3 text-sm font-semibold text-core-accent hover:bg-core-accent/10 transition"
+                >
+                  Compare careers
+                </Link>
+              ) : null}
             </div>
           </section>
         </div>
       </div>
     </div>
+    </CareerDetailClient>
   );
 }

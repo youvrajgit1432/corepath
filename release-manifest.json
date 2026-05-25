@@ -1,0 +1,8 @@
+{
+  "release": "v3",
+  "type": "major",
+  "branch": "main",
+  "tag": "v3.0",
+  "build": "production",
+  "readyForPush": true
+}

@@ -1,8 +1,28 @@
 "use client";
 
+import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { getCareerById, aiImpactLabels, aiImpactColors } from "../../data/careers";
+import { buildCareerSurfaceExplanation, RecommendationExplanation } from "../../data/recommendation-explanations";
+import { buildCareerEvolution } from "../../data/career-evolution";
+import { loadJourneyMemory } from "../../data/journey-memory";
+import { logEvent } from "../../data/analytics-events";
+import { analyzeSkillGap } from "../../data/skill-gap";
+import { getProjectsForCareer } from "../../data/project-recommendations";
+import JourneyProfileCard from "../../components/JourneyProfileCard";
+import ConfidencePanel from "../../components/ConfidencePanel";
+import CareerRealityPanel from "../../components/CareerRealityPanel";
+import RecommendationFeedback from "../../components/RecommendationFeedback";
+import PersonalInsightsPanel from "../../components/PersonalInsightsPanel";
+import SkillGapPanel from "../../components/SkillGapPanel";
+import ProfileAnalyzerPanel from "../../components/ProfileAnalyzerPanel";
+import PathExamplesPanel from "../../components/PathExamplesPanel";
+import ProjectRecommendationPanel from "../../components/ProjectRecommendationPanel";
+import CareerWorkspacePanel from "../../components/CareerWorkspacePanel";
+import CommunitySignalsPanel from "../../components/CommunitySignalsPanel";
+import TrustPanel from "../../components/TrustPanel";
+import FeedbackPanel from "../../components/FeedbackPanel";
 
 interface ParsedResult {
   careerId: string;
@@ -12,6 +32,10 @@ interface ParsedResult {
 export default function RecommendationContent() {
   const searchParams = useSearchParams();
   const raw = searchParams.get("results") ?? "";
+
+  useEffect(() => {
+    logEvent("recommendation_viewed", { resultsCount: raw.split(",").length });
+  }, [raw]);
 
   const results: ParsedResult[] = raw
     .split(",")
@@ -35,9 +59,17 @@ export default function RecommendationContent() {
   const primary = results[0];
   const primaryCareer = getCareerById(primary.careerId);
   const others = results.slice(1);
+  const comparison = others[0] ? primary.percentage - others[0].percentage : undefined;
+  const primaryExplanation: RecommendationExplanation | null = primaryCareer
+    ? buildCareerSurfaceExplanation(primaryCareer, others[0] ? getCareerById(others[0].careerId) : undefined, comparison)
+    : null;
+  const evolution = primaryCareer ? buildCareerEvolution(primaryCareer) : null;
+  const journey = loadJourneyMemory();
+  const skillGap = primaryCareer ? analyzeSkillGap(primaryCareer, []) : undefined;
+  const projectRecommendations = primaryCareer ? getProjectsForCareer(primaryCareer, undefined, skillGap, journey) : undefined;
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-16 pt-28">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12 sm:py-16 pt-24 sm:pt-28">
       <p className="text-xs font-mono text-core-accent uppercase tracking-widest mb-3">
         Your Result
       </p>
@@ -47,6 +79,42 @@ export default function RecommendationContent() {
       <p className="text-core-muted mb-10">
         Based on your answers, here is your recommended specialization.
       </p>
+
+      {primaryCareer && primaryExplanation && (
+        <div className="mb-6 rounded-lg border border-core-border bg-core-surface p-5">
+          <div className="mb-4">
+            <p className="text-xs font-mono text-core-muted uppercase tracking-widest mb-2">
+              Why this recommendation happened
+            </p>
+            <ul className="space-y-2 text-sm text-core-text">
+              {primaryExplanation.whyMatched.map((item, index) => (
+                <li key={index} className="flex items-start gap-2">
+                  <span className="mt-1">•</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {primaryExplanation.alternativeInsight && (
+            <div className="mb-4 rounded-lg bg-core-accent/5 p-4 border border-core-accent/20 text-sm text-core-text">
+              <p className="font-semibold mb-2">Comparing nearby matches</p>
+              <p>{primaryExplanation.alternativeInsight}</p>
+            </div>
+          )}
+
+          <div className="grid gap-3 md:grid-cols-2">
+            <div className="rounded-lg bg-core-accent/5 p-4 border border-core-accent/20">
+              <p className="text-xs uppercase font-mono text-core-muted mb-2">AI-era outlook</p>
+              <p className="text-sm text-core-text">{primaryExplanation.aiOutlook}</p>
+            </div>
+            <div className="rounded-lg bg-core-accent/5 p-4 border border-core-accent/20">
+              <p className="text-xs uppercase font-mono text-core-muted mb-2">Immediate next action</p>
+              <p className="text-sm text-core-text">{primaryExplanation.nextAction}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {primaryCareer && (
         <div className="rounded-card border border-core-accent/40 bg-core-surface p-6 mb-6 glow-border">
@@ -87,22 +155,102 @@ export default function RecommendationContent() {
             {aiImpactLabels[primaryCareer.aiImpact]}
           </div>
 
-          <div className="flex gap-3">
+          <CareerRealityPanel career={primaryCareer} />
+
+          <div className="flex flex-col gap-3 sm:flex-row">
             <Link
               href={`/careers/${primaryCareer.id}`}
+              onClick={() => logEvent("recommendation_clicked", {
+                careerId: primaryCareer.id,
+                category: primaryCareer.category,
+                action: "view_roadmap",
+              })}
               className="flex-1 text-center px-4 py-2.5 rounded-lg bg-core-accent text-core-bg text-sm font-medium hover:bg-core-accent/90 transition-colors"
             >
               View Full Roadmap →
             </Link>
             <Link
               href="/quiz"
+              onClick={() => logEvent("quiz_retaken")}
               className="px-4 py-2.5 rounded-lg border border-core-border text-core-muted text-sm hover:border-core-accent/40 transition-colors"
             >
               Retake
             </Link>
+            {others[0] && (
+              <Link
+                href={`/careers/compare?careerA=${primaryCareer.id}&careerB=${others[0].careerId}`}
+                onClick={() => logEvent("comparison_initiated", { careerA: primaryCareer.id, careerB: others[0].careerId })}
+                className="px-4 py-2.5 rounded-lg border border-core-accent text-core-accent text-sm font-medium hover:bg-core-accent/10 transition-colors"
+              >
+                Compare careers
+              </Link>
+            )}
           </div>
         </div>
       )}
+
+      <SkillGapPanel career={primaryCareer} className="mb-6" />
+
+      <ProfileAnalyzerPanel career={primaryCareer} skillGap={skillGap} className="mb-6" />
+
+      <PathExamplesPanel career={primaryCareer} skillGap={skillGap} className="mb-6" />
+
+      <CommunitySignalsPanel career={primaryCareer} />
+
+      <TrustPanel />
+
+      {projectRecommendations && (
+        <div className="mb-6">
+          <ProjectRecommendationPanel recommendations={projectRecommendations} careerTitle={primaryCareer.title} />
+        </div>
+      )}
+
+      <FeedbackPanel source="recommendation" />
+
+      <ConfidencePanel journey={journey} layout="compact" className="mb-6" />
+
+      <CareerWorkspacePanel career={primaryCareer} showCareersLink={true} />
+
+      {evolution ? (
+        <section className="rounded-card border border-core-border bg-core-surface p-6 mb-6">
+          <p className="text-xs uppercase font-mono text-core-muted tracking-widest mb-4">
+            Where this path can take you
+          </p>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="rounded-3xl border border-core-border bg-core-bg/70 p-4">
+              <p className="text-sm font-semibold text-core-heading mb-3">Career evolution</p>
+              <ul className="space-y-3 text-sm text-core-muted">
+                <li>
+                  <span className="font-semibold text-core-text">Next roles:</span> {evolution.immediateNextPaths.join(", ")}
+                </li>
+                <li>
+                  <span className="font-semibold text-core-text">Mid-career moves:</span> {evolution.midCareerEvolution.join(", ")}
+                </li>
+                <li>
+                  <span className="font-semibold text-core-text">Specializations:</span> {evolution.advancedSpecializationRoutes.join(", ")}
+                </li>
+              </ul>
+            </div>
+            <div className="rounded-3xl border border-core-border bg-core-bg/70 p-4">
+              <p className="text-sm font-semibold text-core-heading mb-3">Skill ecosystem</p>
+              <p className="text-sm text-core-muted mb-3">
+                Core skill: <span className="font-semibold text-core-text">{evolution.skillEcosystem.core}</span>
+              </p>
+              <p className="text-sm text-core-muted mb-2">
+                Supporting: {evolution.skillEcosystem.supporting.join(", ")}
+              </p>
+              <p className="text-sm text-core-muted mb-2">
+                Expansion: {evolution.skillEcosystem.expansion.join(", ")}
+              </p>
+              <p className="text-sm text-core-muted">Transferable: {evolution.skillEcosystem.transferable.join(", ")}</p>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      <JourneyProfileCard className="mb-6" />
+
+      <PersonalInsightsPanel variant="full" />
 
       {others.length > 0 && (
         <div>
@@ -117,6 +265,12 @@ export default function RecommendationContent() {
                 <Link
                   key={r.careerId}
                   href={`/careers/${r.careerId}`}
+                  onClick={() => logEvent("career_viewed", {
+                    careerId: r.careerId,
+                    category: career.category,
+                    careerCategory: career.category,
+                    source: "recommendation_matches",
+                  })}
                   className="flex items-center justify-between p-4 rounded-lg border border-core-border bg-core-surface hover:border-core-accent/30 transition-colors group"
                 >
                   <div className="flex items-center gap-3">

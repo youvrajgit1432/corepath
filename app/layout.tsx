@@ -1,6 +1,7 @@
 import "./globals.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import AnalyticsSession from "../components/AnalyticsSession";
 
 export const metadataBase = new URL("https://corepath.io");
 export const metadata = {
@@ -44,9 +45,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body className="min-h-screen bg-core-bg text-core-text">
+        <a href="#main-content" className="skip-to-content">
+          Skip to main content
+        </a>
+        <AnalyticsSession />
         <Header />
 
-        <main className="pt-20">
+        <main id="main-content" className="pt-20" role="main">
           {children}
         </main>
 

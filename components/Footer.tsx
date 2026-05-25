@@ -1,19 +1,21 @@
 "use client";
 
 import Link from "next/link";
+import { clearJourneyMemory } from "../data/journey-memory";
+import { clearAnalyticsData } from "../data/analytics-events";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="mt-16 bg-core-footer border-t border-transparent">
+    <footer className="mt-16 bg-core-footer border-t border-transparent" role="contentinfo">
       <div className="max-w-7xl mx-auto px-6 py-12 text-core-footer">
         {/* Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-xl font-display text-core-header">◇</span>
+              <span className="text-xl font-display text-core-header" aria-hidden="true">◇</span>
               <span className="font-display text-core-footer">Corepath</span>
             </div>
             <p className="text-xs text-core-footer leading-relaxed">
@@ -23,74 +25,95 @@ export default function Footer() {
 
           {/* Product */}
           <div>
-            <h3 className="font-mono text-xs text-core-header uppercase tracking-widest mb-4">
+            <h3 className="font-mono text-xs text-core-header uppercase tracking-widest mb-4" id="footer-product-heading">
               Product
             </h3>
-            <ul className="space-y-3">
-              <li>
-                <Link href="/careers" className="text-sm text-core-footer hover:text-core-text transition-colors">
-                  Career Explorer
-                </Link>
-              </li>
-              <li>
-                <Link href="/quiz" className="text-sm text-core-muted hover:text-core-text transition-colors">
-                  Career Quiz
-                </Link>
-              </li>
-              <li>
-                <Link href="/recommendation" className="text-sm text-core-muted hover:text-core-text transition-colors">
-                  Recommendations
-                </Link>
-              </li>
-            </ul>
+            <nav aria-labelledby="footer-product-heading">
+              <ul className="space-y-3">
+                <li>
+                  <Link href="/careers" className="text-sm text-core-footer hover:text-core-text transition-colors">
+                    Career Explorer
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/quiz" className="text-sm text-core-muted hover:text-core-text transition-colors">
+                    Career Quiz
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/recommendation" className="text-sm text-core-muted hover:text-core-text transition-colors">
+                    Recommendations
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/insights" className="text-sm text-core-muted hover:text-core-text transition-colors">
+                    Insights
+                  </Link>
+                </li>
+              </ul>
+            </nav>
           </div>
 
           {/* Resources */}
           <div>
-            <h3 className="font-mono text-xs text-core-header uppercase tracking-widest mb-4">
+            <h3 className="font-mono text-xs text-core-header uppercase tracking-widest mb-4" id="footer-resources-heading">
               Resources
             </h3>
-            <ul className="space-y-3">
-              <li>
-                <a href="#" className="text-sm text-core-muted hover:text-core-text transition-colors">
-                  Documentation
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-sm text-core-muted hover:text-core-text transition-colors">
-                  Blog
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-sm text-core-muted hover:text-core-text transition-colors">
-                  FAQ
-                </a>
-              </li>
-            </ul>
+            <nav aria-labelledby="footer-resources-heading">
+              <ul className="space-y-3">
+                <li>
+                  <a href="#" className="text-sm text-core-muted hover:text-core-text transition-colors">
+                    Documentation
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-sm text-core-muted hover:text-core-text transition-colors">
+                    Blog
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-sm text-core-muted hover:text-core-text transition-colors">
+                    FAQ
+                  </a>
+                </li>
+              </ul>
+            </nav>
           </div>
 
-          {/* Legal */}
+          {/* Privacy */}
           <div>
-            <h3 className="font-mono text-xs text-core-header uppercase tracking-widest mb-4">
-              Legal
+            <h3 className="font-mono text-xs text-core-header uppercase tracking-widest mb-4" id="footer-privacy-heading">
+              Privacy
             </h3>
-            <ul className="space-y-3">
-              <li>
-                <a href="#" className="text-sm text-core-muted hover:text-core-text transition-colors">
-                  Privacy Policy
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-sm text-core-muted hover:text-core-text transition-colors">
-                  Terms of Service
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-sm text-core-muted hover:text-core-text transition-colors">
-                  Contact
-                </a>
-              </li>
-            </ul>
+            <nav aria-labelledby="footer-privacy-heading">
+              <ul className="space-y-3">
+                <li>
+                  <a href="#" className="text-sm text-core-muted hover:text-core-text transition-colors">
+                    Privacy Policy
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-sm text-core-muted hover:text-core-text transition-colors">
+                    Terms of Service
+                  </a>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (window.confirm("Clear all local profile memory, analytics, and feedback data? This cannot be undone.")) {
+                        clearJourneyMemory();
+                        clearAnalyticsData();
+                        alert("Your profile memory, analytics, and feedback data have been cleared.");
+                      }
+                    }}
+                    className="text-sm text-amber-400/80 hover:text-amber-300 transition-colors underline underline-offset-2 cursor-pointer"
+                  >
+                    Clear my profile memory
+                  </button>
+                </li>
+              </ul>
+            </nav>
           </div>
         </div>
 
@@ -100,17 +123,19 @@ export default function Footer() {
             <p className="text-xs text-core-footer">
               © {currentYear} Corepath. All rights reserved.
             </p>
-            <div className="flex items-center gap-6">
-              <a href="#" className="text-xs text-core-footer hover:text-core-text transition-colors">
-                Twitter
-              </a>
-              <a href="#" className="text-xs text-core-footer hover:text-core-text transition-colors">
-                LinkedIn
-              </a>
-              <a href="#" className="text-xs text-core-footer hover:text-core-text transition-colors">
-                GitHub
-              </a>
-            </div>
+            <nav aria-label="Social media links">
+              <div className="flex items-center gap-6">
+                <a href="#" className="text-xs text-core-footer hover:text-core-text transition-colors">
+                  Twitter
+                </a>
+                <a href="#" className="text-xs text-core-footer hover:text-core-text transition-colors">
+                  LinkedIn
+                </a>
+                <a href="#" className="text-xs text-core-footer hover:text-core-text transition-colors">
+                  GitHub
+                </a>
+              </div>
+            </nav>
           </div>
         </div>
       </div>

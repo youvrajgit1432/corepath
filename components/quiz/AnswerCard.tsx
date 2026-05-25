@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 type Answer = {
   id: string;
   letter: string;
@@ -14,7 +16,7 @@ type Props = {
   onClick: () => void;
 };
 
-export default function AnswerCard({ answer, selected, dimmed, onClick }: Props) {
+function AnswerCard({ answer, selected, dimmed, onClick }: Props) {
   return (
     <button
       type="button"
@@ -38,3 +40,5 @@ export default function AnswerCard({ answer, selected, dimmed, onClick }: Props)
     </button>
   );
 }
+
+export default memo(AnswerCard);

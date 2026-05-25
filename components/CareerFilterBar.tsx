@@ -52,15 +52,16 @@ export default function CareerFilterBar({
   onClearAll,
 }: Props) {
   return (
-    <div className="w-full rounded-3xl border border-core-border bg-core-surface p-4 shadow-sm">
+    <div className="w-full rounded-3xl border border-core-border bg-core-surface/90 backdrop-blur-md p-3 sm:p-4 shadow-soft">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex-1 min-w-0">
           <input
             type="search"
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
-            placeholder="Search careers by title, skill, or impact"
-            className="w-full rounded-2xl border border-core-border bg-white/10 px-4 py-3 text-sm text-core-text placeholder-core-muted focus:outline-none focus:ring-2 focus:ring-core-accent"
+            placeholder="Search paths..."
+            className="w-full rounded-2xl border border-core-border bg-core-bg/50 px-4 py-2.5 text-sm text-core-text placeholder:text-core-muted focus:outline-none focus:ring-2 focus:ring-core-accent/50 transition-all"
+            aria-label="Search careers"
           />
         </div>
 
@@ -68,7 +69,8 @@ export default function CareerFilterBar({
           <select
             value={aiImpact}
             onChange={(e) => onAiImpactChange(e.target.value)}
-            className="rounded-2xl border border-core-border bg-white/10 px-3 py-2 text-sm text-core-text"
+            className="rounded-xl border border-core-border bg-core-bg/50 px-2 py-2 text-[13px] text-core-text focus:outline-none focus:border-core-accent"
+            aria-label="Filter by AI impact"
           >
             <option value="any">AI impact</option>
             <option value="low">Low</option>
@@ -80,7 +82,8 @@ export default function CareerFilterBar({
           <select
             value={difficulty}
             onChange={(e) => onDifficultyChange(e.target.value)}
-            className="rounded-2xl border border-core-border bg-white/10 px-3 py-2 text-sm text-core-text"
+            className="rounded-xl border border-core-border bg-core-bg/50 px-2 py-2 text-[13px] text-core-text focus:outline-none focus:border-core-accent"
+            aria-label="Filter by depth preference"
           >
             <option value="any">Depth preference</option>
             <option value="low">Beginner-friendly</option>
@@ -91,7 +94,8 @@ export default function CareerFilterBar({
           <select
             value={futureDemand}
             onChange={(e) => onFutureDemandChange(e.target.value)}
-            className="rounded-2xl border border-core-border bg-white/10 px-3 py-2 text-sm text-core-text"
+            className="rounded-xl border border-core-border bg-core-bg/50 px-2 py-2 text-[13px] text-core-text focus:outline-none focus:border-core-accent"
+            aria-label="Filter by future demand"
           >
             <option value="any">Future demand</option>
             <option value="Exploding">Exploding</option>
@@ -103,7 +107,8 @@ export default function CareerFilterBar({
           <select
             value={aiRelationship}
             onChange={(e) => onAiRelationshipChange(e.target.value)}
-            className="rounded-2xl border border-core-border bg-white/10 px-3 py-2 text-sm text-core-text"
+            className="rounded-xl border border-core-border bg-core-bg/50 px-2 py-2 text-[13px] text-core-text focus:outline-none focus:border-core-accent"
+            aria-label="Filter by AI relationship"
           >
             <option value="any">AI relationship</option>
             <option value="AI-Assisted">AI-Assisted</option>
@@ -116,7 +121,8 @@ export default function CareerFilterBar({
           <select
             value={remotePotential}
             onChange={(e) => onRemotePotentialChange(e.target.value)}
-            className="rounded-2xl border border-core-border bg-white/10 px-3 py-2 text-sm text-core-text"
+            className="rounded-xl border border-core-border bg-core-bg/50 px-2 py-2 text-[13px] text-core-text focus:outline-none focus:border-core-accent"
+            aria-label="Filter by remote potential"
           >
             <option value="any">Remote potential</option>
             <option value="High">High</option>
@@ -127,7 +133,8 @@ export default function CareerFilterBar({
           <select
             value={startupFriendly}
             onChange={(e) => onStartupFriendlyChange(e.target.value)}
-            className="rounded-2xl border border-core-border bg-white/10 px-3 py-2 text-sm text-core-text"
+            className="rounded-xl border border-core-border bg-core-bg/50 px-2 py-2 text-[13px] text-core-text focus:outline-none focus:border-core-accent"
+            aria-label="Filter by startup friendly"
           >
             <option value="any">Startup-friendly</option>
             <option value="yes">Yes</option>
@@ -136,15 +143,15 @@ export default function CareerFilterBar({
         </div>
       </div>
 
-      <div className="mt-4 grid gap-3 sm:flex sm:flex-wrap">
-        <span className="inline-flex items-center rounded-full border border-core-border bg-white/10 px-3 py-2 text-xs uppercase tracking-[0.25em] text-core-muted">
+      <div className="mt-3 hidden sm:flex sm:flex-wrap gap-2">
+        <span className="inline-flex items-center rounded-full border border-core-border bg-white/5 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-core-muted">
           Analytical vs creative
         </span>
-        <span className="inline-flex items-center rounded-full border border-core-border bg-white/10 px-3 py-2 text-xs uppercase tracking-[0.25em] text-core-muted">
+        <span className="inline-flex items-center rounded-full border border-core-border bg-white/5 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-core-muted">
           Deep work vs collaboration
         </span>
-        <span className="inline-flex items-center rounded-full border border-core-border bg-white/10 px-3 py-2 text-xs uppercase tracking-[0.25em] text-core-muted">
-          Remote, startup, research-ready
+        <span className="inline-flex items-center rounded-full border border-core-border bg-white/5 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-core-muted">
+          Market signal exploration
         </span>
       </div>
 

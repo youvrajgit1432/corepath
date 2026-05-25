@@ -184,6 +184,65 @@ export function CareerResultsComponent({
               </ul>
             </div>
 
+            {/* Strategic Signal Summary */}
+            <div className="grid gap-3 mb-3 md:grid-cols-2">
+              <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                <p className="text-xs uppercase tracking-widest text-slate-500 mb-2">Strength signals</p>
+                <ul className="space-y-1 text-sm text-slate-700">
+                  {match.explanation.strengthSignals.map((signal, i) => (
+                    <li key={i} className="flex items-start">
+                      <span className="mr-2">•</span>
+                      <span>{signal}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                <p className="text-xs uppercase tracking-widest text-slate-500 mb-2">Potential risks</p>
+                <ul className="space-y-1 text-sm text-slate-700">
+                  {match.explanation.potentialRisks.map((risk, i) => (
+                    <li key={i} className="flex items-start">
+                      <span className="mr-2">•</span>
+                      <span>{risk}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {match.explanation.alternativeInsight && (
+              <div className="mb-3 p-3 rounded-lg bg-orange-50 border border-orange-200 text-sm text-slate-800">
+                <strong className="block text-xs uppercase tracking-widest text-orange-600 mb-1">Career tradeoff</strong>
+                {match.explanation.alternativeInsight}
+              </div>
+            )}
+
+            <div className="mb-3 p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <p className="text-xs uppercase tracking-widest text-slate-500 mb-2">AI outlook</p>
+              <p className="text-sm text-slate-700">{match.explanation.aiOutlook}</p>
+            </div>
+
+            <div className="mb-3 p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <p className="text-xs uppercase tracking-widest text-slate-500 mb-2">Immediate next action</p>
+              <p className="text-sm text-slate-700">{match.explanation.nextAction}</p>
+            </div>
+
+            {index === 0 && (
+              <div className="mb-3 p-3 rounded-lg bg-slate-50 border border-slate-200">
+                <p className="text-xs uppercase tracking-widest text-slate-500 mb-2">Long-term leverage</p>
+                <p className="text-sm text-slate-700 mb-3">{match.explanation.longTermLeverage}</p>
+                <p className="text-xs uppercase tracking-widest text-slate-500 mb-2">Next 30 days</p>
+                <div className="space-y-2 text-sm text-slate-700">
+                  {match.explanation.thirtyDayPlan.map((step) => (
+                    <div key={step.week}>
+                      <p className="font-semibold">{step.week}</p>
+                      <p>{step.focus}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Key Details */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
               <div>

@@ -86,7 +86,7 @@ export default function SkillTree({ nodes }: Props) {
               {layer.map((node) => (
                 <div
                   key={node.id}
-                  className={`inline-flex flex-col items-start px-3 py-2 rounded-lg border text-xs font-mono transition-all duration-150 hover:scale-105 ${
+                  className={`inline-flex flex-col items-start px-3 py-2 rounded-lg border text-xs font-mono transition-all duration-150 lg:hover:scale-105 ${
                     nodeStyles[node.type]
                   }`}
                 >

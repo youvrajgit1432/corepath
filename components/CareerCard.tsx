@@ -1,11 +1,14 @@
 import Link from "next/link";
-import { Career, aiImpactLabels, deriveBadges } from "../data/careers";
+import { Career, aiImpactLabels, deriveBadges, getCareerReality } from "../data/careers";
 
 interface Props {
   career: Career;
+  compareMode?: boolean;
+  selected?: boolean;
+  onToggleCompare?: (careerId: string) => void;
 }
 
-export default function CareerCard({ career }: Props) {
+export default function CareerCard({ career, compareMode, selected, onToggleCompare }: Props) {
   const impactBadge = {
     low: "border-emerald-400 text-emerald-400",
     moderate: "border-yellow-400 text-yellow-400",
@@ -18,20 +21,14 @@ export default function CareerCard({ career }: Props) {
     ? `People who are strongest in ${career.fitTags.join(" and ")}`
     : `People who prefer deep work around ${career.coreSkill.toLowerCase()}`;
 
-  const avoidIf = career.aiRelationship === "Automation-Heavy"
-    ? "You want a role less likely to be automated."
-    : career.difficulty === "low"
-    ? "You want highly technical specialization."
-    : "You prefer a broader generalist role over a focused specialty.";
+  const avoidIf = career.reality?.avoidIf ?? getCareerReality(career).avoidIf;
 
   const marketMaturity = career.futureDemand === "Exploding" ? "Emerging" : career.futureDemand === "High Growth" ? "Growing" : "Established";
 
   return (
-    <Link
-      href={`/careers/${career.id}`}
-      className="group block rounded-card border border-core-border bg-core-bg p-6 transition hover:border-core-accent hover:bg-core-surface"
-    >
-      <div className="flex items-start justify-between gap-4">
+    <div className="group rounded-card border border-core-border bg-core-bg p-6 transition hover:border-core-accent hover:bg-core-surface">
+      <Link href={`/careers/${career.id}`} className="block">
+        <div className="flex items-start justify-between gap-4">
         <span className="text-5xl">{career.icon || "✨"}</span>
         <div className="space-y-2 text-right">
           <span className={`inline-flex items-center justify-center text-[0.65rem] font-semibold uppercase tracking-[0.28em] px-3 py-1 rounded-full border ${impactBadge}`}>
@@ -86,6 +83,22 @@ export default function CareerCard({ career }: Props) {
           <p className="mt-2 text-sm text-core-heading">{avoidIf}</p>
         </div>
       </div>
-    </Link>
+      </Link>
+      {onToggleCompare ? (
+        <button
+          type="button"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onToggleCompare(career.id);
+          }}
+          className={`mt-4 w-full rounded-full border px-4 py-2 text-sm font-semibold transition ${
+            selected ? "border-core-accent bg-core-accent text-white" : "border-core-border bg-core-surface text-core-heading hover:border-core-accent hover:bg-core-accent/10"
+          }`}
+        >
+          {selected ? "Selected to compare" : "Select to compare"}
+        </button>
+      ) : null}
+    </div>
   );
 }

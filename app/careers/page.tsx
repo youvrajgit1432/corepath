@@ -4,7 +4,7 @@
 
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import Link from "next/link";
 import {
   careers as allCareers,
@@ -16,6 +16,8 @@ import {
 import CareerGrid from "../../components/CareerGrid";
 import CareerCategoryTabs from "../../components/CareerCategoryTabs";
 import CareerFilterBar from "../../components/CareerFilterBar";
+import JourneyTimelinePanel from "../../components/JourneyTimelinePanel";
+import { logEvent } from "../../data/analytics-events";
 
 const CATEGORIES = [
   "All",
@@ -45,6 +47,60 @@ export default function CareersPage() {
   const [facets, setFacets] = useState<CareerFacets | null>(null);
   const PAGE_SIZE = 9;
   const [visible, setVisible] = useState(PAGE_SIZE);
+  const [compareMode, setCompareMode] = useState(false);
+  const [selectedCompare, setSelectedCompare] = useState<string[]>([]);
+  
+  // Scroll visibility logic
+  const [isFilterVisible, setIsFilterVisible] = useState(true);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > lastScrollY.current && currentScrollY > 150) {
+        setIsFilterVisible(false);
+      } else {
+        setIsFilterVisible(true);
+      }
+      lastScrollY.current = currentScrollY;
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem("corepath-compare-basket");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved) as string[];
+        const validIds = parsed.filter((id) => typeof id === "string");
+        setSelectedCompare(validIds);
+        
+        // Auto-enable compare mode if the user already has careers in their basket
+        if (validIds.length > 0) setCompareMode(true);
+      } catch {
+        // ignore invalid storage
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem("corepath-compare-basket", JSON.stringify(selectedCompare));
+  }, [selectedCompare]);
+
+  const clearCompareSelection = () => setSelectedCompare([]);
+
+  const toggleCompareSelection = (careerId: string) => {
+    setSelectedCompare((current) => {
+      if (current.includes(careerId)) {
+        return current.filter((id) => id !== careerId);
+      }
+      if (current.length < 2) {
+        return [...current, careerId];
+      }
+      return [current[1], careerId];
+    });
+  };
 
   useEffect(() => {
     fetch("/api/careers")
@@ -53,7 +109,22 @@ export default function CareersPage() {
       .catch(() => {
         // silently ignore server fetch failures in dev
       });
+
+    const params = new URLSearchParams(window.location.search);
+    const initialFutureDemand = params.get("futureDemand");
+    const initialAiRelationship = params.get("aiRelationship");
+    const initialCategory = params.get("category");
+
+    if (initialFutureDemand) setFutureDemand(initialFutureDemand);
+    if (initialAiRelationship) setAiRelationship(initialAiRelationship);
+    if (initialCategory) setCategory(initialCategory);
   }, []);
+
+  useEffect(() => {
+    if (category !== "All") {
+      logEvent("career_category_viewed", { category });
+    }
+  }, [category]);
 
   const clearFilter = (key: string) => {
     setVisible(PAGE_SIZE);
@@ -158,10 +229,21 @@ export default function CareersPage() {
     return list;
   }, [category, query, aiImpact, difficulty, futureDemand, aiRelationship, remotePotential, startupFriendly, badge]);
 
+  useEffect(() => {
+    if (activeFilters.length === 0) return;
+
+    logEvent("filter_applied", {
+      filters: activeFilters,
+      resultCount: filtered.length,
+    });
+  }, [activeFilters, filtered.length]);
+
   const visibleItems = filtered.slice(0, visible);
+  const selectedCareerTitles = selectedCompare.map((id) => allCareers.find((career) => career.id === id)?.title ?? id);
+  const compareLink = selectedCompare.length === 2 ? `/careers/compare?careerA=${selectedCompare[0]}&careerB=${selectedCompare[1]}` : undefined;
 
   return (
-    <div className="pt-20 min-h-screen px-6 py-8">
+    <div className="pt-20 pb-32 min-h-screen px-6 py-8">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <p className="text-xs font-mono text-core-accent uppercase tracking-widest mb-3">Career Intelligence</p>
@@ -171,6 +253,36 @@ export default function CareersPage() {
           <p className="text-core-muted max-w-3xl text-lg leading-relaxed">
             Use strategic filters to find roles by AI relationship, depth of work, remote potential, and startup alignment.
           </p>
+          <div className="mt-6 rounded-3xl border border-core-border bg-core-bg/70 p-5">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm font-semibold text-core-heading">Compare mode</p>
+                <p className="mt-2 text-sm text-core-text">
+                  Select two careers while browsing, then review a side-by-side comparison with history saved automatically.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setCompareMode((prev) => !prev)}
+                  className="rounded-full border border-core-border bg-white/5 px-4 py-2 text-sm font-semibold text-core-heading hover:border-core-accent hover:bg-core-accent/10 transition"
+                >
+                  {compareMode ? "Exit compare mode" : "Enable compare mode"}
+                </button>
+                {compareMode && selectedCompare.length > 0 ? (
+                  <button
+                    type="button"
+                    onClick={clearCompareSelection}
+                    className="rounded-full border border-core-border bg-white/5 px-4 py-2 text-sm font-semibold text-core-heading hover:border-core-accent hover:bg-core-accent/10 transition"
+                  >
+                    Clear compare basket
+                  </button>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        </div>
+        <JourneyTimelinePanel className="mb-8" />
 
           {facets && (
             <div className="mt-6 grid gap-4 sm:grid-cols-4">
@@ -192,13 +304,17 @@ export default function CareersPage() {
               </div>
             </div>
           )}
-        </div>
-
         <div className="mb-4">
           <CareerCategoryTabs categories={CATEGORIES} selected={category} onSelect={(c) => { setCategory(c); setVisible(PAGE_SIZE); }} />
         </div>
 
-        <div className="sticky top-20 z-30 bg-transparent pt-3">
+        <div 
+          className={`sticky top-20 z-30 bg-transparent pt-3 transition-all duration-300 transform ${
+            isFilterVisible 
+              ? "translate-y-0 opacity-100" 
+              : "-translate-y-10 opacity-0 pointer-events-none"
+          }`}
+        >
           <CareerFilterBar
             query={query}
             onQueryChange={setQuery}
@@ -224,7 +340,12 @@ export default function CareersPage() {
         </div>
 
         <div className="mt-6">
-          <CareerGrid careers={visibleItems} />
+          <CareerGrid
+            careers={visibleItems}
+            compareMode={compareMode}
+            selectedCareerIds={selectedCompare}
+            onToggleCompare={toggleCompareSelection}
+          />
         </div>
 
         {visible < filtered.length && (
@@ -242,6 +363,38 @@ export default function CareersPage() {
           <div className="mt-12 text-center text-core-muted">No careers matched your search and filters.</div>
         )}
       </div>
+      {selectedCompare.length > 0 ? (
+        <div className="fixed inset-x-0 bottom-0 z-50 border-t border-core-border bg-core-surface/95 backdrop-blur-xl px-6 py-4 shadow-soft">
+          <div className="mx-auto flex max-w-6xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-2">
+              <p className="text-sm font-semibold text-core-heading">Compare basket</p>
+              <p className="text-sm text-core-text">
+                {selectedCareerTitles.length === 2
+                  ? `${selectedCareerTitles[0]} vs ${selectedCareerTitles[1]}`
+                  : `Select ${2 - selectedCareerTitles.length} more career${selectedCareerTitles.length === 1 ? "" : "s"} to compare.`}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={clearCompareSelection}
+                className="rounded-full border border-core-border bg-white/5 px-4 py-2 text-sm font-semibold text-core-heading hover:border-core-accent hover:bg-core-accent/10 transition"
+              >
+                Clear
+              </button>
+              {compareLink ? (
+                <Link
+                  href={compareLink}
+                  onClick={() => logEvent("comparison_initiated", { careerA: selectedCompare[0], careerB: selectedCompare[1] })}
+                  className="rounded-full bg-core-accent px-4 py-2 text-sm font-semibold text-white hover:bg-core-accent/90 transition"
+                >
+                  Generate report
+                </Link>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

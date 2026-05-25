@@ -1,17 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { getSafeStorage } from "../data/safe-storage";
 
 const STORAGE_KEY = "theme";
 
 type Theme = "dark" | "light";
+
+function getStorage() {
+  return getSafeStorage({ silent: true });
+}
 
 function getInitialTheme(): Theme {
   if (typeof window === "undefined") {
     return "dark";
   }
 
-  const savedTheme = window.localStorage.getItem(STORAGE_KEY);
+  const store = getStorage();
+  const savedTheme = store.get<string>(STORAGE_KEY);
   if (savedTheme === "dark" || savedTheme === "light") {
     return savedTheme;
   }
@@ -24,7 +30,7 @@ function applyTheme(theme: Theme) {
   root.dataset.theme = theme;
   root.classList.toggle("dark", theme === "dark");
   root.classList.toggle("light", theme === "light");
-  window.localStorage.setItem(STORAGE_KEY, theme);
+  getStorage().set(STORAGE_KEY, theme);
 }
 
 export default function ThemeToggle() {

@@ -1,0 +1,23 @@
+{
+  "name": "CorePath",
+  "version": "3.0.0",
+  "codename": "Career Intelligence Evolution",
+  "releaseDate": "2026-05-25",
+  "status": "stable",
+  "features": [
+    "AI Career Intelligence",
+    "Floating Command Center",
+    "Adaptive Roadmaps",
+    "Journey Memory",
+    "Decision Intelligence",
+    "Profile Analysis",
+    "Career Workspace"
+  ],
+  "fixes": [
+    "stack overflow",
+    "recursive dependency cycles",
+    "hydration mismatches",
+    "null propagation",
+    "SSR inconsistencies"
+  ]
+}

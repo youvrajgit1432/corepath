@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: "https://corepath.io", priority: 1.0 },
     { url: "https://corepath.io/careers", priority: 0.9 },
+    { url: "https://corepath.io/insights", priority: 0.9 },
     { url: "https://corepath.io/quiz", priority: 0.9 },
     { url: "https://corepath.io/recommendation", priority: 0.5 },
     ...careerUrls,

@@ -11,10 +11,39 @@ export { aiImpactLabels, aiImpactColors, careers, getCareerById } from "./career
 // ============ Quiz System ============
 export type { QuizQuestion, QuizOption, ScoreResult, TraitScores } from "./quiz";
 export { quizQuestions, calculateResults, calculateTraitScores, findCareerMatches, normalizeTraitScores, traitDimensions, calculateCosineSimilarity } from "./quiz";
+export { calculateEnhancedProfile } from "./quiz-enhanced";
+export { generateResultReport } from "./quiz-report";
+export type { ResultReport } from "./quiz-report";
 
 // ============ Career Matching & Recommendations ============
 export type { CareerMatch, RecommendationResult, CareerComparison } from "./career-matching";
 export { getCareerRecommendations, searchCareers, getCareersByDomain, getCareerById as getCareerByIdFromMatching, getCareersByDifficulty, getCareersByDemand, compareCarees, getCareerPath, getCareersWithSkill, getAvailableDomains, getAvailableSkills } from "./career-matching";
+export { loadJourneyMemory, recordJourneyEvent, buildJourneyProfile, type JourneyEvent } from "./journey-memory";
+export { buildConfidenceInsights, type ConfidenceInsights } from "./confidence-engine";
+export { buildCareerEvolution } from "./career-evolution";
+
+// ============ Skill Gap Intelligence ============
+export type { SkillGapResult } from "./skill-gap";
+export { analyzeSkillGap, getCareerReadiness, getNextLearningPriority } from "./skill-gap";
+
+// ============ Project Recommendations ============
+export type { Project, ProjectRecommendations, ExperienceLevel, AIRelevance } from "./project-recommendations";
+export { generateProjectRecommendations, getProjectsForCareer } from "./project-recommendations";
+
+// ============ Career Execution Workspace ============
+export type { CareerWorkspace, ProgressEntry } from "./career-workspace";
+export {
+  loadCareerWorkspace,
+  selectCareer,
+  recordMilestoneCompletion,
+  recordProjectCompletion,
+  recordStudySession,
+  advancePhase,
+  calculateReadiness,
+  getNextRecommendedAction,
+  getWeeklyProgress,
+  getStreakInfo,
+} from "./career-workspace";
 
 /**
  * QUICK START GUIDE

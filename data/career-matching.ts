@@ -5,6 +5,8 @@
 
 import { careers, Career } from "./careers";
 import { TraitScores, calculateCosineSimilarity } from "./quiz";
+import { buildRecommendationExplanation, RecommendationExplanation } from "./recommendation-explanations";
+import { compareCareers as buildCareerComparison } from "./career-comparison";
 
 export interface CareerMatch {
   career: Career;
@@ -12,6 +14,7 @@ export interface CareerMatch {
   similarity: number;
   reasons: string[];
   skills: string[];
+  explanation: RecommendationExplanation;
 }
 
 export interface RecommendationResult {
@@ -59,7 +62,7 @@ export function getCareerRecommendations(
   userTraits: TraitScores,
   topN: number = 5
 ): RecommendationResult {
-  const matches: CareerMatch[] = careers
+  const ranked = careers
     .map((career) => {
       const careerTraitProfile = buildCareerTraitProfile(career);
       const similarity = calculateCosineSimilarity(userTraits, careerTraitProfile);
@@ -81,6 +84,15 @@ export function getCareerRecommendations(
     .filter((match) => match.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, topN);
+
+  const matches: CareerMatch[] = ranked.map((match, index) => {
+    const alternate = ranked[index + 1];
+    const scoreDelta = alternate ? match.score - alternate.score : undefined;
+    return {
+      ...match,
+      explanation: buildRecommendationExplanation(userTraits, match.career, alternate?.career, scoreDelta),
+    };
+  });
 
   return {
     topMatches: matches,
@@ -158,7 +170,18 @@ export interface CareerComparison {
   career1: Career;
   career2: Career;
   similarities: string[];
-  differences: string[];
+  differences: {
+    career1: string[];
+    career2: string[];
+  };
+  thinkingStyleFit: string;
+  workStyleDifferences: string[];
+  aiEraDifferences: string[];
+  learningDifficulty: string;
+  longTermLeverageComparison: string;
+  futureDemandComparison: string;
+  careerEvolutionDifferences: string[];
+  recommendationSummary: string;
 }
 
 export function compareCarees(id1: string, id2: string): CareerComparison | null {
@@ -167,46 +190,24 @@ export function compareCarees(id1: string, id2: string): CareerComparison | null
   
   if (!career1 || !career2) return null;
 
-  const similarities: string[] = [];
-  const differences: string[] = [];
-
-  // Compare domains
-  if (career1.domain === career2.domain) {
-    similarities.push(`Both in ${career1.domain}`);
-  } else {
-    differences.push(
-      `Different domains: ${career1.domain} vs ${career2.domain}`
-    );
-  }
-
-  // Compare difficulty
-  if (career1.difficulty === career2.difficulty) {
-    similarities.push(`Similar difficulty: ${career1.difficulty}`);
-  } else {
-    differences.push(
-      `Different difficulty levels: ${career1.difficulty} vs ${career2.difficulty}`
-    );
-  }
-
-  // Compare demand
-  if (career1.demand === career2.demand) {
-    similarities.push(`Similar market demand: ${career1.demand}`);
-  } else {
-    differences.push(
-      `Different market demand: ${career1.demand} vs ${career2.demand}`
-    );
-  }
-
-  // Compare core skills
-  if (career1.coreSkill === career2.coreSkill) {
-    similarities.push(`Both focus on ${career1.coreSkill}`);
-  }
+  const comparison = buildCareerComparison(career1, career2);
 
   return {
     career1,
     career2,
-    similarities,
-    differences,
+    similarities: comparison.similarities,
+    differences: {
+      career1: comparison.differences.careerA,
+      career2: comparison.differences.careerB,
+    },
+    thinkingStyleFit: comparison.thinkingStyleFit,
+    workStyleDifferences: comparison.workStyleDifferences,
+    aiEraDifferences: comparison.aiEraDifferences,
+    learningDifficulty: comparison.learningDifficulty,
+    longTermLeverageComparison: comparison.longTermLeverageComparison,
+    futureDemandComparison: comparison.futureDemandComparison,
+    careerEvolutionDifferences: comparison.careerEvolutionDifferences,
+    recommendationSummary: comparison.recommendationSummary,
   };
 }
 
