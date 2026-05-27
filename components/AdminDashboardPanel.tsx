@@ -465,14 +465,14 @@ export default function AdminDashboardPanel() {
   // ── Loading State ──
   if (loading && !data) {
     return (
-      <div className="min-h-screen px-6 py-12">
+      <div className="min-h-screen px-4 sm:px-6 py-12">
         <div className="mx-auto max-w-7xl">
           <div className="mb-8 animate-pulse">
             <div className="h-4 w-36 rounded-full bg-white/10" />
             <div className="mt-3 h-8 w-72 rounded-full bg-white/10" />
             <div className="mt-2 h-4 w-56 rounded-full bg-white/10" />
           </div>
-          <div className="grid gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="h-28 rounded-2xl bg-white/5 animate-pulse" />
             ))}
@@ -485,7 +485,7 @@ export default function AdminDashboardPanel() {
   // ── Error State ──
   if (error && !data) {
     return (
-      <div className="min-h-screen px-6 py-12">
+      <div className="min-h-screen px-4 sm:px-6 py-12">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col items-center justify-center rounded-2xl border border-red-500/30 bg-red-500/10 p-12 text-center">
             <span className="text-4xl">⚠️</span>
@@ -506,7 +506,7 @@ export default function AdminDashboardPanel() {
 
   if (!data) {
     return (
-      <div className="min-h-screen px-6 py-12">
+      <div className="min-h-screen px-4 sm:px-6 py-12">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-core-border p-12 text-center">
             <span className="text-4xl">📊</span>
@@ -528,7 +528,7 @@ export default function AdminDashboardPanel() {
   }
 
   return (
-    <div className="min-h-screen px-6 py-12 pt-28">
+    <div className="min-h-screen px-4 sm:px-6 py-12 pt-28">
       <div className="mx-auto max-w-7xl">
         {/* ───── HEADER ───── */}
         <header className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
@@ -563,7 +563,7 @@ export default function AdminDashboardPanel() {
         </header>
 
         {/* ───── OVERVIEW METRICS ───── */}
-        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
           <OverviewMetricCard
             label="Total Users (Est.)"
             value={data.totalUsersEstimate}
@@ -613,7 +613,7 @@ export default function AdminDashboardPanel() {
         </section>
 
         {/* ───── MAIN GRID ───── */}
-        <section className="mt-6 grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+        <section className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
           {/* Engagement Gauge */}
           <div className="rounded-2xl border border-core-border bg-core-surface p-6">
             <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold mb-2">

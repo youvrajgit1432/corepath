@@ -153,7 +153,7 @@ export default function FloatingCommandCenter() {
             className={`pointer-events-auto overflow-y-auto rounded-3xl border border-white/[0.08] bg-[var(--bg)]/80 backdrop-blur-2xl shadow-2xl shadow-black/30 transition-all duration-300 ${
               isFullscreen
                 ? "fixed inset-3 sm:inset-6 md:inset-10 w-auto h-auto max-w-none max-h-none"
-                : "w-[calc(100vw-48px)] max-w-[400px] md:w-[400px] max-h-[75vh] md:max-h-[70vh]"
+                : "w-[calc(100vw-32px)] max-w-[400px] md:w-[400px] max-h-[75vh] md:max-h-[70vh] left-4 right-4 sm:left-auto sm:right-auto"
             }`}
             style={{ scrollbarWidth: "thin" }}
           >

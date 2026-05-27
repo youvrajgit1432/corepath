@@ -26,7 +26,7 @@ export default function CareerCard({ career, compareMode, selected, onToggleComp
   const marketMaturity = career.futureDemand === "Exploding" ? "Emerging" : career.futureDemand === "High Growth" ? "Growing" : "Established";
 
   return (
-    <div className="group rounded-card border border-core-border bg-core-bg p-6 transition hover:border-core-accent hover:bg-core-surface">
+    <div className="group rounded-card border border-core-border bg-core-bg p-4 sm:p-6 transition hover:border-core-accent hover:bg-core-surface min-w-0">
       <Link href={`/careers/${career.id}`} className="block">
         <div className="flex items-start justify-between gap-4">
         <span className="text-5xl">{career.icon || "✨"}</span>

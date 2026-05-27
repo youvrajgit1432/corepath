@@ -355,7 +355,7 @@ export default function JourneyProfileCard({ event, enhancedProfile, className =
               {profile.careerInterestProfile.map((item, index) => (
                 <li key={`interest-${index}`} className="flex items-start gap-3">
                   <span className="mt-1 shrink-0">&bull;</span>
-                  <span>{item}</span>
+                  <span className="break-safe">{item}</span>
                 </li>
               ))}
             </ul>
@@ -371,13 +371,13 @@ export default function JourneyProfileCard({ event, enhancedProfile, className =
               profile.recentChanges.map((item, index) => (
                 <li key={`changed-${index}`} className="flex items-start gap-3">
                   <span className="mt-1 shrink-0">&bull;</span>
-                  <span>{item}</span>
+                  <span className="break-safe">{item}</span>
                 </li>
               ))
             ) : (
               <li className="flex items-start gap-3">
                 <span className="mt-1 shrink-0">&bull;</span>
-                <span>We&apos;re tracking your profile across sessions.</span>
+                <span className="break-safe">We&apos;re tracking your profile across sessions.</span>
               </li>
             )}
           </ul>
@@ -392,13 +392,13 @@ export default function JourneyProfileCard({ event, enhancedProfile, className =
         </div>
         <div className="rounded-3xl border border-core-border bg-core-bg/70 p-4">
           <p className="text-xs uppercase tracking-[0.24em] text-core-muted">Favorite themes</p>
-          <p className="mt-3 text-sm text-core-text">
+          <p className="mt-3 text-sm text-core-text break-safe line-clamp-2">
             {profile.topThemes.length > 0 ? profile.topThemes.join(", ") : "None yet"}
           </p>
         </div>
         <div className="rounded-3xl border border-core-border bg-core-bg/70 p-4">
           <p className="text-xs uppercase tracking-[0.24em] text-core-muted">Strong categories</p>
-          <p className="mt-3 text-sm text-core-text">
+          <p className="mt-3 text-sm text-core-text break-safe line-clamp-2">
             {profile.favoriteCategories.length > 0 ? profile.favoriteCategories.join(", ") : "None yet"}
           </p>
         </div>

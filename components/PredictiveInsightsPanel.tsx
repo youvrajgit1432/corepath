@@ -72,13 +72,13 @@ function activityIcon(level: string): string {
 function priorityBadge(priority: string): { label: string; className: string } {
   switch (priority) {
     case "critical":
-      return { label: "Critical", className: "bg-red-500/15 text-red-400" };
+      return { label: "Critical", className: "bg-red-100/80 text-red-700 dark:bg-red-500/15 dark:text-red-400" };
     case "high":
-      return { label: "High priority", className: "bg-orange-500/15 text-orange-400" };
+      return { label: "High priority", className: "bg-orange-100/80 text-orange-700 dark:bg-orange-500/15 dark:text-orange-400" };
     case "medium":
-      return { label: "Suggestion", className: "bg-amber-500/15 text-amber-400" };
+      return { label: "Suggestion", className: "bg-amber-100/80 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400" };
     case "low":
-      return { label: "On track", className: "bg-emerald-500/15 text-emerald-400" };
+      return { label: "On track", className: "bg-emerald-100/80 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400" };
     default:
       return { label: "Info", className: "bg-core-accent/15 text-core-accent" };
   }
@@ -125,7 +125,7 @@ export default function PredictiveInsightsPanel({ className = "" }: Props) {
         <button
           type="button"
           onClick={() => setShowDetails(!showDetails)}
-          className="text-xs font-medium text-core-accent transition hover:text-indigo-400"
+          className="text-xs font-medium text-core-accent transition hover:text-indigo-600 dark:hover:text-indigo-400"
         >
           {showDetails ? "Show less" : "Show all"}
         </button>
@@ -145,10 +145,10 @@ export default function PredictiveInsightsPanel({ className = "" }: Props) {
           <span
             className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
               nextWeekPrediction.expectedActivity === "high"
-                ? "bg-emerald-500/15 text-emerald-400"
+                ? "bg-emerald-100/80 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400"
                 : nextWeekPrediction.expectedActivity === "moderate"
-                  ? "bg-blue-500/15 text-blue-400"
-                  : "bg-amber-500/15 text-amber-400"
+                  ? "bg-blue-100/80 text-blue-700 dark:bg-blue-500/15 dark:text-blue-400"
+                  : "bg-amber-100/80 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400"
             }`}
           >
             {nextWeekPrediction.expectedActivity} activity
@@ -181,8 +181,8 @@ export default function PredictiveInsightsPanel({ className = "" }: Props) {
                 </p>
                 <ul className="space-y-1">
                   {nextWeekPrediction.watchFor.map((w, i) => (
-                    <li key={i} className="flex items-start gap-2 text-xs text-amber-400/80">
-                      <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-amber-400" />
+                    <li key={i} className="flex items-start gap-2 text-xs text-amber-600/80 dark:text-amber-400/80">
+                      <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-amber-500" />
                       {w}
                     </li>
                   ))}
@@ -204,7 +204,7 @@ export default function PredictiveInsightsPanel({ className = "" }: Props) {
             <span className="text-2xl font-bold text-core-heading">{dropoffRisk.score}</span>
             <span className="text-[10px] text-core-muted">/ 100</span>
           </div>
-          <div className="mt-2 h-2 w-full rounded-full bg-white/10 overflow-hidden">
+          <div className="mt-2 h-2 w-full rounded-full bg-core-border/50 overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-700 ${dropoffColor(dropoffRisk.level)}`}
               style={{ width: `${dropoffRisk.score}%` }}
@@ -212,8 +212,8 @@ export default function PredictiveInsightsPanel({ className = "" }: Props) {
           </div>
           <p className={`mt-1 text-[11px] font-medium ${
             dropoffRisk.level === "high" || dropoffRisk.level === "elevated"
-              ? "text-amber-400"
-              : "text-emerald-400"
+              ? "text-amber-600 dark:text-amber-400"
+              : "text-emerald-600 dark:text-emerald-400"
           }`}>
             {dropoffRisk.level === "low" ? "Low risk"
               : dropoffRisk.level === "moderate" ? "Moderate"
@@ -241,7 +241,7 @@ export default function PredictiveInsightsPanel({ className = "" }: Props) {
             <span className="text-2xl font-bold text-core-heading">{goalCompletionProbability.percentage}</span>
             <span className="text-[10px] text-core-muted">%</span>
           </div>
-          <div className="mt-2 h-2 w-full rounded-full bg-white/10 overflow-hidden">
+          <div className="mt-2 h-2 w-full rounded-full bg-core-border/50 overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-700 ${
                 goalCompletionProbability.percentage >= 60
@@ -269,7 +269,7 @@ export default function PredictiveInsightsPanel({ className = "" }: Props) {
             <span className="text-2xl font-bold text-core-heading">{careerDirectionConfidence.score}</span>
             <span className="text-[10px] text-core-muted">/ 100</span>
           </div>
-          <div className="mt-2 h-2 w-full rounded-full bg-white/10 overflow-hidden">
+          <div className="mt-2 h-2 w-full rounded-full bg-core-border/50 overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-700 ${directionColor(careerDirectionConfidence.level)}`}
               style={{ width: `${careerDirectionConfidence.score}%` }}
@@ -277,10 +277,10 @@ export default function PredictiveInsightsPanel({ className = "" }: Props) {
           </div>
           <p className={`mt-1 text-[11px] font-medium ${
             careerDirectionConfidence.level === "strong"
-              ? "text-emerald-400"
+              ? "text-emerald-600 dark:text-emerald-400"
               : careerDirectionConfidence.level === "moderate"
-                ? "text-blue-400"
-                : "text-amber-400"
+                ? "text-blue-600 dark:text-blue-400"
+                : "text-amber-600 dark:text-amber-400"
           }`}>
             {careerDirectionConfidence.level === "strong" ? "Strong"
               : careerDirectionConfidence.level === "moderate" ? "Moderate"

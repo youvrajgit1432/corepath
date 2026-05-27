@@ -409,7 +409,7 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
   if (!data) {
     // ── Skeleton loading state ──
     return (
-      <section className="rounded-2xl border border-core-border bg-core-surface p-6 shadow-soft overflow-hidden">
+      <section className="rounded-2xl border border-core-border bg-core-surface p-4 sm:p-6 shadow-soft overflow-hidden">
         <div className="flex items-center justify-between mb-5">
           <div className="space-y-2">
             <div className="h-3 w-28 animate-skeleton" />
@@ -417,7 +417,7 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
           </div>
           <div className="h-8 w-20 animate-skeleton" />
         </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           <SkeletonPanel lines={4} />
           <SkeletonPanel lines={3} />
           <SkeletonPanel lines={3} />

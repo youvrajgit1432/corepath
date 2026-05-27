@@ -420,7 +420,7 @@ function MobileBottomNav({
 }) {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-core-border/40 bg-[var(--bg)]/95 backdrop-blur-xl md:hidden pb-[env(safe-area-inset-bottom)]">
-      <div className="flex items-center justify-around px-2 py-1">
+      <div className="flex items-center justify-around px-1 sm:px-2 py-1 gap-0">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -428,7 +428,7 @@ function MobileBottomNav({
               key={tab.id}
               type="button"
               onClick={() => onTabChange(tab.id)}
-              className={`flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all duration-200 min-w-0 ${
+              className={`flex flex-col items-center gap-0.5 px-2 sm:px-3 py-2 rounded-xl transition-all duration-200 min-w-0 flex-1 ${
                 isActive
                   ? "text-core-accent"
                   : "text-core-muted/50 hover:text-core-muted"

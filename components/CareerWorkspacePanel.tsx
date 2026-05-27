@@ -71,7 +71,7 @@ export default function CareerWorkspacePanel({ career, showCareersLink = true }:
 
   if (!workspace) {
     return (
-      <section className="rounded-card border border-core-border bg-core-surface p-6">
+      <section className="rounded-card border border-core-border bg-core-surface p-4 sm:p-6 min-w-0">
         <p className="text-sm font-semibold text-core-heading mb-3">Career Execution Workspace</p>
         <p className="text-sm text-core-muted mb-4">
           Select a career to start tracking your progress toward your goal.
@@ -119,7 +119,7 @@ export default function CareerWorkspacePanel({ career, showCareersLink = true }:
   const weeklyProgress = getWeeklyProgress();
 
   return (
-    <section className="rounded-card border border-core-border bg-core-surface p-6">
+    <section className="rounded-card border border-core-border bg-core-surface p-4 sm:p-6">
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
@@ -225,7 +225,7 @@ export default function CareerWorkspacePanel({ career, showCareersLink = true }:
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-3 gap-3 text-center">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
         {/* Projects Completed */}
         <div className="p-3 rounded-lg bg-core-bg/40 border border-core-border/50">
           <p className="text-2xl font-bold text-core-accent">{workspace.completedProjects.length}</p>

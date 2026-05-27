@@ -336,7 +336,7 @@ export default function LaunchAuditPanel() {
       </div>
 
       {/* ───── OVERVIEW GRID ───── */}
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         {/* Score Gauge */}
         <div className="rounded-2xl border border-core-border bg-core-surface p-5 flex flex-col items-center">
           <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold mb-2">Launch Score</p>

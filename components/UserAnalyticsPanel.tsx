@@ -7,9 +7,9 @@ import type { UserAnalyticsData } from "../data/user-analytics";
 // ─── Color helpers ───────────────────────────────────────────────────────
 
 function scoreColor(score: number): string {
-  if (score >= 70) return "text-emerald-400";
-  if (score >= 40) return "text-amber-400";
-  return "text-red-400";
+  if (score >= 70) return "text-emerald-600 dark:text-emerald-400";
+  if (score >= 40) return "text-amber-600 dark:text-amber-400";
+  return "text-red-600 dark:text-red-400";
 }
 
 function scoreBg(score: number): string {
@@ -25,12 +25,12 @@ function scoreRing(score: number): string {
 }
 
 function heatmapIntensity(value: number, max: number): string {
-  if (max === 0 || value === 0) return "bg-white/5";
+  if (max === 0 || value === 0) return "bg-core-border/30 dark:bg-white/5";
   const ratio = value / max;
   if (ratio >= 0.75) return "bg-core-accent/50";
   if (ratio >= 0.5) return "bg-core-accent/30";
   if (ratio >= 0.25) return "bg-core-accent/15";
-  return "bg-white/10";
+  return "bg-core-border/40 dark:bg-white/10";
 }
 
 // ─── Mini Bar ────────────────────────────────────────────────────────────
@@ -40,7 +40,7 @@ function MiniBar({ value, max, label }: { value: number; max: number; label: str
   return (
     <div className="flex items-center gap-2 text-xs">
       <span className="w-28 shrink-0 text-core-muted truncate">{label}</span>
-      <div className="flex-1 h-2 rounded-full bg-white/10 overflow-hidden">
+      <div className="flex-1 h-2 rounded-full bg-core-border/50 overflow-hidden">
         <div
           className="h-full rounded-full bg-core-accent/60 transition-all duration-500"
           style={{ width: `${pct}%` }}
@@ -61,7 +61,7 @@ function EngagementGauge({ score }: { score: number }) {
     <div className="flex flex-col items-center gap-2">
       <div className="relative flex items-center justify-center">
         <svg width="96" height="96" className="-rotate-90">
-          <circle cx="48" cy="48" r="36" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="6" />
+          <circle cx="48" cy="48" r="36" fill="none" stroke="currentColor" className="text-core-border/40" strokeWidth="6" />
           <circle
             cx="48"
             cy="48"
@@ -87,13 +87,13 @@ function EngagementGauge({ score }: { score: number }) {
 function DropoffAlert({ point }: { point: string | null }) {
   if (!point) {
     return (
-      <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3 text-xs text-emerald-400">
+      <div className="rounded-xl border border-emerald-200/60 bg-emerald-50/50 dark:border-emerald-500/20 dark:bg-emerald-500/5 p-3 text-xs text-emerald-700 dark:text-emerald-400">
         No dropoff points detected — flow is clean
       </div>
     );
   }
   return (
-    <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-xs text-amber-400">
+    <div className="rounded-xl border border-amber-200/60 bg-amber-50/50 dark:border-amber-500/20 dark:bg-amber-500/5 p-3 text-xs text-amber-700 dark:text-amber-400">
       <span className="font-semibold">Dropoff detected:</span> {point}
     </div>
   );

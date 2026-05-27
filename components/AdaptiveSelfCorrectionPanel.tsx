@@ -10,21 +10,21 @@ type Props = {
 // ── Colour helpers ────────────────────────────────────────────────
 
 function scoreColor(score: number): string {
-  if (score >= 65) return "text-emerald-400";
-  if (score >= 40) return "text-amber-400";
-  return "text-red-400";
+  if (score >= 65) return "text-emerald-600 dark:text-emerald-400";
+  if (score >= 40) return "text-amber-600 dark:text-amber-400";
+  return "text-red-600 dark:text-red-400";
 }
 
 function scoreBg(score: number): string {
-  if (score >= 65) return "bg-emerald-500/20";
-  if (score >= 40) return "bg-amber-500/20";
-  return "bg-red-500/20";
+  if (score >= 65) return "bg-emerald-100/60 dark:bg-emerald-500/20";
+  if (score >= 40) return "bg-amber-100/60 dark:bg-amber-500/20";
+  return "bg-red-100/60 dark:bg-red-500/20";
 }
 
 function trendBadge(trend: string): { label: string; color: string } {
-  if (trend === "improving") return { label: "Improving", color: "text-emerald-400 bg-emerald-500/15" };
-  if (trend === "declining") return { label: "Declining", color: "text-red-400 bg-red-500/15" };
-  return { label: "Stable", color: "text-core-muted bg-white/5" };
+  if (trend === "improving") return { label: "Improving", color: "text-emerald-700 bg-emerald-100/80 dark:text-emerald-400 dark:bg-emerald-500/15" };
+  if (trend === "declining") return { label: "Declining", color: "text-red-700 bg-red-100/80 dark:text-red-400 dark:bg-red-500/15" };
+  return { label: "Stable", color: "text-core-muted bg-core-border/30 dark:bg-white/5" };
 }
 
 // ── Semi-circle gauge ──────────────────────────────────────────────
@@ -35,7 +35,7 @@ function ScoreGauge({ score, label }: { score: number; label: string }) {
     <div className="flex flex-col items-center">
       <div className="relative h-20 w-40 overflow-hidden">
         {/* Background arc */}
-        <div className="absolute top-0 left-0 h-40 w-40 rounded-full border-[6px] border-white/10" />
+        <div className="absolute top-0 left-0 h-40 w-40 rounded-full border-[6px] border-core-border/50" />
         {/* Filled arc */}
         <div
           className={`absolute top-0 left-0 h-40 w-40 rounded-full border-[6px] border-transparent ${scoreColor(score)}`}
@@ -125,7 +125,7 @@ export default function AdaptiveSelfCorrectionPanel({ className = "" }: Props) {
 
       {/* ── Success vs Failure Cards ── */}
       <div className="mb-4 grid gap-3 md:grid-cols-2">
-        <SectionCard title="Successful interventions" icon="✅" accentClass="text-emerald-400">
+        <SectionCard title="Successful interventions" icon="✅" accentClass="text-emerald-600 dark:text-emerald-400">
           {successfulInterventions.length > 0 ? (
             <ul className="space-y-1.5">
               {successfulInterventions.map((item, i) => (
@@ -140,7 +140,7 @@ export default function AdaptiveSelfCorrectionPanel({ className = "" }: Props) {
           )}
         </SectionCard>
 
-        <SectionCard title="Recommendation failures" icon="❌" accentClass="text-red-400">
+        <SectionCard title="Recommendation failures" icon="❌" accentClass="text-red-600 dark:text-red-400">
           {recommendationFailures.length > 0 ? (
             <ul className="space-y-1.5">
               {recommendationFailures.map((item, i) => (
@@ -158,7 +158,7 @@ export default function AdaptiveSelfCorrectionPanel({ className = "" }: Props) {
 
       {/* ── Drift Signals ── */}
       {driftSignals.length > 0 && (
-        <SectionCard title="Drift signals" icon="🔄" accentClass="text-amber-400" >
+        <SectionCard title="Drift signals" icon="🔄" accentClass="text-amber-600 dark:text-amber-400" >
           <ul className="space-y-1.5">
             {driftSignals.map((signal, i) => (
               <li key={i} className="flex items-start gap-2 text-xs text-core-muted">
@@ -172,7 +172,7 @@ export default function AdaptiveSelfCorrectionPanel({ className = "" }: Props) {
 
       {/* ── Misalignment Areas ── */}
       {misalignmentAreas.length > 0 && (
-        <SectionCard title="Misalignment areas" icon="⚡" accentClass="text-red-400" >
+        <SectionCard title="Misalignment areas" icon="⚡" accentClass="text-red-600 dark:text-red-400" >
           <ul className="space-y-1.5">
             {misalignmentAreas.map((area, i) => (
               <li key={i} className="flex items-start gap-2 text-xs text-core-muted">
@@ -185,11 +185,11 @@ export default function AdaptiveSelfCorrectionPanel({ className = "" }: Props) {
       )}
 
       {/* ── Improvement Actions ── */}
-      <SectionCard title="Improvement actions" icon="🔧" accentClass="text-blue-400" >
+      <SectionCard title="Improvement actions" icon="🔧" accentClass="text-blue-600 dark:text-blue-400" >
         <ul className="space-y-1.5">
           {improvementActions.map((action, i) => (
             <li key={i} className="flex items-start gap-2 text-xs text-core-muted">
-              <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-blue-500/15 text-[9px] font-bold text-blue-400">
+              <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-blue-100/80 dark:bg-blue-500/15 text-[9px] font-bold text-blue-700 dark:text-blue-400">
                 {i + 1}
               </span>
               <span>{action}</span>

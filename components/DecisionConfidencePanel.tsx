@@ -14,27 +14,27 @@ import type {
 // ── Helpers ────────────────────────────────────────────────────────
 
 function gaugeColor(score: number): string {
-  if (score >= 65) return "text-emerald-400";
-  if (score >= 45) return "text-amber-400";
-  return "text-slate-400";
+  if (score >= 65) return "text-emerald-600 dark:text-emerald-400";
+  if (score >= 45) return "text-amber-600 dark:text-amber-400";
+  return "text-core-muted";
 }
 
 function gaugeStroke(score: number): string {
-  if (score >= 65) return "stroke-emerald-400";
-  if (score >= 45) return "stroke-amber-400";
-  return "stroke-slate-400";
+  if (score >= 65) return "stroke-emerald-500";
+  if (score >= 45) return "stroke-amber-500";
+  return "stroke-core-muted";
 }
 
 function stabilityColor(stability: string): string {
   switch (stability) {
     case "stable":
-      return "text-emerald-400";
+      return "text-emerald-600 dark:text-emerald-400";
     case "fluctuating":
-      return "text-amber-400";
+      return "text-amber-600 dark:text-amber-400";
     case "emerging":
-      return "text-blue-400";
+      return "text-blue-600 dark:text-blue-400";
     default:
-      return "text-white/60";
+      return "text-core-muted";
   }
 }
 
@@ -54,20 +54,20 @@ function stabilityLabel(stability: string): string {
 function actionBadge(type: string): { color: string; label: string } {
   switch (type) {
     case "reinforce":
-      return { color: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30", label: "Reinforce" };
+      return { color: "bg-emerald-100/80 text-emerald-700 border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/30", label: "Reinforce" };
     case "explore":
-      return { color: "bg-blue-500/20 text-blue-400 border-blue-500/30", label: "Explore" };
+      return { color: "bg-blue-100/80 text-blue-700 border-blue-200 dark:bg-blue-500/20 dark:text-blue-300 dark:border-blue-500/30", label: "Explore" };
     case "pause":
-      return { color: "bg-amber-500/20 text-amber-400 border-amber-500/30", label: "Pause & Reflect" };
+      return { color: "bg-amber-100/80 text-amber-700 border-amber-200 dark:bg-amber-500/20 dark:text-amber-300 dark:border-amber-500/30", label: "Pause & Reflect" };
     default:
-      return { color: "bg-white/10 text-white/60 border-white/10", label: type };
+      return { color: "bg-core-border/50 text-core-muted border-core-border", label: type };
   }
 }
 
 function driverBarColor(impact: number): string {
   if (impact >= 15) return "bg-emerald-500";
   if (impact >= 5) return "bg-emerald-500/50";
-  if (impact >= 0) return "bg-white/20";
+  if (impact >= 0) return "bg-core-border";
   if (impact >= -10) return "bg-amber-500/50";
   return "bg-red-500/50";
 }
@@ -79,7 +79,7 @@ function severityBorder(severity: UncertaintySignal["severity"]): string {
     case "medium":
       return "border-l-amber-500";
     case "low":
-      return "border-l-blue-400";
+      return "border-l-blue-500";
   }
 }
 
@@ -99,7 +99,7 @@ function ConfidenceGauge({ score }: { score: number }) {
         fill="none"
         stroke="currentColor"
         strokeWidth="6"
-        className="text-white/10"
+        className="text-core-border"
       />
       <circle
         cx="48"
@@ -118,7 +118,7 @@ function ConfidenceGauge({ score }: { score: number }) {
         x="48"
         y="44"
         textAnchor="middle"
-        className="fill-white text-lg font-bold"
+        className="fill-core-heading text-lg font-bold"
         dominantBaseline="central"
       >
         {score}
@@ -127,7 +127,7 @@ function ConfidenceGauge({ score }: { score: number }) {
         x="48"
         y="64"
         textAnchor="middle"
-        className="fill-white/40 text-[7px] uppercase tracking-wider"
+        className="fill-core-muted text-[7px] uppercase tracking-wider"
         dominantBaseline="central"
       >
         confidence
@@ -146,16 +146,16 @@ function DriverBar({ driver }: { driver: ConfidenceDriver }) {
     <div className="flex items-center gap-2">
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-0.5">
-          <span className="text-xs text-white/80 truncate">{driver.driver}</span>
+          <span className="text-xs text-core-text truncate">{driver.driver}</span>
           <span
             className={`text-[10px] font-medium shrink-0 ml-2 ${
-              driver.impact >= 0 ? "text-emerald-400" : "text-red-400"
+              driver.impact >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
             }`}
           >
             {driver.impact >= 0 ? "+" : ""}{driver.impact}
           </span>
         </div>
-        <div className="h-1 bg-white/10 rounded-full overflow-hidden">
+        <div className="h-1 bg-core-border/50 rounded-full overflow-hidden">
           <div
             className={`h-full rounded-full transition-all ${driverBarColor(driver.impact)}`}
             style={{ width: `${barWidth}%` }}
@@ -170,25 +170,25 @@ function UncertaintyCard({ signal }: { signal: UncertaintySignal }) {
   const [open, setOpen] = useState(false);
   return (
     <div
-      className={`border-l-4 ${severityBorder(signal.severity)} bg-white/5 rounded-lg p-3 cursor-pointer transition-colors hover:bg-white/10`}
+      className={`border-l-4 ${severityBorder(signal.severity)} bg-core-surface rounded-lg p-3 cursor-pointer transition-colors hover:bg-core-border/30`}
       onClick={() => setOpen(!open)}
     >
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-white/90 truncate">{signal.signal}</span>
+        <span className="text-sm font-medium text-core-heading truncate">{signal.signal}</span>
         <span
           className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full shrink-0 ml-2 ${
             signal.severity === "high"
-              ? "bg-red-500/20 text-red-400"
+              ? "bg-red-100/80 text-red-700 dark:bg-red-500/20 dark:text-red-400"
               : signal.severity === "medium"
-                ? "bg-amber-500/20 text-amber-400"
-                : "bg-blue-500/20 text-blue-400"
+                ? "bg-amber-100/80 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400"
+                : "bg-blue-100/80 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400"
           }`}
         >
           {signal.severity}
         </span>
       </div>
       {open && (
-        <p className="mt-2 text-xs text-white/60 leading-relaxed">{signal.description}</p>
+        <p className="mt-2 text-xs text-core-muted leading-relaxed">{signal.description}</p>
       )}
     </div>
   );
@@ -216,11 +216,11 @@ export default function DecisionConfidencePanel({ className = "" }: { className?
 
   if (!data) {
     return (
-      <div className={`${className} rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.04] to-transparent p-5`}>
+      <div className={`${className} rounded-xl border border-core-border bg-core-surface p-5`}>
         <div className="animate-pulse space-y-3">
-          <div className="h-5 w-44 bg-white/10 rounded" />
-          <div className="h-20 bg-white/5 rounded" />
-          <div className="h-12 bg-white/5 rounded" />
+          <div className="h-5 w-44 bg-core-border rounded" />
+          <div className="h-20 bg-core-border/50 rounded" />
+          <div className="h-12 bg-core-border/50 rounded" />
         </div>
       </div>
     );
@@ -232,14 +232,14 @@ export default function DecisionConfidencePanel({ className = "" }: { className?
   const useGaugeColor = gaugeColor(data.confidenceScore);
 
   return (
-    <div className={`${className} rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.04] to-transparent p-5 space-y-5`}>
+    <div className={`${className} rounded-xl border border-core-border bg-core-surface p-5 space-y-5`}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-white/90 uppercase tracking-wider">
+          <h3 className="text-sm font-semibold text-core-heading uppercase tracking-wider">
             Decision Confidence
           </h3>
-          <p className="text-xs text-white/40 mt-0.5">
+          <p className="text-xs text-core-muted mt-0.5">
             Stability:{" "}
             <span className={stabilityColor(data.decisionStability)}>
               {stabilityLabel(data.decisionStability)}
@@ -258,7 +258,7 @@ export default function DecisionConfidencePanel({ className = "" }: { className?
           />
           <button
             onClick={refresh}
-            className="text-[10px] text-white/40 hover:text-white/70 transition-colors uppercase tracking-wider"
+            className="text-[10px] text-core-muted hover:text-core-text transition-colors uppercase tracking-wider"
           >
             ↻ Refresh
           </button>
@@ -272,10 +272,10 @@ export default function DecisionConfidencePanel({ className = "" }: { className?
           {/* Exploration readiness */}
           <div>
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-white/60">Exploration readiness</span>
+              <span className="text-xs text-core-muted">Exploration readiness</span>
               <span className={useGaugeColor}>{data.explorationReadiness}%</span>
             </div>
-            <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+            <div className="h-1.5 bg-core-border/50 rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full transition-all"
                 style={{
@@ -292,11 +292,11 @@ export default function DecisionConfidencePanel({ className = "" }: { className?
 
           {/* Driver count summary */}
           <div className="flex items-center gap-3 text-[11px]">
-            <span className="text-emerald-400">+{posDrivers.length} drivers</span>
+            <span className="text-emerald-600 dark:text-emerald-400">+{posDrivers.length} drivers</span>
             {negDrivers.length > 0 && (
-              <span className="text-red-400">{negDrivers.length} concerns</span>
+              <span className="text-red-600 dark:text-red-400">{negDrivers.length} concerns</span>
             )}
-            <span className="text-white/40">
+            <span className="text-core-muted">
               {data.uncertaintySignals.length} uncertainty signals
             </span>
           </div>
@@ -308,7 +308,7 @@ export default function DecisionConfidencePanel({ className = "" }: { className?
         <div className="flex items-center justify-between mb-1">
           <span className="text-xs font-semibold uppercase tracking-wider">{badge.label}</span>
         </div>
-        <p className="text-sm text-white/80 leading-relaxed">{data.recommendedAction.description}</p>
+        <p className="text-sm text-core-text leading-relaxed">{data.recommendedAction.description}</p>
       </div>
 
       {/* Confidence Drivers */}
@@ -316,7 +316,7 @@ export default function DecisionConfidencePanel({ className = "" }: { className?
         <div>
           <button
             onClick={() => setShowDrivers(!showDrivers)}
-            className="flex items-center gap-2 text-xs font-semibold text-white/60 uppercase tracking-wider mb-3 hover:text-white/80 transition-colors"
+            className="flex items-center gap-2 text-xs font-semibold text-core-muted uppercase tracking-wider mb-3 hover:text-core-text transition-colors"
           >
             <span>Confidence Drivers ({data.confidenceDrivers.length})</span>
             <span className="text-[10px]">{showDrivers ? "▾" : "▸"}</span>
@@ -326,7 +326,7 @@ export default function DecisionConfidencePanel({ className = "" }: { className?
               {/* Positive drivers sorted by impact descending */}
               {posDrivers.length > 0 && (
                 <div>
-                  <p className="text-[10px] uppercase tracking-wider text-emerald-400/70 mb-1.5">
+                  <p className="text-[10px] uppercase tracking-wider text-emerald-600/70 dark:text-emerald-400/70 mb-1.5">
                     Positive
                   </p>
                   {posDrivers.sort((a, b) => b.impact - a.impact).map((d, i) => (
@@ -337,7 +337,7 @@ export default function DecisionConfidencePanel({ className = "" }: { className?
               {/* Negative drivers sorted by impact ascending */}
               {negDrivers.length > 0 && (
                 <div className="mt-3">
-                  <p className="text-[10px] uppercase tracking-wider text-red-400/70 mb-1.5">
+                  <p className="text-[10px] uppercase tracking-wider text-red-600/70 dark:text-red-400/70 mb-1.5">
                     Concerns
                   </p>
                   {negDrivers.sort((a, b) => a.impact - b.impact).map((d, i) => (
@@ -359,7 +359,7 @@ export default function DecisionConfidencePanel({ className = "" }: { className?
         <div>
           <button
             onClick={() => setShowUncertainty(!showUncertainty)}
-            className="flex items-center gap-2 text-xs font-semibold text-white/60 uppercase tracking-wider mb-3 hover:text-white/80 transition-colors"
+            className="flex items-center gap-2 text-xs font-semibold text-core-muted uppercase tracking-wider mb-3 hover:text-core-text transition-colors"
           >
             <span>Uncertainty Signals ({data.uncertaintySignals.length})</span>
             <span className="text-[10px]">{showUncertainty ? "▾" : "▸"}</span>
@@ -375,8 +375,8 @@ export default function DecisionConfidencePanel({ className = "" }: { className?
       )}
 
       {/* Narrative */}
-      <div className="bg-white/[0.03] rounded-lg p-4 border border-white/5">
-        <p className="text-xs text-white/60 leading-relaxed italic">
+      <div className="bg-core-surface/50 rounded-lg p-4 border border-core-border/50">
+        <p className="text-xs text-core-muted leading-relaxed italic">
           {data.decisionNarrative}
         </p>
       </div>

@@ -4,15 +4,15 @@ import { useEffect, useState } from "react";
 import { computeCareerStory, type CareerStoryData, type StoryArc, type StoryStage } from "../data/career-story";
 
 // ============================================================================
-// COLOR / LABEL HELPERS
+// COLOR / LABEL HELPERS — using CSS vars in dark/amber shades for light mode
 // ============================================================================
 
 const arcColors: Record<StoryArc, string> = {
-  discovery: "text-sky-400 border-sky-500/30 bg-sky-500/10",
-  growth: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10",
-  breakthrough: "text-violet-400 border-violet-500/30 bg-violet-500/10",
-  mastery: "text-amber-400 border-amber-500/30 bg-amber-500/10",
-  transition: "text-rose-400 border-rose-500/30 bg-rose-500/10",
+  discovery: "text-sky-600 border-sky-500/30 bg-sky-500/10",
+  growth: "text-emerald-600 border-emerald-500/30 bg-emerald-500/10",
+  breakthrough: "text-violet-600 border-violet-500/30 bg-violet-500/10",
+  mastery: "text-amber-600 border-amber-500/30 bg-amber-500/10",
+  transition: "text-rose-600 border-rose-500/30 bg-rose-500/10",
 };
 
 const arcLabels: Record<StoryArc, string> = {
@@ -24,10 +24,10 @@ const arcLabels: Record<StoryArc, string> = {
 };
 
 const stageColors: Record<StoryStage, string> = {
-  early: "text-slate-400",
-  building: "text-blue-400",
-  accelerating: "text-emerald-400",
-  established: "text-violet-400",
+  early: "text-core-muted",
+  building: "text-blue-600",
+  accelerating: "text-emerald-600",
+  established: "text-violet-600",
 };
 
 const arcIcons: Record<StoryArc, string> = {
@@ -39,9 +39,9 @@ const arcIcons: Record<StoryArc, string> = {
 };
 
 const impactColors: Record<string, string> = {
-  high: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
-  medium: "bg-amber-500/15 text-amber-400 border-amber-500/30",
-  low: "bg-slate-500/15 text-slate-400 border-slate-500/30",
+  high: "bg-emerald-500/15 text-emerald-700 border-emerald-500/30",
+  medium: "bg-amber-500/15 text-amber-700 border-amber-500/30",
+  low: "bg-core-border/30 text-core-muted border-core-border",
 };
 
 const momentIcons: Record<string, string> = {
@@ -68,9 +68,9 @@ function chapterColor(momentumScore: number): string {
 }
 
 function scoreColor(score: number): string {
-  if (score >= 60) return "text-emerald-400";
-  if (score >= 40) return "text-amber-400";
-  return "text-slate-400";
+  if (score >= 60) return "text-emerald-600";
+  if (score >= 40) return "text-amber-600";
+  return "text-core-muted";
 }
 
 // ============================================================================
@@ -93,8 +93,8 @@ function ArcLegend({ storyArc }: { storyArc: StoryArc }) {
                 isActive
                   ? `${arcColors[arc]} ring-1 ring-inset`
                   : isPast
-                    ? "text-slate-500"
-                    : "text-slate-600"
+                    ? "text-core-muted"
+                    : "text-core-muted/40"
               }`}
             >
               <span>{arcIcons[arc]}</span>
@@ -102,7 +102,7 @@ function ArcLegend({ storyArc }: { storyArc: StoryArc }) {
               {isPast && <span className="text-[9px]">✓</span>}
             </div>
             {i < allArcs.length - 1 && (
-              <span className={`h-px w-2 ${i < currentIdx ? "bg-emerald-500/40" : "bg-white/5"}`} />
+              <span className={`h-px w-2 ${i < currentIdx ? "bg-emerald-500/40" : "bg-core-border/30"}`} />
             )}
           </div>
         );
@@ -120,15 +120,15 @@ function TurningPointCard({ point }: { point: { type: string; title: string; des
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-start gap-3 p-3 text-left transition hover:bg-white/[0.02]"
+        className="flex w-full items-start gap-3 p-3 text-left transition hover:bg-core-accent/5"
       >
         <span className="mt-0.5 text-base">{icon}</span>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <p className="text-sm font-medium text-core-heading">{point.title}</p>
+            <p className="text-sm font-medium text-core-heading truncate">{point.title}</p>
           </div>
           {expanded && (
-            <p className="mt-1.5 text-xs text-core-muted leading-relaxed">{point.description}</p>
+            <p className="mt-1.5 text-xs text-core-text leading-relaxed break-safe">{point.description}</p>
           )}
         </div>
         <span className={`mt-1 text-xs text-core-muted transition-transform ${expanded ? "rotate-180" : ""}`}>
@@ -147,6 +147,7 @@ export default function CareerStoryPanel({ className = "" }: { className?: strin
   const [data, setData] = useState<CareerStoryData | null>(null);
   const [expandedTurning, setExpandedTurning] = useState(false);
   const [expandedMoments, setExpandedMoments] = useState(false);
+  const [showNarrative, setShowNarrative] = useState(false);
 
   useEffect(() => {
     setData(computeCareerStory());
@@ -167,7 +168,7 @@ export default function CareerStoryPanel({ className = "" }: { className?: strin
   } = data;
 
   return (
-    <section className={`rounded-card border border-core-border bg-core-surface p-6 ${className}`}>
+    <section className={`rounded-card border border-core-border bg-core-surface p-4 sm:p-6 overflow-hidden ${className}`}>
       {/* ── HEADER ── */}
       <div className="mb-4">
         <p className="text-xs uppercase tracking-[0.24em] text-core-muted">Career story intelligence</p>
@@ -179,7 +180,7 @@ export default function CareerStoryPanel({ className = "" }: { className?: strin
         <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold">
           Current chapter
         </p>
-        <p className="mt-1 text-lg font-bold text-core-heading">{chapterTitle}</p>
+        <p className="mt-1 text-lg font-bold text-core-heading break-safe">{chapterTitle}</p>
         <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
           <span className={`font-medium capitalize ${stageColors[storyStage]}`}>
             {storyStage} stage
@@ -215,11 +216,11 @@ export default function CareerStoryPanel({ className = "" }: { className?: strin
 
       {/* ── TURNING POINTS ── */}
       {turningPoints.length > 0 && (
-        <div className="mt-5">
+        <div className="mt-4">
           <button
             type="button"
             onClick={() => setExpandedTurning(!expandedTurning)}
-            className="flex w-full items-center justify-between text-xs uppercase tracking-[0.2em] text-core-muted font-semibold"
+            className="flex w-full items-center justify-between text-xs uppercase tracking-[0.2em] text-core-muted font-semibold hover:text-core-heading transition-colors"
           >
             <span>Turning points ({turningPoints.length})</span>
             <span className={`transition-transform ${expandedTurning ? "rotate-180" : ""}`}>▼</span>
@@ -240,7 +241,7 @@ export default function CareerStoryPanel({ className = "" }: { className?: strin
           <button
             type="button"
             onClick={() => setExpandedMoments(!expandedMoments)}
-            className="flex w-full items-center justify-between text-xs uppercase tracking-[0.2em] text-core-muted font-semibold"
+            className="flex w-full items-center justify-between text-xs uppercase tracking-[0.2em] text-core-muted font-semibold hover:text-core-heading transition-colors"
           >
             <span>Major moments ({majorMoments.length})</span>
             <span className={`transition-transform ${expandedMoments ? "rotate-180" : ""}`}>▼</span>
@@ -254,7 +255,7 @@ export default function CareerStoryPanel({ className = "" }: { className?: strin
                 >
                   <div className="flex items-center gap-2">
                     <span>{momentIcons[m.type] ?? "📌"}</span>
-                    <p className="text-sm font-medium text-core-heading">{m.title}</p>
+                    <p className="text-sm font-medium text-core-heading break-safe">{m.title}</p>
                   </div>
                   <span
                     className={`mt-1.5 inline-block rounded-full border px-2 py-0.5 text-[10px] font-medium capitalize ${impactColors[m.impact]}`}
@@ -269,15 +270,32 @@ export default function CareerStoryPanel({ className = "" }: { className?: strin
       )}
 
       {/* ── NEXT CHAPTER PREDICTION ── */}
-      <div className="mt-5 rounded-xl border border-core-border bg-core-bg/60 p-3">
+      <div className="mt-4 rounded-xl border border-core-border bg-core-bg/60 p-3">
         <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold">
           Next chapter prediction
         </p>
-        <p className="mt-1 text-sm text-core-text leading-relaxed">{nextChapterPrediction}</p>
+        <p className="mt-1 text-sm text-core-text leading-relaxed break-safe">{nextChapterPrediction}</p>
       </div>
 
-      {/* ── NARRATIVE SUMMARY ── */}
-      <p className="mt-4 text-sm italic text-core-muted leading-relaxed">{narrativeSummary}</p>
+      {/* ── NARRATIVE SUMMARY — collapsed by default with Show More ── */}
+      <div className="mt-4 rounded-xl border border-core-accent/15 bg-core-accent/5 p-3">
+        <button
+          type="button"
+          onClick={() => setShowNarrative(!showNarrative)}
+          className="flex w-full items-center justify-between text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold hover:text-core-heading transition-colors"
+        >
+          <span>Narrative summary</span>
+          <span className="text-xs">{showNarrative ? "▾ Hide" : "▸ Show"}</span>
+        </button>
+        <div className={showNarrative ? "" : "max-h-[80px] overflow-hidden relative"}>
+          <p className="mt-1 text-sm italic text-core-text leading-relaxed break-safe">
+            {narrativeSummary}
+          </p>
+          {!showNarrative && (
+            <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-[var(--bg)] to-transparent pointer-events-none" />
+          )}
+        </div>
+      </div>
     </section>
   );
 }

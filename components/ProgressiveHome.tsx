@@ -293,39 +293,72 @@ function OverviewTab({
 }) {
   const [missions, setMissions] = useState<ReturnType<typeof getDailyMissions> | null>(null);
   const [sprint, setSprint] = useState<ReturnType<typeof loadActionSprint> | null>(null);
-  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     setMissions(getDailyMissions());
     setSprint(loadActionSprint());
-    setUnreadCount(getUnreadCount());
   }, []);
 
   const missionComplete = missions ? isMissionCompleted(missions.todayMission.id) : false;
+  const isNewUser = !hasCompletedQuiz;
 
+  // New user: only show Quiz CTA + Continue Journey + Trending Careers
+  // Returning user: show full overview with missions, stats, and progress
+  if (isNewUser) {
+    return (
+      <div className="space-y-5 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+        <div className="grid gap-4 sm:grid-cols-2">
+          {/* Start Quiz CTA */}
+          <div className="rounded-2xl border border-core-accent/20 bg-gradient-to-br from-core-accent/5 to-transparent p-5 sm:p-6 shadow-soft">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-core-accent font-semibold">First step</p>
+            <p className="mt-2 text-sm font-semibold text-core-heading">Discover your career profile</p>
+            <p className="mt-1 text-xs text-core-muted leading-relaxed">
+              Take the 5-minute career cognition quiz to unlock personalized insights.
+            </p>
+            <Link
+              href="/quiz"
+              onClick={onAction}
+              className="mt-3 inline-flex w-full items-center justify-center rounded-full bg-core-accent px-4 py-2.5 text-xs font-medium text-white shadow-glow transition hover:bg-indigo-500"
+            >
+              Start the quiz →
+            </Link>
+          </div>
+
+          {/* Continue Journey */}
+          <div className="rounded-2xl border border-core-border bg-core-surface p-5 sm:p-6 shadow-soft">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold">Next action</p>
+            <p className="mt-2 text-sm font-semibold text-core-heading leading-snug">
+              Explore your next career move
+            </p>
+            <p className="mt-1 text-xs text-core-muted leading-relaxed line-clamp-2">
+              Browse careers to find roles that match your interests and strengths.
+            </p>
+            <Link
+              href="/careers"
+              onClick={onAction}
+              className="mt-3 inline-flex w-full items-center justify-center rounded-full border border-core-border px-4 py-2.5 text-xs font-medium text-core-text transition hover:border-core-accent hover:text-core-accent"
+            >
+              Browse careers
+            </Link>
+          </div>
+        </div>
+
+        {/* Trending AI Careers */}
+        <div className="pt-2">
+          <HomeCareerPreviewGrid />
+        </div>
+      </div>
+    );
+  }
+
+  // Returning user view
   return (
     <div className="space-y-5 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-      {/* Stage indicator + user level */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <StageBadge userStage={userStage} />
-          {!hasCompletedQuiz && (
-            <span className="text-xs text-core-muted/60">Take the quiz to unlock more features</span>
-          )}
-        </div>
-        {unreadCount > 0 && (
-          <Link href="/" className="inline-flex items-center gap-1.5 rounded-full bg-red-500/10 px-3 py-1 text-xs font-medium text-red-400 transition hover:bg-red-500/20">
-            <span className="flex h-2 w-2 rounded-full bg-red-400" />
-            {unreadCount} update{unreadCount !== 1 ? "s" : ""}
-          </Link>
-        )}
-      </div>
-
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {/* Current Mission */}
         {missions && (
           <div className="rounded-2xl border border-core-border bg-core-surface p-5 shadow-soft">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold">Today's mission</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold">Today&apos;s mission</p>
             <p className="mt-2 text-sm font-semibold text-core-heading leading-snug line-clamp-2">{missions.todayMission.title}</p>
             <div className="mt-2 flex items-center gap-3 text-xs text-core-muted">
               <span>+{missions.todayMission.rewardXP} XP</span>
@@ -343,24 +376,6 @@ function OverviewTab({
             ) : (
               <p className="mt-3 text-xs font-medium text-emerald-400">✓ Completed</p>
             )}
-          </div>
-        )}
-
-        {/* Start Quiz CTA (new users) */}
-        {!hasCompletedQuiz && (
-          <div className="rounded-2xl border border-core-accent/20 bg-gradient-to-br from-core-accent/5 to-transparent p-5 shadow-soft">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-core-accent font-semibold">First step</p>
-            <p className="mt-2 text-sm font-semibold text-core-heading">Discover your career profile</p>
-            <p className="mt-1 text-xs text-core-muted leading-relaxed">
-              Take the 5-minute career cognition quiz to unlock personalized insights.
-            </p>
-            <Link
-              href="/quiz"
-              onClick={onAction}
-              className="mt-3 inline-flex w-full items-center justify-center rounded-full bg-core-accent px-3 py-1.5 text-xs font-medium text-white shadow-glow transition hover:bg-indigo-500"
-            >
-              Start the quiz →
-            </Link>
           </div>
         )}
 
@@ -382,29 +397,27 @@ function OverviewTab({
           </Link>
         </div>
 
-        {/* Quick Stats (returning+) */}
-        {hasCompletedQuiz && (
-          <div className="rounded-2xl border border-core-border bg-core-surface p-5 shadow-soft">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold">Your progress</p>
-            <div className="mt-3 flex items-center gap-4">
-              <ProgressStat value={missions?.completedMissionIds.length ?? 0} label="missions" />
-              <ProgressStat value={userStage === "power_user" ? "Lv.Max" : `${STAGE_ORDER[userStage] + 1}/4`} label="stage" />
-            </div>
-            <Link
-              href="/insights"
-              onClick={onAction}
-              className="mt-3 inline-flex w-full items-center justify-center rounded-full border border-core-border px-3 py-1.5 text-xs font-medium text-core-text transition hover:border-core-accent hover:text-core-accent"
-            >
-              View insights
-            </Link>
+        {/* Quick Stats */}
+        <div className="rounded-2xl border border-core-border bg-core-surface p-5 shadow-soft">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold">Your progress</p>
+          <div className="mt-3 flex items-center gap-4">
+            <ProgressStat value={missions?.completedMissionIds.length ?? 0} label="missions" />
+            <ProgressStat value={userStage === "power_user" ? "Lv.Max" : `${STAGE_ORDER[userStage] + 1}/4`} label="stage" />
           </div>
-        )}
+          <Link
+            href="/insights"
+            onClick={onAction}
+            className="mt-3 inline-flex w-full items-center justify-center rounded-full border border-core-border px-3 py-1.5 text-xs font-medium text-core-text transition hover:border-core-accent hover:text-core-accent"
+          >
+            View insights
+          </Link>
+        </div>
 
-        {/* Level & XP (if available) */}
+        {/* Level & XP */}
         <AchievementMiniCard />
       </div>
 
-      {/* Trending AI Careers (4-5 cards, compact) */}
+      {/* Trending AI Careers */}
       <div className="pt-2">
         <HomeCareerPreviewGrid />
       </div>
@@ -545,18 +558,18 @@ function CompactHero({ hasCompletedQuiz }: { hasCompletedQuiz: boolean }) {
               : "CorePath surfaces the specialization that gives you long-term advantage, future clarity, and a confident next move."}
           </p>
         </div>
-        <div className="flex gap-2 shrink-0">
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto min-w-0">
           {!hasCompletedQuiz && (
             <Link
               href="/quiz"
-              className="inline-flex items-center justify-center rounded-full bg-core-accent px-5 py-2.5 text-xs font-semibold text-white shadow-glow transition hover:bg-indigo-500"
+              className="inline-flex items-center justify-center rounded-full bg-core-accent px-5 py-2.5 text-xs font-semibold text-white shadow-glow transition hover:bg-indigo-500 w-full sm:w-auto"
             >
               Start quiz
             </Link>
           )}
           <Link
             href="/careers"
-            className="inline-flex items-center justify-center rounded-full border border-core-border px-5 py-2.5 text-xs font-semibold text-core-heading transition hover:bg-white/10"
+            className="inline-flex items-center justify-center rounded-full border border-core-border px-5 py-2.5 text-xs font-semibold text-core-heading transition hover:bg-white/10 w-full sm:w-auto"
           >
             Browse careers
           </Link>
@@ -584,19 +597,24 @@ export default function ProgressiveHome() {
     setPanelVisibility(getPanelVisibility());
   }, []);
 
+  // Determine user stage
+  const userStage: UserStage = panelVisibility?.userStage ?? "new_user";
+  const isNewUser = !hasCompletedQuiz;
+  const stageLevel = STAGE_ORDER[userStage];
+
+  // Hide advanced tabs for new users - only show Overview
+  const visibleTabs = isNewUser ? TABS.filter((t) => t.id === "overview") : TABS;
+
   // Show floating button when scrolled past the hero
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || isNewUser) return;
     const handleScroll = () => {
       const scrollY = window.scrollY;
       setShowFloatingButton(scrollY > 200);
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [mounted]);
-
-  const userStage: UserStage = panelVisibility?.userStage ?? "new_user";
-  const stageLevel = STAGE_ORDER[userStage];
+  }, [mounted, isNewUser]);
 
   // Scroll to the top of the main content
   const scrollToContent = useCallback(() => {
@@ -606,7 +624,7 @@ export default function ProgressiveHome() {
   }, []);
 
   // Available (unlocked) tabs for swipe navigation
-  const availableTabs = TABS.filter((t) => STAGE_ORDER[userStage] >= STAGE_ORDER[t.requiredStage]);
+  const availableTabs = visibleTabs.filter((t) => STAGE_ORDER[userStage] >= STAGE_ORDER[t.requiredStage]);
 
   const handleSwipeLeft = useCallback(() => {
     const currentIndex = availableTabs.findIndex((t) => t.id === activeTab);
@@ -646,23 +664,25 @@ export default function ProgressiveHome() {
   }
 
   return (
-    <main ref={mainRef} className="page-shell pb-24">
+    <main ref={mainRef} className="page-shell pb-16 sm:pb-24">
       {/* Compact Hero */}
       <CompactHero hasCompletedQuiz={hasCompletedQuiz} />
 
-      {/* Sticky Tab Navigation */}
-      <TabNav
-        tabs={TABS}
-        activeTab={activeTab}
-        setActiveTab={(id) => {
-          setActiveTab(id);
-          window.scrollTo({ top: 280, behavior: "smooth" });
-        }}
-        userStage={userStage}
-      />
+      {/* Sticky Tab Navigation - hidden for new users since only Overview is visible */}
+      {!isNewUser && (
+        <TabNav
+          tabs={visibleTabs}
+          activeTab={activeTab}
+          setActiveTab={(id) => {
+            setActiveTab(id);
+            window.scrollTo({ top: 280, behavior: "smooth" });
+          }}
+          userStage={userStage}
+        />
+      )}
 
       {/* Tab Content */}
-      <div ref={contentRef} className="mt-6">
+      <div ref={contentRef} className={`mt-4 sm:mt-6 ${isNewUser ? "" : ""}`}>
         {activeTab === "overview" && (
           <OverviewTab
             userStage={userStage}
@@ -671,7 +691,7 @@ export default function ProgressiveHome() {
           />
         )}
 
-        {activeTab === "journey" && (
+        {!isNewUser && activeTab === "journey" && (
           stageLevel >= STAGE_ORDER.returning ? (
             <JourneyTab onAction={() => {}} />
           ) : (
@@ -679,7 +699,7 @@ export default function ProgressiveHome() {
           )
         )}
 
-        {activeTab === "growth" && (
+        {!isNewUser && activeTab === "growth" && (
           stageLevel >= STAGE_ORDER.engaged ? (
             <GrowthTab onAction={() => {}} />
           ) : (
@@ -687,7 +707,7 @@ export default function ProgressiveHome() {
           )
         )}
 
-        {activeTab === "intelligence" && (
+        {!isNewUser && activeTab === "intelligence" && (
           stageLevel >= STAGE_ORDER.power_user ? (
             <IntelligenceTab onAction={() => {}} />
           ) : (
@@ -696,11 +716,13 @@ export default function ProgressiveHome() {
         )}
       </div>
 
-      {/* Floating Continue Journey Button */}
-      <FloatingContinueButton
-        visible={showFloatingButton}
-        onScroll={scrollToContent}
-      />
+      {/* Floating Continue Journey Button - only for non-new users */}
+      {!isNewUser && (
+        <FloatingContinueButton
+          visible={showFloatingButton}
+          onScroll={scrollToContent}
+        />
+      )}
     </main>
   );
 }

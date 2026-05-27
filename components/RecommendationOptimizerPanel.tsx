@@ -12,10 +12,10 @@ import {
 function QualityGauge({ score }: { score: number }) {
   const color =
     score >= 70
-      ? "text-emerald-400 stroke-emerald-500"
+      ? "text-emerald-600 stroke-emerald-600 dark:text-emerald-400 dark:stroke-emerald-500"
       : score >= 45
-        ? "text-amber-400 stroke-amber-500"
-        : "text-slate-400 stroke-slate-500";
+        ? "text-amber-600 stroke-amber-600 dark:text-amber-400 dark:stroke-amber-500"
+        : "text-slate-500 stroke-slate-500 dark:text-slate-400 dark:stroke-slate-500";
   const circumference = 2 * Math.PI * 36;
   const offset = circumference * (1 - score / 100);
 
@@ -27,7 +27,7 @@ function QualityGauge({ score }: { score: number }) {
           fill="none"
           stroke="currentColor"
           strokeWidth="6"
-          className="text-white/10"
+          className="text-core-border/50 dark:text-white/10"
         />
         <circle
           cx="48" cy="48" r="36"
@@ -60,10 +60,10 @@ function QualityGauge({ score }: { score: number }) {
 function RankBadge({ direction, adjustment }: { direction: "up" | "down" | "neutral"; adjustment: number }) {
   const color =
     direction === "up"
-      ? "text-emerald-400 bg-emerald-500/10"
+      ? "text-emerald-700 bg-emerald-100/80 dark:text-emerald-400 dark:bg-emerald-500/10"
       : direction === "down"
-        ? "text-red-400 bg-red-500/10"
-        : "text-core-muted bg-white/5";
+        ? "text-red-700 bg-red-100/80 dark:text-red-400 dark:bg-red-500/10"
+        : "text-core-muted bg-core-border/30 dark:bg-white/5";
 
   return (
     <span className={`inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-medium ${color}`}>
@@ -77,7 +77,7 @@ function RankBadge({ direction, adjustment }: { direction: "up" | "down" | "neut
 
 function BoostBadge({ boost }: { boost: number }) {
   return (
-    <span className="inline-flex items-center gap-0.5 rounded-full bg-indigo-500/10 text-indigo-400 px-2 py-0.5 text-[11px] font-medium">
+    <span className="inline-flex items-center gap-0.5 rounded-full bg-indigo-100/80 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400 px-2 py-0.5 text-[11px] font-medium">
       ✦ +{boost}
     </span>
   );
@@ -176,7 +176,7 @@ export default function RecommendationOptimizerPanel({ className = "" }: Props) 
             <p className="text-sm font-semibold text-core-text mt-0.5 capitalize">
               {data.explorationBias.type}
             </p>
-            <div className="mt-1 h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
+            <div className="mt-1 h-1.5 w-full rounded-full bg-core-border/50 dark:bg-white/10 overflow-hidden">
               <div
                 className={`h-full rounded-full transition-all duration-500 ${
                   data.explorationBias.type === "specialize"
@@ -200,7 +200,7 @@ export default function RecommendationOptimizerPanel({ className = "" }: Props) 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {boostedAdjustments.length > 0 && (
             <div className="rounded-xl border border-core-border bg-core-bg/40 p-3">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-emerald-400 font-semibold mb-1.5">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-400 font-semibold mb-1.5">
                 Boosted careers
               </p>
               <div className="space-y-1">
@@ -215,7 +215,7 @@ export default function RecommendationOptimizerPanel({ className = "" }: Props) 
           )}
           {penalizedAdjustments.length > 0 && (
             <div className="rounded-xl border border-core-border bg-core-bg/40 p-3">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-red-400 font-semibold mb-1.5">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-red-700 dark:text-red-400 font-semibold mb-1.5">
                 Penalized careers
               </p>
               <div className="space-y-1">
@@ -234,7 +234,7 @@ export default function RecommendationOptimizerPanel({ className = "" }: Props) 
       {/* Confidence Boosts */}
       {topBoosts.length > 0 && (
         <div className="rounded-xl border border-core-border bg-core-bg/40 p-3">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-indigo-400 font-semibold mb-1.5">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-indigo-700 dark:text-indigo-400 font-semibold mb-1.5">
             Confidence boosts
           </p>
           <div className="space-y-1">
@@ -261,18 +261,18 @@ export default function RecommendationOptimizerPanel({ className = "" }: Props) 
                   <span className="text-core-text truncate min-w-0 mr-2">{w.careerTitle}</span>
                   <span className={`text-[11px] font-medium ${
                     w.adjustedWeight > w.baseWeight
-                      ? "text-emerald-400"
+                      ? "text-emerald-700 dark:text-emerald-400"
                       : w.adjustedWeight < w.baseWeight
-                        ? "text-red-400"
+                        ? "text-red-700 dark:text-red-400"
                         : "text-core-muted"
                   }`}>
                     {w.baseWeight} → {w.adjustedWeight}
                   </span>
                 </div>
-                <div className="h-1 w-full rounded-full bg-white/10 overflow-hidden">
+                <div className="h-1 w-full rounded-full bg-core-border/50 dark:bg-white/10 overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all duration-500 ${
-                      w.adjustedWeight > w.baseWeight ? "bg-emerald-500" : "bg-red-400"
+                      w.adjustedWeight > w.baseWeight ? "bg-emerald-500" : "bg-red-500"
                     }`}
                     style={{ width: `${Math.abs(w.adjustedWeight - w.baseWeight) * 2}%` }}
                   />
@@ -296,7 +296,7 @@ export default function RecommendationOptimizerPanel({ className = "" }: Props) 
                   <span className="text-core-text truncate min-w-0 mr-2">{s.domain}</span>
                   <span className="text-xs text-core-muted">{s.engagement}%</span>
                 </div>
-                <div className="h-1 w-full rounded-full bg-white/10 overflow-hidden">
+                <div className="h-1 w-full rounded-full bg-core-border/50 dark:bg-white/10 overflow-hidden">
                   <div
                     className="h-full rounded-full bg-indigo-500/70 transition-all duration-500"
                     style={{ width: `${s.engagement}%` }}

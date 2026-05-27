@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   computeMemoryEvolution,
   type MemoryEvolutionData,
@@ -14,9 +14,9 @@ function EvolutionGauge({ score }: { score: number }) {
   const deg = (score / 100) * 180;
   const color =
     score >= 65
-      ? "border-emerald-500 text-emerald-400"
+      ? "border-emerald-600 text-emerald-600"
       : score >= 40
-        ? "border-amber-500 text-amber-400"
+        ? "border-amber-600 text-amber-600"
         : "border-core-accent/60 text-core-muted";
 
   return (
@@ -38,12 +38,12 @@ function EvolutionGauge({ score }: { score: number }) {
 
 function ConfidenceBadge({ trend }: { trend: "rising" | "stable" | "declining" | "fluctuating" }) {
   const map: Record<string, { label: string; color: string }> = {
-    rising: { label: "Rising ↑", color: "text-emerald-400 bg-emerald-500/10" },
+    rising: { label: "Rising ↑", color: "text-emerald-600 bg-emerald-500/10" },
     stable: { label: "Stable →", color: "text-core-accent bg-core-accent/10" },
-    declining: { label: "Declining ↓", color: "text-red-400 bg-red-500/10" },
-    fluctuating: { label: "Fluctuating ⇅", color: "text-amber-400 bg-amber-500/10" },
+    declining: { label: "Declining ↓", color: "text-red-500 bg-red-500/10" },
+    fluctuating: { label: "Fluctuating ⇅", color: "text-amber-600 bg-amber-500/10" },
   };
-  const m = map[trend] ?? { label: trend, color: "text-core-muted bg-white/5" };
+  const m = map[trend] ?? { label: trend, color: "text-core-muted bg-core-border/20" };
 
   return (
     <span className={`inline-block rounded-full px-2.5 py-0.5 text-[10px] font-medium ${m.color}`}>
@@ -61,7 +61,7 @@ function TimelineItem({ text, index }: { text: string; index: number }) {
         </div>
         {index < 5 && <div className="mt-1 h-full w-px bg-core-border" />}
       </div>
-      <p className="pt-0.5 text-sm text-core-text leading-relaxed">{text}</p>
+      <p className="pt-0.5 text-sm text-core-text leading-relaxed break-safe">{text}</p>
     </div>
   );
 }
@@ -79,11 +79,12 @@ function Card({ label, children }: { label: string; children: React.ReactNode })
 
 export default function MemoryEvolutionPanel({ className = "" }: Props) {
   const data = useMemo(() => computeMemoryEvolution(), []);
+  const [expandedNarrative, setExpandedNarrative] = useState(false);
 
   if (!data) return null;
 
   return (
-    <section className={`rounded-2xl border border-core-border bg-core-surface p-6 shadow-soft ${className}`}>
+    <section className={`rounded-2xl border border-core-border bg-core-surface p-4 sm:p-6 shadow-soft overflow-hidden ${className}`}>
       <p className="text-xs uppercase tracking-[0.24em] text-core-muted">
         Memory evolution
       </p>
@@ -96,7 +97,7 @@ export default function MemoryEvolutionPanel({ className = "" }: Props) {
         <EvolutionGauge score={data.evolutionScore} />
 
         <div className="min-w-0 flex-1 space-y-2">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="text-sm font-medium text-core-heading">Confidence evolution</span>
             <ConfidenceBadge trend={data.confidenceEvolution.trend} />
           </div>
@@ -112,7 +113,7 @@ export default function MemoryEvolutionPanel({ className = "" }: Props) {
             </div>
           </div>
 
-          <div className="mt-2 h-2 w-full max-w-[240px] rounded-full bg-white/10 overflow-hidden">
+          <div className="mt-2 h-2 w-full max-w-[240px] rounded-full bg-core-border/30 overflow-hidden">
             <div
               className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-core-accent transition-all duration-500"
               style={{ width: `${Math.min(100, data.evolutionScore)}%` }}
@@ -129,7 +130,7 @@ export default function MemoryEvolutionPanel({ className = "" }: Props) {
               {data.thinkingShifts.map((shift, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-core-text">
                   <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-core-accent/60" />
-                  <span>{shift}</span>
+                  <span className="break-safe">{shift}</span>
                 </li>
               ))}
             </ul>
@@ -144,7 +145,7 @@ export default function MemoryEvolutionPanel({ className = "" }: Props) {
               {data.identityEvolution.map((change, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-core-text">
                   <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-400/60" />
-                  <span>{change}</span>
+                  <span className="break-safe">{change}</span>
                 </li>
               ))}
             </ul>
@@ -161,8 +162,8 @@ export default function MemoryEvolutionPanel({ className = "" }: Props) {
             <ul className="space-y-2">
               {data.beliefChanges.map((change, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-core-text">
-                  <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-amber-400/60" />
-                  <span>{change}</span>
+                  <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-amber-500/60" />
+                  <span className="break-safe">{change}</span>
                 </li>
               ))}
             </ul>
@@ -177,8 +178,8 @@ export default function MemoryEvolutionPanel({ className = "" }: Props) {
             <ul className="space-y-2">
               {data.careerDirectionChanges.map((change, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-core-text">
-                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400/60" />
-                  <span>{change}</span>
+                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500/60" />
+                  <span className="break-safe">{change}</span>
                 </li>
               ))}
             </ul>
@@ -187,13 +188,13 @@ export default function MemoryEvolutionPanel({ className = "" }: Props) {
       )}
 
       {/* ─── VELOCITY + SCORE ─── */}
-      <div className="mt-4 grid gap-4 grid-cols-2">
+      <div className="mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2">
         <div className="rounded-2xl border border-core-border bg-core-bg/60 p-4 text-center">
           <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold">
             Growth velocity
           </p>
           <p className="mt-2 text-2xl font-bold text-core-heading">{data.growthVelocity}%</p>
-          <div className="mt-1.5 h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
+          <div className="mt-1.5 h-1.5 w-full rounded-full bg-core-border/30 overflow-hidden">
             <div
               className="h-full rounded-full bg-gradient-to-r from-core-accent to-indigo-400 transition-all duration-500"
               style={{ width: `${data.growthVelocity}%` }}
@@ -205,7 +206,7 @@ export default function MemoryEvolutionPanel({ className = "" }: Props) {
             Evolution score
           </p>
           <p className="mt-2 text-2xl font-bold text-core-heading">{data.evolutionScore}</p>
-          <div className="mt-1.5 h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
+          <div className="mt-1.5 h-1.5 w-full rounded-full bg-core-border/30 overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-500 ${
                 data.evolutionScore >= 65 ? "bg-emerald-500" : data.evolutionScore >= 40 ? "bg-amber-500" : "bg-core-accent/60"
@@ -229,14 +230,24 @@ export default function MemoryEvolutionPanel({ className = "" }: Props) {
         </div>
       )}
 
-      {/* ─── NARRATIVE ─── */}
+      {/* ─── NARRATIVE — collapsed by default with Show More ─── */}
       <div className="mt-4 rounded-2xl border border-core-accent/15 bg-core-accent/5 p-4">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold">
-          Timeline narrative
-        </p>
-        <p className="mt-2 text-sm text-core-text leading-relaxed">
-          {data.timelineNarrative}
-        </p>
+        <button
+          type="button"
+          onClick={() => setExpandedNarrative(!expandedNarrative)}
+          className="flex w-full items-center justify-between text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold hover:text-core-heading transition-colors"
+        >
+          <span>Timeline narrative</span>
+          <span className="text-xs">{expandedNarrative ? "▾ Hide" : "▸ Show"}</span>
+        </button>
+        <div className={expandedNarrative ? "" : "max-h-[80px] overflow-hidden relative"}>
+          <p className="mt-2 text-sm text-core-text leading-relaxed break-safe">
+            {data.timelineNarrative}
+          </p>
+          {!expandedNarrative && (
+            <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-[var(--bg)] to-transparent pointer-events-none" />
+          )}
+        </div>
       </div>
     </section>
   );

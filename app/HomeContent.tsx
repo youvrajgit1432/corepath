@@ -35,12 +35,12 @@ function LayoutToggle({
   if (!mounted) return null;
 
   return (
-    <div className="fixed top-24 right-2 sm:right-4 z-30">
+    <div className="fixed top-24 right-2 sm:right-4 z-30 max-w-[calc(100vw-16px)]">
       <div className="flex items-center gap-1 rounded-full border border-core-border/20 bg-[var(--bg)]/90 backdrop-blur-xl p-0.5 shadow-soft">
         <button
           type="button"
           onClick={() => onChange("classic")}
-          className={`flex items-center gap-1.5 rounded-full px-2 sm:px-2.5 py-1.5 text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider transition-all duration-200 ${
+          className={`flex items-center gap-1 rounded-full px-1.5 sm:px-2.5 py-1.5 text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider transition-all duration-200 ${
             mode === "classic"
               ? "bg-core-accent/15 text-core-accent shadow-sm"
               : "text-core-muted/40 hover:text-core-muted"
@@ -53,7 +53,7 @@ function LayoutToggle({
         <button
           type="button"
           onClick={() => onChange("dashboard")}
-          className={`flex items-center gap-1.5 rounded-full px-2 sm:px-2.5 py-1.5 text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider transition-all duration-200 ${
+          className={`flex items-center gap-1 rounded-full px-1.5 sm:px-2.5 py-1.5 text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider transition-all duration-200 ${
             mode === "dashboard"
               ? "bg-core-accent/15 text-core-accent shadow-sm"
               : "text-core-muted/40 hover:text-core-muted"

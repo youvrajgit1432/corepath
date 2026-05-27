@@ -138,7 +138,7 @@ export default function PredictionFeedbackPanel({ className = "" }: Props) {
         </p>
 
         {/* Per-dimension breakdown */}
-        <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
           <DimensionScore label="Momentum" score={accuracyScore.byDimension.momentum} />
           <DimensionScore label="Dropoff" score={accuracyScore.byDimension.dropoff} />
           <DimensionScore

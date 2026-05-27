@@ -101,7 +101,7 @@ export default function NotificationBell() {
       {open && (
         <div
           id="notification-dropdown"
-          className="absolute right-0 top-full mt-2 w-80 rounded-2xl border border-core-border bg-core-surface p-3 shadow-soft backdrop-blur-xl z-50"
+          className="absolute right-0 sm:right-auto top-full mt-2 w-80 max-w-[calc(100vw-1.5rem)] sm:max-w-xs rounded-2xl border border-core-border bg-core-surface p-3 shadow-soft backdrop-blur-xl z-50"
           role="dialog"
           aria-label="Notifications preview"
         >

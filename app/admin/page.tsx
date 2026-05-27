@@ -115,7 +115,7 @@ export default function AdminPage() {
     <>
       {/* Admin navigation bar */}
       <div className="fixed left-0 right-0 top-0 z-50 border-b border-core-border bg-core-surface/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-3">
           <div className="flex items-center gap-3">
             <a href="/" className="text-sm font-semibold text-core-heading hover:text-core-accent transition-colors">
               CorePath

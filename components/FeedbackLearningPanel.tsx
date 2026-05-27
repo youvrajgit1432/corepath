@@ -15,15 +15,15 @@ import {
 // ─── Helpers ─────────────────────────────────────────────────────────────
 
 function trustColor(trust: number): string {
-  if (trust >= 70) return "text-emerald-400";
-  if (trust >= 40) return "text-amber-400";
-  return "text-red-400";
+  if (trust >= 70) return "text-emerald-600 dark:text-emerald-400";
+  if (trust >= 40) return "text-amber-600 dark:text-amber-400";
+  return "text-red-600 dark:text-red-400";
 }
 
 function trustBgColor(trust: number): string {
-  if (trust >= 70) return "bg-emerald-500/20";
-  if (trust >= 40) return "bg-amber-500/20";
-  return "bg-red-500/20";
+  if (trust >= 70) return "bg-emerald-100/60 dark:bg-emerald-500/20";
+  if (trust >= 40) return "bg-amber-100/60 dark:bg-amber-500/20";
+  return "bg-red-100/60 dark:bg-red-500/20";
 }
 
 function trustBarColor(trust: number): string {
@@ -33,10 +33,10 @@ function trustBarColor(trust: number): string {
 }
 
 function affinityColor(score: number): string {
-  if (score >= 50) return "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
-  if (score >= 20) return "text-emerald-300 bg-emerald-400/10 border-emerald-400/20";
-  if (score <= -50) return "text-red-400 bg-red-500/10 border-red-500/20";
-  if (score <= -20) return "text-red-300 bg-red-400/10 border-red-400/20";
+  if (score >= 50) return "text-emerald-700 bg-emerald-100/80 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-500/10 dark:border-emerald-500/20";
+  if (score >= 20) return "text-emerald-600 bg-emerald-100/60 border-emerald-200/80 dark:text-emerald-300 dark:bg-emerald-400/10 dark:border-emerald-400/20";
+  if (score <= -50) return "text-red-700 bg-red-100/80 border-red-200 dark:text-red-400 dark:bg-red-500/10 dark:border-red-500/20";
+  if (score <= -20) return "text-red-600 bg-red-100/60 border-red-200/80 dark:text-red-300 dark:bg-red-400/10 dark:border-red-400/20";
   return "text-core-muted bg-core-bg/30 border-core-border";
 }
 
@@ -75,7 +75,7 @@ function TrustMeter({ trust, score }: { trust: number; score: number }) {
         </p>
         <span className={`text-lg font-bold ${trustColor(trust)}`}>{trust}/100</span>
       </div>
-      <div className="h-2 w-full rounded-full bg-white/10 overflow-hidden">
+      <div className="h-2 w-full rounded-full bg-core-border/50 overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-500 ${trustBarColor(trust)}`}
           style={{ width: `${trust}%` }}
@@ -119,8 +119,8 @@ function LikedDislikedSection({
   if (patterns.length === 0) return null;
 
   const colors = type === "liked"
-    ? { border: "border-emerald-500/20", bg: "bg-emerald-500/5", dot: "bg-emerald-500", text: "text-emerald-400" }
-    : { border: "border-red-500/20", bg: "bg-red-500/5", dot: "bg-red-500", text: "text-red-400" };
+    ? { border: "border-emerald-200/60 dark:border-emerald-500/20", bg: "bg-emerald-50/50 dark:bg-emerald-500/5", dot: "bg-emerald-500", text: "text-emerald-700 dark:text-emerald-400" }
+    : { border: "border-red-200/60 dark:border-red-500/20", bg: "bg-red-50/50 dark:bg-red-500/5", dot: "bg-red-500", text: "text-red-700 dark:text-red-400" };
 
   return (
     <div className={`rounded-2xl border ${colors.border} ${colors.bg} p-4`}>
@@ -163,7 +163,7 @@ function WeightAdjustmentsCard({ adjustments }: { adjustments: RecommendationWei
             <span className="text-core-text truncate max-w-[180px]">{adj.careerTitle}</span>
             <span
               className={`shrink-0 font-medium ${
-                adj.adjustment > 1.0 ? "text-emerald-400" : "text-red-400"
+                adj.adjustment > 1.0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
               }`}
             >
               {adj.adjustment > 1.0 ? "×" : "×"}{adj.adjustment.toFixed(2)}

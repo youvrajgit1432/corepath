@@ -243,7 +243,7 @@ export default function CareersPage() {
   const compareLink = selectedCompare.length === 2 ? `/careers/compare?careerA=${selectedCompare[0]}&careerB=${selectedCompare[1]}` : undefined;
 
   return (
-    <div className="pt-20 pb-32 min-h-screen px-6 py-8">
+    <div className="pt-20 pb-32 min-h-screen px-2 sm:px-6 py-8 overflow-x-hidden">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <p className="text-xs font-mono text-core-accent uppercase tracking-widest mb-3">Career Intelligence</p>
@@ -285,8 +285,8 @@ export default function CareersPage() {
         <JourneyTimelinePanel className="mb-8" />
 
           {facets && (
-            <div className="mt-6 grid gap-4 sm:grid-cols-4">
-              <div className="rounded-3xl border border-core-border bg-white/5 p-5">
+            <div className="mt-6 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="rounded-3xl border border-core-border bg-white/5 p-5 min-w-0">
                 <p className="text-xs uppercase tracking-[0.24em] text-core-muted">Total paths</p>
                 <p className="mt-3 text-3xl font-bold text-core-heading">{facets.total}</p>
               </div>
@@ -364,7 +364,7 @@ export default function CareersPage() {
         )}
       </div>
       {selectedCompare.length > 0 ? (
-        <div className="fixed inset-x-0 bottom-0 z-50 border-t border-core-border bg-core-surface/95 backdrop-blur-xl px-6 py-4 shadow-soft">
+        <div className="fixed inset-x-0 bottom-0 z-50 border-t border-core-border bg-core-surface/95 backdrop-blur-xl px-4 sm:px-6 py-4 shadow-soft">
           <div className="mx-auto flex max-w-6xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-col gap-2">
               <p className="text-sm font-semibold text-core-heading">Compare basket</p>

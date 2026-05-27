@@ -11,16 +11,32 @@ interface Props {
 
 export default function CareerGrid({ careers, compareMode, selectedCareerIds, onToggleCompare }: Props) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" role="list" aria-label="Career cards">
-      {careers.map((c) => (
-        <CareerCard
-          key={c.id}
-          career={c}
-          compareMode={compareMode}
-          selected={selectedCareerIds?.includes(c.id)}
-          onToggleCompare={compareMode ? onToggleCompare : undefined}
-        />
-      ))}
-    </div>
+    <>
+      {/* Mobile: horizontal snap carousel */}
+      <div className="flex md:hidden overflow-x-auto snap-x snap-mandatory gap-3 -mx-4 px-4 scrollbar-none" role="list" aria-label="Career cards">
+        {careers.map((c) => (
+          <div key={c.id} className="flex-shrink-0 snap-start w-full max-w-[260px] min-w-0">
+            <CareerCard
+              career={c}
+              compareMode={compareMode}
+              selected={selectedCareerIds?.includes(c.id)}
+              onToggleCompare={compareMode ? onToggleCompare : undefined}
+            />
+          </div>
+        ))}
+      </div>
+      {/* Desktop: grid 5 cols */}
+      <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-5 gap-6" role="list" aria-label="Career cards">
+        {careers.map((c) => (
+          <CareerCard
+            key={c.id}
+            career={c}
+            compareMode={compareMode}
+            selected={selectedCareerIds?.includes(c.id)}
+            onToggleCompare={compareMode ? onToggleCompare : undefined}
+          />
+        ))}
+      </div>
+    </>
   );
 }

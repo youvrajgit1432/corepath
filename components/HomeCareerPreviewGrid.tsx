@@ -129,8 +129,16 @@ export default function HomeCareerPreviewGrid() {
         </p>
       </div>
 
-      {/* Grid: 2 cols mobile → 4 cols md → 5 cols xl */}
-      <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-3">
+      {/* Mobile: horizontal snap carousel */}
+      <div className="flex md:hidden overflow-x-auto snap-x snap-mandatory gap-3 -mx-4 px-4 pb-2 scrollbar-none">
+        {careers.map((career, i) => (
+          <div key={career.id} className="flex-shrink-0 snap-start min-w-[260px] w-[72vw] max-w-xs">
+            <CareerPreviewCard career={career} index={i} />
+          </div>
+        ))}
+      </div>
+      {/* Desktop: grid 5 cols */}
+      <div className="hidden md:grid md:grid-cols-5 gap-3">
         {careers.map((career, i) => (
           <CareerPreviewCard key={career.id} career={career} index={i} />
         ))}

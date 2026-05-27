@@ -167,7 +167,7 @@ export default function LocalInsightsDashboard() {
   const insightList = useMemo(() => snapshot.generatedInsights, [snapshot]);
 
   return (
-    <div className="min-h-screen px-6 py-12 pt-28">
+    <div className="min-h-screen px-4 sm:px-6 py-12 pt-28">
       <div className="mx-auto max-w-7xl">
         <header className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>

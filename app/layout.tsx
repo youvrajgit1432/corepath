@@ -52,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AnalyticsSession />
         <Header />
 
-        <main id="main-content" className="pt-20" role="main">
+        <main id="main-content" className="pt-20 overflow-x-hidden w-full" role="main">
           <RootErrorWrapper>
             {children}
           </RootErrorWrapper>

@@ -405,7 +405,7 @@ export default function ProductionHealthPanel() {
       </div>
 
       {/* ───── OVERVIEW GRID ───── */}
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         {/* Health Gauge */}
         <div className="rounded-2xl border border-core-border bg-core-surface p-5 flex flex-col items-center">
           <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold mb-2">Health Score</p>
@@ -476,7 +476,7 @@ export default function ProductionHealthPanel() {
       </div>
 
       {/* ───── MAIN GRID ───── */}
-      <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
         {/* Slow Components */}
         <div className="rounded-2xl border border-core-border bg-core-surface p-5">
           <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold mb-3">
