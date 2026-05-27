@@ -14,6 +14,19 @@ export const metadata = {
       "Explore search-intent career insights, comparison guides, and learning pathways for AI-era career decisions.",
     url: "https://corepath.io/insights",
     type: "website",
+    images: [
+      {
+        url: "https://corepath.io/og-image.png",
+        alt: "CorePath insights",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Insights | CorePath",
+    description:
+      "Explore search-intent career insights, comparison guides, and learning pathways for AI-era career decisions.",
+    images: ["https://corepath.io/og-image.png"],
   },
 };
 

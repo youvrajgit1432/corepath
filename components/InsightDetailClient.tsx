@@ -6,8 +6,10 @@ import { logEvent } from "../data/analytics-events";
 import { JsonLd } from "./JsonLd";
 import type { SeoInsightPage, InsightContent } from "../data/seo-content";
 
+type ClientPageData = Omit<SeoInsightPage, "filter">;
+
 interface InsightDetailClientProps {
-  page: SeoInsightPage;
+  page: ClientPageData;
   content: InsightContent;
   breadcrumbSchema: any;
   faqSchema: any;

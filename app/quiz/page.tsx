@@ -14,6 +14,19 @@ export const metadata = {
       "Take CorePath's career quiz to discover the tech specialization that best matches your interests and strengths.",
     url: "https://corepath.io/quiz",
     type: "website",
+    images: [
+      {
+        url: "https://corepath.io/og-image.png",
+        alt: "CorePath career quiz",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CorePath Quiz | Find your ideal tech career",
+    description:
+      "Take CorePath's career quiz to discover the tech specialization that best matches your interests and strengths.",
+    images: ["https://corepath.io/og-image.png"],
   },
 };
 

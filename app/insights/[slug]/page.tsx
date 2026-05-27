@@ -12,14 +12,13 @@ import {
 } from "../../../data/seo-content";
 import InsightDetailClient from "../../../components/InsightDetailClient";
 
-interface InsightPageProps {
-  params: {
-    slug: string;
-  };
+interface Props {
+  params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({ params }: InsightPageProps) {
-  const page = getInsightPage(params.slug);
+export async function generateMetadata({ params }: Props) {
+  const { slug } = await params;
+  const page = getInsightPage(slug);
   if (!page) {
     return { title: "Not found | CorePath" };
   }
@@ -31,8 +30,9 @@ export function generateStaticParams() {
   return getInsightPages().map((page) => ({ slug: page.slug }));
 }
 
-export default function InsightDetailPage({ params }: InsightPageProps) {
-  const page = getInsightPage(params.slug);
+export default async function InsightDetailPage({ params }: Props) {
+  const { slug } = await params;
+  const page = getInsightPage(slug);
   if (!page) {
     notFound();
   }
@@ -41,9 +41,12 @@ export default function InsightDetailPage({ params }: InsightPageProps) {
   const breadcrumbSchema = getInsightBreadcrumbSchema(page);
   const faqSchema = getInsightFAQSchema(content);
 
+  // Omit filter function — cannot pass functions to Client Components
+  const { filter: _filter, ...clientPage } = page;
+
   return (
     <InsightDetailClient
-      page={page}
+      page={clientPage}
       content={content}
       breadcrumbSchema={breadcrumbSchema}
       faqSchema={faqSchema}

@@ -15,6 +15,19 @@ export const metadata = {
       "View your personalized career match from CorePath's quiz and discover the roadmap for your top role.",
     url: "https://corepath.io/recommendation",
     type: "website",
+    images: [
+      {
+        url: "https://corepath.io/og-image.png",
+        alt: "CorePath personalized career recommendations",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CorePath | Personalized career recommendations",
+    description:
+      "View your personalized career match from CorePath's quiz and discover the roadmap for your top role.",
+    images: ["https://corepath.io/og-image.png"],
   },
 };
 

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getCareerById } from "../../../data/careers";
 import { compareCareers } from "../../../data/career-comparison";
@@ -5,6 +6,36 @@ import JourneyProfileCard from "../../../components/JourneyProfileCard";
 import CompareAnalytics from "../../../components/CompareAnalytics";
 import DecisionAssistantPanel from "../../../components/DecisionAssistantPanel";
 import CareerScenarioPanel from "../../../components/CareerScenarioPanel";
+
+export const metadata: Metadata = {
+  title: "Compare tech careers | CorePath",
+  description:
+    "Side-by-side career comparison to evaluate similarities, differences, AI impact, and long-term leverage between two tech roles.",
+  alternates: {
+    canonical: "https://corepath.io/careers/compare",
+  },
+  openGraph: {
+    title: "Compare tech careers | CorePath",
+    description:
+      "Side-by-side career comparison to evaluate similarities, differences, AI impact, and long-term leverage between two tech roles.",
+    url: "https://corepath.io/careers/compare",
+    type: "website",
+    images: [
+      {
+        url: "https://corepath.io/og-image.png",
+        alt: "CorePath career comparison",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Compare tech careers | CorePath",
+    description:
+      "Side-by-side career comparison to evaluate similarities, differences, AI impact, and long-term leverage between two tech roles.",
+    images: ["https://corepath.io/og-image.png"],
+  },
+};
+
 
 interface Props {
   searchParams: Promise<{
