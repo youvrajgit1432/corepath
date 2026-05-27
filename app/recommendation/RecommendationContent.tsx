@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { getCareerById, aiImpactLabels, aiImpactColors } from "../../data/careers";
@@ -10,6 +10,9 @@ import { loadJourneyMemory } from "../../data/journey-memory";
 import { logEvent } from "../../data/analytics-events";
 import { analyzeSkillGap } from "../../data/skill-gap";
 import { getProjectsForCareer } from "../../data/project-recommendations";
+import { getPanelVisibility } from "../../data/panel-visibility";
+import type { PanelVisibilityData } from "../../data/panel-visibility";
+import AdaptivePanelContainer from "../../components/AdaptivePanelContainer";
 import JourneyProfileCard from "../../components/JourneyProfileCard";
 import ConfidencePanel from "../../components/ConfidencePanel";
 import CareerRealityPanel from "../../components/CareerRealityPanel";
@@ -32,10 +35,16 @@ interface ParsedResult {
 export default function RecommendationContent() {
   const searchParams = useSearchParams();
   const raw = searchParams.get("results") ?? "";
+  const [panelVisibility, setPanelVisibility] = useState<PanelVisibilityData | null>(null);
 
   useEffect(() => {
     logEvent("recommendation_viewed", { resultsCount: raw.split(",").length });
   }, [raw]);
+
+  useEffect(() => {
+    const vis = getPanelVisibility();
+    setPanelVisibility(vis);
+  }, []);
 
   const results: ParsedResult[] = raw
     .split(",")
@@ -189,25 +198,82 @@ export default function RecommendationContent() {
         </div>
       )}
 
-      <SkillGapPanel career={primaryCareer} className="mb-6" />
+      {panelVisibility ? (
+        <>
+          {/* Skill analysis — recommended (returning+) */}
+          <AdaptivePanelContainer
+            group={{
+              id: "insights",
+              label: "Skill Analysis",
+              description: "Gap analysis, profile deep-dive, and learning paths",
+              icon: "📊",
+              visibility: panelVisibility.visibilityMap["insights"],
+              unlockHint: panelVisibility.visibilityMap["insights"] !== "visible"
+                ? "Complete 2+ quizzes to unlock skill analysis."
+                : undefined,
+            }}
+          >
+            <SkillGapPanel career={primaryCareer} className="mb-0" />
+            <ProfileAnalyzerPanel career={primaryCareer} skillGap={skillGap} className="mb-0" />
+            <PathExamplesPanel career={primaryCareer} skillGap={skillGap} className="mb-0" />
+          </AdaptivePanelContainer>
 
-      <ProfileAnalyzerPanel career={primaryCareer} skillGap={skillGap} className="mb-6" />
+          {/* Community signals — recommended (returning+) */}
+          <AdaptivePanelContainer
+            group={{
+              id: "predictions",
+              label: "Community & Trust",
+              description: "Market signals, trust indicators, and project recommendations",
+              icon: "🌐",
+              visibility: panelVisibility.visibilityMap["predictions"],
+              unlockHint: panelVisibility.visibilityMap["predictions"] !== "visible"
+                ? "Complete 2+ quizzes to unlock community insights."
+                : undefined,
+            }}
+          >
+            <CommunitySignalsPanel career={primaryCareer} />
+            <TrustPanel />
+            {projectRecommendations && (
+              <ProjectRecommendationPanel recommendations={projectRecommendations} careerTitle={primaryCareer.title} />
+            )}
+          </AdaptivePanelContainer>
 
-      <PathExamplesPanel career={primaryCareer} skillGap={skillGap} className="mb-6" />
+          {/* Personal insights — advanced (engaged+) */}
+          <AdaptivePanelContainer
+            group={{
+              id: "future",
+              label: "Personal Insights",
+              description: "Confidence tracking and personal growth reflections",
+              icon: "💭",
+              visibility: panelVisibility.visibilityMap["future"],
+              unlockHint: panelVisibility.visibilityMap["future"] !== "visible"
+                ? "Complete 5+ quizzes and set up your workspace to unlock personal insights."
+                : undefined,
+            }}
+          >
+            <ConfidencePanel journey={journey} layout="compact" />
+            <PersonalInsightsPanel variant="full" />
+          </AdaptivePanelContainer>
 
-      <CommunitySignalsPanel career={primaryCareer} />
-
-      <TrustPanel />
-
-      {projectRecommendations && (
-        <div className="mb-6">
-          <ProjectRecommendationPanel recommendations={projectRecommendations} careerTitle={primaryCareer.title} />
-        </div>
+          <FeedbackPanel source="recommendation" />
+        </>
+      ) : (
+        /* ── Fallback: show everything while visibility loads ── */
+        <>
+          <SkillGapPanel career={primaryCareer} className="mb-6" />
+          <ProfileAnalyzerPanel career={primaryCareer} skillGap={skillGap} className="mb-6" />
+          <PathExamplesPanel career={primaryCareer} skillGap={skillGap} className="mb-6" />
+          <CommunitySignalsPanel career={primaryCareer} />
+          <TrustPanel />
+          {projectRecommendations && (
+            <div className="mb-6">
+              <ProjectRecommendationPanel recommendations={projectRecommendations} careerTitle={primaryCareer.title} />
+            </div>
+          )}
+          <FeedbackPanel source="recommendation" />
+          <ConfidencePanel journey={journey} layout="compact" className="mb-6" />
+        </>
       )}
-
-      <FeedbackPanel source="recommendation" />
-
-      <ConfidencePanel journey={journey} layout="compact" className="mb-6" />
 
       <CareerWorkspacePanel career={primaryCareer} showCareersLink={true} />
 
@@ -249,8 +315,6 @@ export default function RecommendationContent() {
       ) : null}
 
       <JourneyProfileCard className="mb-6" />
-
-      <PersonalInsightsPanel variant="full" />
 
       {others.length > 0 && (
         <div>

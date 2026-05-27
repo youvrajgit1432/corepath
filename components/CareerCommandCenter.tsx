@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Link from "next/link";
 import { loadCareerWorkspace, getNextRecommendedAction } from "../data/career-workspace";
 import { loadGoalState } from "../data/career-goals";
@@ -11,6 +11,10 @@ import { computeCareerProgress } from "../data/career-progress";
 import { getUnreadCount, getNotifications } from "../data/notification-engine";
 import { getCareerById } from "../data/careers";
 import { getSafeStorage } from "../data/safe-storage";
+import { loadJourneyMemory } from "../data/journey-memory";
+import { computePanelVisibility, getPanelVisibility, getUnlockHint } from "../data/panel-visibility";
+import AdaptivePanelContainer from "./AdaptivePanelContainer";
+import type { PanelVisibilityData, UserStage } from "../data/panel-visibility";
 import GrowthAnalyticsPanel from "./GrowthAnalyticsPanel";
 import JourneyReplayPanel from "./JourneyReplayPanel";
 import CareerIdentityPanel from "./CareerIdentityPanel";
@@ -20,7 +24,6 @@ import PredictionFeedbackPanel from "./PredictionFeedbackPanel";
 import RecommendationEvolutionPanel from "./RecommendationEvolutionPanel";
 import ActionSprintPanel from "./ActionSprintPanel";
 import DecisionReadinessPanel from "./DecisionReadinessPanel";
-import EngagementPulsePanel from "./EngagementPulsePanel";
 import DecisionPriorityPanel from "./DecisionPriorityPanel";
 import PersonalEvolutionPanel from "./PersonalEvolutionPanel";
 import LearningStylePanel from "./LearningStylePanel";
@@ -38,11 +41,15 @@ import IntelligenceSynthesisPanel from "./IntelligenceSynthesisPanel";
 import ActionExecutionPanel from "./ActionExecutionPanel";
 import ProgressReflectionPanel from "./ProgressReflectionPanel";
 import InsightVaultPanel from "./InsightVaultPanel";
-import CoachingPanel from "./CoachingPanel";
 import DecisionIntelligencePanel from "./DecisionIntelligencePanel";
 import GrowthForecastPanel from "./GrowthForecastPanel";
 import MemoryEvolutionPanel from "./MemoryEvolutionPanel";
 import AdaptiveSelfCorrectionPanel from "./AdaptiveSelfCorrectionPanel";
+import UserAnalyticsPanel from "./UserAnalyticsPanel";
+import FeedbackLearningPanel from "./FeedbackLearningPanel";
+import RecommendationOptimizerPanel from "./RecommendationOptimizerPanel";
+import ExperimentPanel from "./ExperimentPanel";
+import GrowthSummaryCard from "./GrowthSummaryCard";
 
 const EXPANDED_STORAGE_KEY = "corepath-command-center-expanded";
 
@@ -50,6 +57,188 @@ interface CareerCommandCenterProps {
   /** When true, the dashboard starts in expanded mode (used by FloatingCommandCenter) */
   defaultExpanded?: boolean;
 }
+
+// ─── Skeleton Panel ──────────────────────────────────────────────────────
+
+const SKELETON_WIDTHS = ["w-3/4", "w-1/2", "w-2/3", "w-4/5", "w-3/5"];
+
+function SkeletonPanel({ lines = 3 }: { lines?: number }) {
+  return (
+    <div className="rounded-2xl border border-core-border bg-core-bg/60 p-4 space-y-3">
+      <div className="h-3 w-1/3 animate-skeleton" />
+      <div className="h-5 w-1/2 animate-skeleton" />
+      {Array.from({ length: lines }).map((_, i) => (
+        <div key={i} className={`h-3 ${SKELETON_WIDTHS[i % SKELETON_WIDTHS.length]} animate-skeleton`} />
+      ))}
+    </div>
+  );
+}
+
+// ─── Section Header ──────────────────────────────────────────────────────
+
+function SectionHeader({ label, description }: { label: string; description: string }) {
+  return (
+    <div className="mb-3 mt-8 first:mt-0">
+      <p className="text-[10px] uppercase tracking-[0.24em] text-core-muted font-semibold">
+        {label}
+      </p>
+      <p className="text-xs text-core-muted/60 mt-0.5">{description}</p>
+    </div>
+  );
+}
+
+// ─── Export Helpers ──────────────────────────────────────────────────────
+
+function exportAsFile(content: string, filename: string, mime = "text/plain") {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportJourneySnapshot(data: {
+  workspace: ReturnType<typeof loadCareerWorkspace>;
+  goalState: ReturnType<typeof loadGoalState>;
+  achievements: ReturnType<typeof computeAchievements>;
+  progress: ReturnType<typeof computeCareerProgress>;
+}) {
+  const snapshot = {
+    exportedAt: new Date().toISOString(),
+    workspace: data.workspace
+      ? {
+          career: data.workspace.selectedCareerTitle,
+          streak: data.workspace.streak,
+          milestonesCompleted: data.workspace.completedMilestones.length,
+          phase: data.workspace.activePhaseName,
+        }
+      : null,
+    goal: data.goalState.goal
+      ? {
+          target: data.goalState.goal.selectedCareerGoal,
+          progress: data.goalState.goal.goalProgress,
+          pace: data.goalState.signals?.paceSignal,
+        }
+      : null,
+    achievements: {
+      level: data.achievements.level,
+      xp: data.achievements.xp,
+      unlockedCount: data.achievements.unlockedAchievements.length,
+    },
+    progress: {
+      momentum: data.progress?.learningMomentum ?? 0,
+      milestones: data.progress?.milestonesCompleted ?? 0,
+    },
+  };
+  exportAsFile(JSON.stringify(snapshot, null, 2), `corepath-snapshot-${Date.now()}.json`, "application/json");
+}
+
+function exportCareerIdentity() {
+  const memory = loadJourneyMemory();
+  const identity = {
+    exportedAt: new Date().toISOString(),
+    completedQuizzes: memory.completedQuizzes,
+    topThemes: Object.entries(memory.repeatedThemes)
+      .filter(([, count]) => count > 0)
+      .sort((a, b) => b[1] - a[1])
+      .map(([theme]) => theme),
+    favoriteCategories: Object.entries(memory.favoriteCategories)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([cat]) => cat),
+    confidenceTrend: memory.confidenceHistory,
+    specializationTrend: memory.specializationDepthHistory,
+  };
+  exportAsFile(JSON.stringify(identity, null, 2), `corepath-identity-${Date.now()}.json`, "application/json");
+}
+
+function exportProgressSummary(data: {
+  workspace: ReturnType<typeof loadCareerWorkspace>;
+  goalState: ReturnType<typeof loadGoalState>;
+  achievements: ReturnType<typeof computeAchievements>;
+  progress: ReturnType<typeof computeCareerProgress>;
+}) {
+  const lines: string[] = [
+    "=== CorePath Progress Summary ===",
+    `Exported: ${new Date().toLocaleDateString()}`,
+    "",
+    `Level: ${data.achievements.level} (${data.achievements.xp} XP)`,
+    `Momentum: ${data.progress?.learningMomentum ?? 0}%`,
+    `Milestones Completed: ${data.progress?.milestonesCompleted ?? 0}`,
+    `Achievements Unlocked: ${data.achievements.unlockedAchievements.length}`,
+    "",
+  ];
+  if (data.workspace) {
+    lines.push("--- Workspace ---");
+    lines.push(`Career: ${data.workspace.selectedCareerTitle}`);
+    lines.push(`Streak: ${data.workspace.streak} days`);
+    lines.push(`Phase: ${data.workspace.activePhaseName}`);
+    lines.push(`Total Milestones: ${data.workspace.completedMilestones.length}`);
+    lines.push("");
+  }
+  if (data.goalState.goal) {
+    lines.push("--- Goal ---");
+    lines.push(`Target: ${data.goalState.goal.selectedCareerGoal}`);
+    lines.push(`Progress: ${data.goalState.goal.goalProgress}%`);
+    lines.push(`Pace: ${data.goalState.signals?.paceSignal ?? "unknown"}`);
+    lines.push("");
+  }
+  lines.push("Generated by CorePath (corepath.io)");
+  exportAsFile(lines.join("\n"), `corepath-progress-${Date.now()}.txt`);
+}
+
+// ─── Export Menu (with click-outside + escape handling) ─────────────────
+
+function ExportMenu({ data, onClose }: { data: ReturnType<typeof loadCareerWorkspace> | any; onClose: () => void }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        onClose();
+      }
+    };
+    const escHandler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("mousedown", handler);
+    document.addEventListener("keydown", escHandler);
+    return () => {
+      document.removeEventListener("mousedown", handler);
+      document.removeEventListener("keydown", escHandler);
+    };
+  }, [onClose]);
+
+  return (
+    <div ref={ref} className="absolute right-0 top-full mt-1 z-50 w-56 rounded-xl border border-core-border bg-core-surface p-2 shadow-soft backdrop-blur-xl">
+      <button
+        type="button"
+        onClick={() => { exportJourneySnapshot(data); onClose(); }}
+        className="w-full rounded-lg px-3 py-2 text-left text-xs font-medium text-core-text hover:bg-core-accent/10 transition-colors"
+      >
+        Export Journey Snapshot
+      </button>
+      <button
+        type="button"
+        onClick={() => { exportCareerIdentity(); onClose(); }}
+        className="w-full rounded-lg px-3 py-2 text-left text-xs font-medium text-core-text hover:bg-core-accent/10 transition-colors"
+      >
+        Export Career Identity
+      </button>
+      <button
+        type="button"
+        onClick={() => { exportProgressSummary(data); onClose(); }}
+        className="w-full rounded-lg px-3 py-2 text-left text-xs font-medium text-core-text hover:bg-core-accent/10 transition-colors"
+      >
+        Export Progress Summary
+      </button>
+    </div>
+  );
+}
+
+// ─── Main Component ──────────────────────────────────────────────────────
 
 export default function CareerCommandCenter({ defaultExpanded = false }: CareerCommandCenterProps) {
   const [data, setData] = useState<{
@@ -69,6 +258,8 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
   const [activeSection, setActiveSection] = useState<
     "goals" | "missions" | "planner" | "achievements" | "analytics" | null
   >(null);
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const [panelVisibility, setPanelVisibility] = useState<PanelVisibilityData | null>(null);
 
   const load = useCallback(() => {
     const workspace = loadCareerWorkspace();
@@ -90,6 +281,9 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
       unreadCount,
       topNotifications: notifs.filter((n) => !n.read).slice(0, 3),
     });
+
+    const vis = getPanelVisibility();
+    setPanelVisibility(vis);
   }, []);
 
   // ── Initialise expanded state from storage ──
@@ -153,14 +347,12 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
     if (el) {
       setTimeout(() => {
         el.scrollIntoView({ behavior: "smooth", block: "center" });
-        // Brief highlight effect
         el.classList.add("ring-2", "ring-core-accent/60", "ring-offset-2", "ring-offset-core-bg");
         setTimeout(() => {
           el.classList.remove("ring-2", "ring-core-accent/60", "ring-offset-2", "ring-offset-core-bg");
         }, 2000);
       }, 100);
     }
-    // Always clear activeSection so the effect doesn't linger
     setActiveSection(null);
   }, [isExpanded, activeSection]);
 
@@ -168,19 +360,16 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
   useEffect(() => {
     if (!initialised) return;
     const storage = getSafeStorage({ silent: true });
-    // Only persist if this is a permanent toggle, not a temp-open from notification
     if (!isTempOpen) {
       storage.set(EXPANDED_STORAGE_KEY, isExpanded);
     }
   }, [isExpanded, isTempOpen, initialised]);
 
-  // Handle complete mission
   const handleCompleteMission = (id: string) => {
     completeMission(id);
     load();
   };
 
-  // ── Open/close helpers ──
   const openDashboard = (temporary = false) => {
     setIsExpanded(true);
     setIsTempOpen(temporary);
@@ -192,25 +381,55 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
     setActiveSection(null);
   };
 
-  if (!data) return null;
+  // ── Memoised derived values ──
+  const { workspace, goalState, missions, weekly, achievements, progress, unreadCount, topNotifications } = data ?? {};
 
-  const { workspace, goalState, missions, weekly, achievements, progress, unreadCount, topNotifications } = data;
-  const hasData = workspace || goalState.goal || missions || weekly || achievements.xp > 0;
+  const isNewUser = useMemo(() => {
+    if (!data) return true;
+    return !data.workspace && !data.missions && (data.achievements?.xp ?? 0) === 0;
+  }, [data]);
 
-  // Derived values
-  const targetCareerTitle =
-    workspace?.selectedCareerTitle ??
-    (goalState.goal?.selectedCareerGoal
-      ? getCareerById(goalState.goal.selectedCareerGoal)?.title ?? goalState.goal.selectedCareerGoal
-      : null);
-  const goalProgress = goalState.signals?.paceSignal ?? null;
-  const levelProgressPct = levelProgressPercentage(achievements);
-  const momentum = progress?.learningMomentum ?? 0;
-  const weeklyRate = weekly?.missionCompletionRate ?? 0;
-  const todayId = missions?.todayMission.id ?? null;
-  const todayComplete = todayId ? isMissionCompleted(todayId) : false;
+  const derived = useMemo(() => {
+    if (!data) return null;
+    return {
+      targetCareerTitle:
+        data.workspace?.selectedCareerTitle ??
+        (data.goalState.goal?.selectedCareerGoal
+          ? getCareerById(data.goalState.goal.selectedCareerGoal)?.title ?? data.goalState.goal.selectedCareerGoal
+          : null),
+      goalProgress: data.goalState.signals?.paceSignal ?? null,
+      levelProgressPct: levelProgressPercentage(data.achievements),
+      momentum: data.progress?.learningMomentum ?? 0,
+      weeklyRate: data.weekly?.missionCompletionRate ?? 0,
+      todayId: data.missions?.todayMission.id ?? null,
+      todayComplete: data.missions?.todayMission.id ? isMissionCompleted(data.missions.todayMission.id) : false,
+    };
+  }, [data]);
 
-  // Next action — use workspace baseline, then layer mission/goal checks on top
+  if (!data) {
+    // ── Skeleton loading state ──
+    return (
+      <section className="rounded-2xl border border-core-border bg-core-surface p-6 shadow-soft overflow-hidden">
+        <div className="flex items-center justify-between mb-5">
+          <div className="space-y-2">
+            <div className="h-3 w-28 animate-skeleton" />
+            <div className="h-6 w-56 animate-skeleton" />
+          </div>
+          <div className="h-8 w-20 animate-skeleton" />
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <SkeletonPanel lines={4} />
+          <SkeletonPanel lines={3} />
+          <SkeletonPanel lines={3} />
+          <SkeletonPanel lines={3} />
+          <SkeletonPanel lines={4} />
+          <SkeletonPanel lines={2} />
+        </div>
+      </section>
+    );
+  }
+
+  // ── Next action logic ──
   let nextAction: string;
   let nextActionHref: string;
   let nextActionLabel: string;
@@ -225,7 +444,7 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
       nextActionHref = "/careers";
       nextActionLabel = "Browse careers";
     }
-  } else if (goalProgress === "behind") {
+  } else if (derived?.goalProgress === "behind") {
     nextAction = "Your goal is behind schedule — increase weekly time or focus on high-impact milestones.";
     nextActionHref = "/";
     nextActionLabel = "Review goal";
@@ -233,74 +452,63 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
     nextAction = "Resume your streak — log a small action today to rebuild momentum.";
     nextActionHref = `/careers/${workspace.selectedCareerId}`;
     nextActionLabel = "Log progress";
-  } else if (!todayComplete && missions) {
+  } else if (!derived?.todayComplete && missions) {
     nextAction = `Complete today's mission: ${missions.todayMission.title}`;
     nextActionHref = "/";
     nextActionLabel = "View mission";
-  } else if (momentum < 30) {
+  } else if ((derived?.momentum ?? 0) < 30) {
     nextAction = "Your momentum is low. Try a quick quiz or career comparison to build it up.";
     nextActionHref = "/quiz";
     nextActionLabel = "Take quiz";
   } else {
     nextAction = getNextRecommendedAction();
-    nextActionHref = `/careers/${workspace.selectedCareerId}`;
+    nextActionHref = `/careers/${workspace?.selectedCareerId}`;
     nextActionLabel = "Open workspace";
   }
 
   return (
-    <section className="rounded-2xl border border-core-border bg-core-surface p-6 shadow-soft">
+    <section className="rounded-2xl border border-core-border bg-core-surface p-4 sm:p-6 shadow-soft overflow-hidden">
       {/* ───── COMPACT SUMMARY (collapsed) ───── */}
       {!isExpanded && (
         <div>
           <p className="text-xs uppercase tracking-[0.24em] text-core-muted">Command center</p>
 
-          {/* Summary row */}
           <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2">
-            {/* Career title */}
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-core-heading truncate max-w-[220px] sm:max-w-xs">
-                {targetCareerTitle ?? "Your career intelligence"}
+              <p className="text-sm font-semibold text-core-heading truncate max-w-[180px] sm:max-w-xs">
+                {derived?.targetCareerTitle ?? "Your career intelligence"}
               </p>
             </div>
-
-            {/* Level */}
             <div className="flex items-center gap-1.5 text-xs text-core-muted">
               <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-core-accent/15 text-[10px] font-bold text-core-accent">
                 {achievements.level}
               </span>
               Level {achievements.level}
             </div>
-
-            {/* Mission snippet */}
-            {missions && !todayComplete && (
+            {missions && !derived?.todayComplete && (
               <div className="flex items-center gap-1.5 text-xs text-core-muted">
                 <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
                 {missions.todayMission.title.length > 28
-                  ? missions.todayMission.title.slice(0, 28) + "…"
+                  ? missions.todayMission.title.slice(0, 28) + "..."
                   : missions.todayMission.title}
               </div>
             )}
-
-            {/* Notification count */}
             {unreadCount > 0 && (
               <div className="flex items-center gap-1 text-xs text-red-400">
                 <span className="flex h-2 w-2 rounded-full bg-red-400" />
                 {unreadCount} unread
               </div>
             )}
-
-            {/* Momentum */}
             <div className="flex items-center gap-1.5 text-xs text-core-muted">
               <span
                 className={`h-1.5 w-1.5 rounded-full ${
-                  momentum >= 50 ? "bg-emerald-500" : momentum >= 20 ? "bg-amber-500" : "bg-core-accent/60"
+                  (derived?.momentum ?? 0) >= 50 ? "bg-emerald-500" : (derived?.momentum ?? 0) >= 20 ? "bg-amber-500" : "bg-core-accent/60"
                 }`}
               />
-              {momentum}% momentum
+              {derived?.momentum ?? 0}% momentum
             </div>
           </div>
 
-          {/* Open button */}
           <button
             type="button"
             onClick={() => openDashboard(false)}
@@ -313,18 +521,28 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
 
       {/* ───── EXPANDED DASHBOARD ───── */}
       {isExpanded && (
-        <>
-          {/* Header with collapse button */}
-          <div className="mb-5 flex items-center justify-between">
-            <div>
+        <div className="overflow-safe">
+          {/* Header */}
+          <div className="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="min-w-0">
               <p className="text-xs uppercase tracking-[0.24em] text-core-muted">Command center</p>
-              <h2 className="mt-1 text-xl font-semibold text-core-heading">
-                {targetCareerTitle
-                  ? `${typeof targetCareerTitle === "string" && targetCareerTitle.length > 25 ? "Tracking: " : ""}${targetCareerTitle}`
+              <h2 className="mt-1 text-lg sm:text-xl font-semibold text-core-heading truncate">
+                {derived?.targetCareerTitle
+                  ? `${typeof derived.targetCareerTitle === "string" && derived.targetCareerTitle.length > 25 ? "Tracking: " : ""}${derived.targetCareerTitle}`
                   : "Your career intelligence overview"}
               </h2>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowExportMenu(!showExportMenu)}
+                  className="rounded-full border border-core-border px-3 py-1.5 text-xs font-medium text-core-muted transition hover:border-core-accent hover:text-core-accent"
+                >
+                  Export
+                </button>
+                {showExportMenu && <ExportMenu data={data} onClose={() => setShowExportMenu(false)} />}
+              </div>
               {unreadCount > 0 && (
                 <Link
                   href="/"
@@ -348,9 +566,34 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
             </div>
           </div>
 
+          {/* ─── ONBOARDING HINTS (new users) ─── */}
+          {isNewUser && (
+            <div className="mb-5 rounded-2xl border border-core-accent/20 bg-core-accent/5 p-4">
+              <p className="text-xs uppercase tracking-[0.2em] text-core-accent font-semibold">
+                Getting started
+              </p>
+              <p className="mt-1 text-sm text-core-text">
+                You haven&apos;t started your career journey yet. Here are a few ways to begin:
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Link
+                  href="/quiz"
+                  className="rounded-full bg-core-accent px-4 py-2 text-xs font-medium text-white transition hover:bg-indigo-500"
+                >
+                  Start quiz
+                </Link>
+                <Link
+                  href="/careers"
+                  className="rounded-full border border-core-border bg-core-bg/60 px-4 py-2 text-xs font-medium text-core-text transition hover:bg-white/10 hover:border-core-accent"
+                >
+                  Explore careers
+                </Link>
+              </div>
+            </div>
+          )}
+
           {/* Dashboard grid */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {/* ─── CARD: Today's Mission ─── */}
+          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {missions && (
               <div id="section-missions" className="rounded-2xl border border-core-border bg-core-bg/60 p-4 scroll-mt-28">
                 <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold">
@@ -359,12 +602,12 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
                 <p className="mt-1.5 text-sm font-semibold text-core-heading leading-snug line-clamp-2">
                   {missions.todayMission.title}
                 </p>
-                <div className="mt-2 flex items-center gap-3 text-xs text-core-muted">
+                <div className="mt-2 flex items-center gap-3 text-xs text-core-muted flex-wrap">
                   <span>+{missions.todayMission.rewardXP} XP</span>
                   <span className="capitalize">{missions.todayMission.difficulty}</span>
                   <span>{missions.todayMission.estimatedMinutes}m</span>
                 </div>
-                {!todayComplete ? (
+                {!derived?.todayComplete ? (
                   <button
                     type="button"
                     onClick={() => handleCompleteMission(missions.todayMission.id)}
@@ -378,7 +621,6 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
               </div>
             )}
 
-            {/* ─── CARD: XP & Level ─── */}
             <div id="section-achievements" className="rounded-2xl border border-core-border bg-core-bg/60 p-4 scroll-mt-28">
               <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold">
                 Level & XP
@@ -390,22 +632,21 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
               <div className="mt-2 h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-core-accent to-indigo-400 transition-all duration-500"
-                  style={{ width: `${levelProgressPct}%` }}
+                  style={{ width: `${derived?.levelProgressPct ?? 0}%` }}
                 />
               </div>
               <p className="mt-1 text-[10px] text-core-muted/70">
-                {levelProgressPct}% to next level
+                {derived?.levelProgressPct ?? 0}% to next level
               </p>
             </div>
 
-            {/* ─── CARD: Weekly Sprint ─── */}
             {weekly && (
               <div id="section-planner" className="rounded-2xl border border-core-border bg-core-bg/60 p-4 scroll-mt-28">
                 <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold">
                   Weekly sprint
                 </p>
                 <div className="mt-1.5 flex items-baseline gap-1.5">
-                  <span className="text-2xl font-bold text-core-heading">{weeklyRate}%</span>
+                  <span className="text-2xl font-bold text-core-heading">{derived?.weeklyRate ?? 0}%</span>
                   <span className="text-xs text-core-muted">completion</span>
                 </div>
                 <div className="mt-1.5 flex flex-wrap gap-2 text-xs text-core-muted">
@@ -417,19 +658,18 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
                 <div className="mt-2 h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all duration-500 ${
-                      weeklyRate >= 60
+                      (derived?.weeklyRate ?? 0) >= 60
                         ? "bg-emerald-500"
-                        : weeklyRate >= 30
+                        : (derived?.weeklyRate ?? 0) >= 30
                           ? "bg-amber-500"
                           : "bg-core-accent/60"
                     }`}
-                    style={{ width: `${weeklyRate}%` }}
+                    style={{ width: `${derived?.weeklyRate ?? 0}%` }}
                   />
                 </div>
               </div>
             )}
 
-            {/* ─── CARD: Goal Progress ─── */}
             {goalState.signals && (
               <div id="section-goals" className="rounded-2xl border border-core-border bg-core-bg/60 p-4 scroll-mt-28">
                 <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold">
@@ -444,7 +684,7 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
                 <p className="text-[11px] text-core-muted">
                   Est. completion: {goalState.signals.estimatedCompletion}
                 </p>
-                <div className="mt-1 flex items-center gap-2 text-xs">
+                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs">
                   <span
                     className={`font-medium ${
                       goalState.signals.paceSignal === "ahead"
@@ -455,10 +695,10 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
                     }`}
                   >
                     {goalState.signals.paceSignal === "ahead"
-                      ? "🚀 Ahead of schedule"
+                      ? "Ahead of schedule"
                       : goalState.signals.paceSignal === "behind"
-                        ? "⚠️ Behind schedule"
-                        : "✅ On track"}
+                        ? "Behind schedule"
+                        : "On track"}
                   </span>
                   <span
                     className={`${
@@ -481,15 +721,14 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
               </div>
             )}
 
-            {/* ─── CARD: Momentum ─── */}
             <div className="rounded-2xl border border-core-border bg-core-bg/60 p-4">
               <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold">
                 Momentum
               </p>
               <div className="mt-1.5 flex items-baseline gap-1.5">
-                <span className="text-2xl font-bold text-core-heading">{momentum}%</span>
+                <span className="text-2xl font-bold text-core-heading">{derived?.momentum ?? 0}%</span>
               </div>
-              <div className="mt-1 flex items-center gap-2 text-xs text-core-muted">
+              <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-core-muted">
                 {workspace ? (
                   <span>
                     {workspace.streak > 0
@@ -499,20 +738,19 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
                 ) : (
                   <span>No workspace yet</span>
                 )}
-                <span>•</span>
+                <span>&bull;</span>
                 <span>{progress?.milestonesCompleted ?? 0} milestones</span>
               </div>
               <div className="mt-2 h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ${
-                    momentum >= 50 ? "bg-emerald-500" : momentum >= 20 ? "bg-amber-500" : "bg-core-accent/60"
+                    (derived?.momentum ?? 0) >= 50 ? "bg-emerald-500" : (derived?.momentum ?? 0) >= 20 ? "bg-amber-500" : "bg-core-accent/60"
                   }`}
-                  style={{ width: `${momentum}%` }}
+                  style={{ width: `${derived?.momentum ?? 0}%` }}
                 />
               </div>
             </div>
 
-            {/* ─── CARD: Notifications ─── */}
             {unreadCount > 0 && (
               <div className="rounded-2xl border border-core-border bg-core-bg/60 p-4">
                 <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold">
@@ -534,107 +772,189 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
             )}
           </div>
 
-          {/* ─── GROWTH ANALYTICS ─── */}
-          <div id="section-analytics">
-            <GrowthAnalyticsPanel className="mt-4" />
-          </div>
+          {/* ─── GROUPED INTELLIGENCE PANELS ─── */}
 
-          {/* ─── JOURNEY REPLAY ─── */}
-          <JourneyReplayPanel className="mt-4" />
+          {/* ─── ADAPTIVE PANEL GROUPS ─── */}
+          {panelVisibility && (
+            <>
+              {/* Identity — recommended (returning+) */}
+              <AdaptivePanelContainer
+                group={{
+                  id: "identity",
+                  label: "Career Identity",
+                  description: "Who you are as a professional",
+                  icon: "🧑",
+                  visibility: panelVisibility.visibilityMap["identity"],
+                  unlockHint: panelVisibility.visibilityMap["identity"] !== "visible"
+                    ? "Complete 2+ quizzes to unlock your career identity."
+                    : undefined,
+                }}
+              >
+                <CareerIdentityPanel className="mt-0" />
+              </AdaptivePanelContainer>
 
-          {/* ─── BEHAVIOR INSIGHTS ─── */}
-          <BehaviorInsightsPanel className="mt-4" />
+              {/* Insights — recommended (returning+) */}
+              <AdaptivePanelContainer
+                group={{
+                  id: "insights",
+                  label: "Insights",
+                  description: "Behavior, learning, and growth patterns",
+                  icon: "💡",
+                  visibility: panelVisibility.visibilityMap["insights"],
+                  unlockHint: panelVisibility.visibilityMap["insights"] !== "visible"
+                    ? "Complete 2+ quizzes to unlock these insights."
+                    : undefined,
+                }}
+              >
+                <BehaviorInsightsPanel className="mt-0" />
+                <PersonalEvolutionPanel className="mt-0" />
+                <LearningStylePanel className="mt-0" />
+                <LearningFrictionPanel className="mt-0" />
+                <ChangeAttributionPanel className="mt-0" />
+                <HabitIntelligencePanel className="mt-0" />
+                <UniquenessPanel className="mt-0" />
+              </AdaptivePanelContainer>
 
-          {/* ─── PREDICTIVE INSIGHTS ─── */}
-          <PredictiveInsightsPanel className="mt-4" />
+              {/* Predictions — recommended (returning+) */}
+              <AdaptivePanelContainer
+                group={{
+                  id: "predictions",
+                  label: "Predictions",
+                  description: "Forecasts, fit, and decision intelligence",
+                  icon: "🔮",
+                  visibility: panelVisibility.visibilityMap["predictions"],
+                  unlockHint: panelVisibility.visibilityMap["predictions"] !== "visible"
+                    ? "Complete 2+ quizzes to unlock predictions."
+                    : undefined,
+                }}
+              >
+                <PredictiveInsightsPanel className="mt-0" />
+                <PredictionFeedbackPanel className="mt-0" />
+                <RecommendationEvolutionPanel className="mt-0" />
+                <DecisionReadinessPanel className="mt-0" />
+                <DecisionPriorityPanel className="mt-0" />
+                <DecisionIntelligencePanel className="mt-0" />
+              </AdaptivePanelContainer>
 
-          {/* ─── PREDICTION FEEDBACK ─── */}
-          <PredictionFeedbackPanel className="mt-4" />
+              {/* Execution — always visible */}
+              <SectionHeader label="Execution" description="Sprints, actions, and weekly growth" />
+              <div className="panel-stack">
+                <GrowthSummaryCard className="mt-0" />
+                <ActionSprintPanel className="mt-0" />
+                <ActionExecutionPanel className="mt-0" />
+              </div>
 
-          {/* ─── RECOMMENDATION EVOLUTION ─── */}
-          <RecommendationEvolutionPanel className="mt-4" />
+              {/* Memory & Adaptation — hidden (power_user only) */}
+              <AdaptivePanelContainer
+                group={{
+                  id: "memory",
+                  label: "Memory & Adaptation",
+                  description: "Vault, coaching, and system self-correction",
+                  icon: "🧠",
+                  visibility: panelVisibility.visibilityMap["memory"],
+                  unlockHint: "Reach Power User status (15+ sessions, active workspace, 7-day streak) to unlock memory systems.",
+                }}
+              >
+                <MemoryEvolutionPanel className="mt-0" />
+                <InsightVaultPanel className="mt-0" />
+                <IntelligenceSynthesisPanel className="mt-0" />
+                <AdaptiveSelfCorrectionPanel className="mt-0" />
+                <UserAnalyticsPanel className="mt-0" />
+                <FeedbackLearningPanel className="mt-0" />
+                <RecommendationOptimizerPanel className="mt-0" />
+                <ExperimentPanel className="mt-0" />
+              </AdaptivePanelContainer>
 
-          {/* ─── ACTION SPRINT ─── */}
-          <ActionSprintPanel className="mt-4" />
+              {/* History — recommended (returning+) */}
+              <AdaptivePanelContainer
+                group={{
+                  id: "history",
+                  label: "History",
+                  description: "Replay, reflection, and progress intelligence",
+                  icon: "📜",
+                  visibility: panelVisibility.visibilityMap["history"],
+                  unlockHint: panelVisibility.visibilityMap["history"] !== "visible"
+                    ? "Complete 2+ quizzes to unlock your history."
+                    : undefined,
+                }}
+              >
+                <JourneyReplayPanel className="mt-0" />
+                <ProgressReflectionPanel className="mt-0" />
+                <CareerMomentumPanel className="mt-0" />
+                <CareerAlignmentPanel className="mt-0" />
+                <GrowthAnalyticsPanel className="mt-0" />
+              </AdaptivePanelContainer>
 
-          {/* ─── DECISION READINESS ─── */}
-          <DecisionReadinessPanel className="mt-4" />
+              {/* Future Self — advanced (engaged+) */}
+              <AdaptivePanelContainer
+                group={{
+                  id: "future",
+                  label: "Future Self",
+                  description: "Projected trajectory and decision confidence",
+                  icon: "🚀",
+                  visibility: panelVisibility.visibilityMap["future"],
+                  unlockHint: panelVisibility.visibilityMap["future"] !== "visible"
+                    ? "Complete 5+ quizzes and set up your workspace to unlock Future Self."
+                    : undefined,
+                }}
+              >
+                <FutureSelfPanel className="mt-0" />
+                <DecisionConfidencePanel className="mt-0" />
+              </AdaptivePanelContainer>
 
-          {/* ─── ENGAGEMENT PULSE ─── */}
-          <EngagementPulsePanel className="mt-4" />
+              {/* Growth Forecast — advanced (engaged+) */}
+              <AdaptivePanelContainer
+                group={{
+                  id: "growth",
+                  label: "Growth Forecast",
+                  description: "Forecasts, trends, and confidence evolution",
+                  icon: "📈",
+                  visibility: panelVisibility.visibilityMap["growth"],
+                  unlockHint: panelVisibility.visibilityMap["growth"] !== "visible"
+                    ? "Complete 5+ quizzes and set up your workspace to unlock Growth Forecast."
+                    : undefined,
+                }}
+              >
+                <GrowthForecastPanel className="mt-0" />
+              </AdaptivePanelContainer>
 
-          {/* ─── DECISION PRIORITY ─── */}
-          <DecisionPriorityPanel className="mt-4" />
+              {/* Career Story — advanced (engaged+) */}
+              <AdaptivePanelContainer
+                group={{
+                  id: "story",
+                  label: "Career Story",
+                  description: "Your evolving career narrative and trajectory",
+                  icon: "📖",
+                  visibility: panelVisibility.visibilityMap["story"],
+                  unlockHint: panelVisibility.visibilityMap["story"] !== "visible"
+                    ? "Complete 5+ quizzes and set up your workspace to unlock your Career Story."
+                    : undefined,
+                }}
+              >
+                <CareerStoryPanel className="mt-0" />
+              </AdaptivePanelContainer>
+            </>
+          )}
 
-          {/* ─── PERSONAL EVOLUTION ─── */}
-          <PersonalEvolutionPanel className="mt-4" />
-
-          {/* ─── LEARNING STYLE INTELLIGENCE ─── */}
-          <LearningStylePanel className="mt-4" />
-
-          {/* ─── LEARNING FRICTION ─── */}
-          <LearningFrictionPanel className="mt-4" />
-
-          {/* ─── CHANGE ATTRIBUTION ─── */}
-          <ChangeAttributionPanel className="mt-4" />
-
-          {/* ─── HABIT INTELLIGENCE ─── */}
-          <HabitIntelligencePanel className="mt-4" />
-
-          {/* ─── UNIQUENESS INTELLIGENCE ─── */}
-          <UniquenessPanel className="mt-4" />
-
-          {/* ─── FUTURE SELF INTELLIGENCE ─── */}
-          <FutureSelfPanel className="mt-4" />
-
-          {/* ─── DECISION CONFIDENCE INTELLIGENCE ─── */}
-          <DecisionConfidencePanel className="mt-4" />
-
-          {/* ─── MISSION INTELLIGENCE ─── */}
-          <MissionIntelligencePanel className="mt-4" />
-
-          {/* ─── CAREER MOMENTUM INTELLIGENCE ─── */}
-          <CareerMomentumPanel className="mt-4" />
-
-          {/* ─── CAREER ALIGNMENT INTELLIGENCE ─── */}
-          <CareerAlignmentPanel className="mt-4" />
-
-          {/* ─── CAREER STORY INTELLIGENCE ─── */}
-          <CareerStoryPanel className="mt-4" />
-
-          {/* ─── PROGRESS REFLECTION ─── */}
-          <ProgressReflectionPanel className="mt-4" />
-
-          {/* ─── INSIGHT VAULT ─── */}
-          <InsightVaultPanel className="mt-4" />
-
-          {/* ─── COACHING INTELLIGENCE ─── */}
-          <CoachingPanel className="mt-4" />
-
-          {/* ─── DECISION INTELLIGENCE ─── */}
-          <DecisionIntelligencePanel className="mt-4" />
-
-          {/* ─── GROWTH FORECAST INTELLIGENCE ─── */}
-          <GrowthForecastPanel className="mt-4" />
-
-          {/* ─── INTELLIGENCE SYNTHESIS HUB ─── */}
-          <IntelligenceSynthesisPanel className="mt-4" />
-
-          {/* ─── ACTION EXECUTION ─── */}
-          <ActionExecutionPanel className="mt-4" />
-
-          {/* ─── MEMORY EVOLUTION ─── */}
-          <MemoryEvolutionPanel className="mt-4" />
-
-          {/* ─── ADAPTIVE SELF-CORRECTION ─── */}
-          <AdaptiveSelfCorrectionPanel className="mt-4" />
-
-          {/* ─── CAREER IDENTITY ─── */}
-          <CareerIdentityPanel className="mt-4" />
+          {/* ─── FALLBACK: if panelVisibility not yet loaded, show identity + execution ─── */}
+          {!panelVisibility && (
+            <>
+              <SectionHeader label="Identity" description="Who you are as a professional" />
+              <div className="panel-stack">
+                <CareerIdentityPanel className="mt-0" />
+              </div>
+              <SectionHeader label="Execution" description="Sprints, actions, and mission tracking" />
+              <div className="panel-stack">
+                <ActionSprintPanel className="mt-0" />
+                <ActionExecutionPanel className="mt-0" />
+                <MissionIntelligencePanel className="mt-0" />
+              </div>
+            </>
+          )}
 
           {/* ─── NEXT ACTION ─── */}
-          <div className="mt-4 rounded-2xl border border-core-accent/20 bg-core-accent/5 p-4">
-            <div className="flex items-center justify-between gap-4">
+          <div className="mt-6 rounded-2xl border border-core-accent/20 bg-core-accent/5 p-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold">
                   Next action
@@ -650,10 +970,10 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
             </div>
           </div>
 
-          {/* ─── QUICK ACTIONS ─── */}
+          {/* ─── QUICK ACTIONS (reduced to 3 core navigations) ─── */}
           <div className="mt-4">
             <p className="mb-2 text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold">
-              Quick actions
+              Quick links
             </p>
             <div className="flex flex-wrap gap-2">
               <Link
@@ -666,25 +986,13 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
                 href="/quiz"
                 className="rounded-full border border-core-border bg-core-bg/60 px-3.5 py-2 text-xs font-medium text-core-text transition hover:bg-white/10 hover:border-core-accent"
               >
-                Resume quiz
+                {workspace ? "Resume quiz" : "Take quiz"}
               </Link>
               <Link
                 href="/insights"
                 className="rounded-full border border-core-border bg-core-bg/60 px-3.5 py-2 text-xs font-medium text-core-text transition hover:bg-white/10 hover:border-core-accent"
               >
                 View timeline
-              </Link>
-              <Link
-                href="/careers/compare"
-                className="rounded-full border border-core-border bg-core-bg/60 px-3.5 py-2 text-xs font-medium text-core-text transition hover:bg-white/10 hover:border-core-accent"
-              >
-                Open comparison history
-              </Link>
-              <Link
-                href="/"
-                className="rounded-full border border-core-border bg-core-bg/60 px-3.5 py-2 text-xs font-medium text-core-text transition hover:bg-white/10 hover:border-core-accent"
-              >
-                Open planner
               </Link>
             </div>
           </div>
@@ -699,7 +1007,7 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
               Collapse dashboard
             </button>
           </div>
-        </>
+        </div>
       )}
     </section>
   );
