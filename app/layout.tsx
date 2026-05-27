@@ -2,6 +2,7 @@ import "./globals.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import AnalyticsSession from "../components/AnalyticsSession";
+import RootErrorWrapper from "../components/RootErrorWrapper";
 
 export const metadataBase = new URL("https://corepath.io");
 export const metadata = {
@@ -52,7 +53,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
 
         <main id="main-content" className="pt-20" role="main">
-          {children}
+          <RootErrorWrapper>
+            {children}
+          </RootErrorWrapper>
         </main>
 
         <Footer />

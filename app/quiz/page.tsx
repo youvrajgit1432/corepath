@@ -1,4 +1,5 @@
 import QuizShell from "../../components/quiz/QuizShell";
+import { ErrorBoundary } from "../../components/ErrorBoundary";
 
 export const metadata = {
   title: "Career quiz for tech students | CorePath",
@@ -17,5 +18,9 @@ export const metadata = {
 };
 
 export default function QuizPage() {
-  return <QuizShell />;
+  return (
+    <ErrorBoundary name="QuizPage">
+      <QuizShell />
+    </ErrorBoundary>
+  );
 }

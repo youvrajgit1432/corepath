@@ -65,6 +65,10 @@ export default function CareerWorkspacePanel({ career, showCareersLink = true }:
     setStreak(getStreakInfo());
   }, [career]);
 
+  // Compute roadmap before early return so hooks execute unconditionally
+  const roadmap = roadmaps.find((r) => r.careerId === workspace?.selectedCareerId);
+  const adaptiveSteps = useMemo(() => roadmap?.steps ?? [], [roadmap?.steps]);
+
   if (!workspace) {
     return (
       <section className="rounded-card border border-core-border bg-core-surface p-6">
@@ -104,12 +108,8 @@ export default function CareerWorkspacePanel({ career, showCareersLink = true }:
   }
 
   const activeCareer = career ?? getCareerById(workspace.selectedCareerId);
-  const roadmap = roadmaps.find((r) => r.careerId === workspace.selectedCareerId);
   const totalPhases = roadmap?.steps.length || 1;
   const phaseProgress = (workspace.activePhaseNumber / totalPhases) * 100;
-
-  // Stabilize steps to prevent new array references on every render
-  const adaptiveSteps = useMemo(() => roadmap?.steps ?? [], [roadmap?.steps]);
 
   // Get current phase details
   const currentPhase = roadmap?.steps.find((s) => s.phase === workspace.activePhaseNumber);

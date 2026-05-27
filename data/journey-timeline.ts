@@ -98,32 +98,12 @@ function buildActionData(
   }
 }
 
-// ─── Public API ──────────────────────────────────────────────────────────────
+// ─── Cache for buildTimeline ────────────────────────────────────────────
 
-/**
- * Record a new timeline event explicitly.
- * Stores directly to SafeStorage, newest first, capped at MAX_EVENTS.
- */
-export function recordTimelineEvent(
-  event: Omit<TimelineEvent, "id">
-): TimelineEvent {
-  const storage = getStorage();
-  const events = loadStoredEvents();
+let buildCache: { result: TimelineEvent[]; memoryTimestamp: number; workspaceTimestamp: number } | null = null;
 
-  // Auto-populate action data if not provided
-  const actionData = event.actionHref
-    ? null
-    : buildActionData(event.type, event.metadata);
-
-  const newEvent: TimelineEvent = {
-    ...event,
-    ...(actionData ?? {}),
-    id: generateId(),
-  };
-
-  const updated = [newEvent, ...events].slice(0, MAX_EVENTS);
-  storage.set(STORAGE_KEY, updated);
-  return newEvent;
+function invalidateBuildCache(): void {
+  buildCache = null;
 }
 
 /** Load only explicitly stored events from SafeStorage */
@@ -138,23 +118,87 @@ function loadStoredEvents(): TimelineEvent[] {
   return [];
 }
 
+/** Normalize a date ISO string to date-only precision (YYYY-MM-DD) for dedup */
+function normalizeToDate(iso: string): string {
+  try {
+    return new Date(iso).toISOString().slice(0, 10);
+  } catch {
+    return iso;
+  }
+}
+
+/**
+ * Record a new timeline event explicitly.
+ * Stores directly to SafeStorage, newest first, capped at MAX_EVENTS.
+ * Invalidates the build cache on mutation.
+ */
+export function recordTimelineEvent(
+  event: Omit<TimelineEvent, "id">
+): TimelineEvent {
+  const storage = getStorage();
+  const events = loadStoredEvents();
+
+  // Dedup: prevent duplicate stored events with identical type+metadata within 1 hour
+  const dedupWindow = Date.now() - 60 * 60 * 1000;
+  const isDuplicate = events.some(
+    (e) =>
+      e.type === event.type &&
+      JSON.stringify(e.metadata) === JSON.stringify(event.metadata) &&
+      new Date(e.timestamp).getTime() > dedupWindow
+  );
+  if (isDuplicate) {
+    return events[0];
+  }
+
+  // Auto-populate action data if not provided
+  const actionData = event.actionHref
+    ? null
+    : buildActionData(event.type, event.metadata);
+
+  const newEvent: TimelineEvent = {
+    ...event,
+    ...(actionData ?? {}),
+    id: generateId(),
+  };
+
+  const updated = [newEvent, ...events].slice(0, MAX_EVENTS);
+  storage.set(STORAGE_KEY, updated);
+  invalidateBuildCache();
+  return newEvent;
+}
+
 /**
  * Build the full timeline by merging stored events with synthetic events
  * derived from journey-memory and career-workspace data.
  * Deduplicates by event ID. Returns newest first, capped at MAX_EVENTS.
+ * Results are cached and invalidated when events are recorded.
  */
 export function buildTimeline(): TimelineEvent[] {
+  const memory = loadJourneyMemory();
+  const memoryTimestamp = new Date(memory.updatedAt).getTime();
+  const workspace = loadCareerWorkspace();
+  const workspaceTimestamp = workspace ? new Date(workspace.updatedAt).getTime() : 0;
+
+  // Return cache if neither memory nor workspace has changed
+  if (buildCache && buildCache.memoryTimestamp === memoryTimestamp && buildCache.workspaceTimestamp === workspaceTimestamp) {
+    return buildCache.result;
+  }
+
   const storedEvents = loadStoredEvents();
   const storedIds = new Set(storedEvents.map((e) => e.id));
 
   const syntheticEvents: TimelineEvent[] = [];
 
   // ── From journey-memory ──────────────────────────────────────────────
-  const memory = loadJourneyMemory();
 
-  // Quiz completions
+  // Quiz completions — deduplicate by date (only one per day to prevent repeats)
+  const seenQuizDates = new Set<string>();
   for (const date of memory.quizDates) {
-    const synthId = `quiz_${date}`;
+    const dateKey = normalizeToDate(date);
+    if (seenQuizDates.has(dateKey)) continue;
+    seenQuizDates.add(dateKey);
+
+    const synthId = `quiz_${dateKey}`;
     if (!storedIds.has(synthId)) {
       syntheticEvents.push({
         id: synthId,
@@ -190,9 +234,20 @@ export function buildTimeline(): TimelineEvent[] {
     }
   }
 
-  // Comparisons
+  // Comparisons — deduplicate by order-independent pair per day
+  const seenComparisonPairs = new Set<string>();
   for (const entry of memory.comparisonHistory) {
-    const synthId = `compare_${entry.timestamp}_${entry.careerA}_${entry.careerB}`;
+    // Normalize pair order (A < B alphabetically)
+    const [normA, normB] =
+      entry.careerA < entry.careerB
+        ? [entry.careerA, entry.careerB]
+        : [entry.careerB, entry.careerA];
+    const pairDay = normalizeToDate(entry.timestamp);
+    const pairKey = `${pairDay}|${normA}|${normB}`;
+    if (seenComparisonPairs.has(pairKey)) continue;
+    seenComparisonPairs.add(pairKey);
+
+    const synthId = `compare_${pairKey}`;
     if (!storedIds.has(synthId)) {
       const titleA = careerTitle(entry.careerA);
       const titleB = careerTitle(entry.careerB);
@@ -211,7 +266,6 @@ export function buildTimeline(): TimelineEvent[] {
   }
 
   // ── From career-workspace ────────────────────────────────────────────
-  const workspace = loadCareerWorkspace();
   const wsCareerId = workspace?.selectedCareerId;
 
   if (workspace) {
@@ -289,9 +343,13 @@ export function buildTimeline(): TimelineEvent[] {
     }
     return true;
   });
-  return deduped
+  const result = deduped
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
     .slice(0, MAX_EVENTS);
+
+  // Save cache
+  buildCache = { result, memoryTimestamp, workspaceTimestamp };
+  return result;
 }
 
 /**
