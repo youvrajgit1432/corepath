@@ -114,7 +114,7 @@ export default function HomeCareerPreviewGrid() {
             c.futureDemand === "High Growth" ||
             c.aiRelationship === "AI-Created",
         )
-        .slice(0, 10),
+        .slice(0, 5),
     [],
   );
 
