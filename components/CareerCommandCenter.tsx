@@ -474,39 +474,47 @@ export default function CareerCommandCenter({ defaultExpanded = false }: CareerC
           <p className="text-xs uppercase tracking-[0.24em] text-core-muted">Command center</p>
 
           <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2">
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-core-heading truncate max-w-[180px] sm:max-w-xs">
-                {derived?.targetCareerTitle ?? "Your career intelligence"}
-              </p>
-            </div>
-            <div className="flex items-center gap-1.5 text-xs text-core-muted">
-              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-core-accent/15 text-[10px] font-bold text-core-accent">
-                {achievements.level}
-              </span>
-              Level {achievements.level}
-            </div>
-            {missions && !derived?.todayComplete && (
-              <div className="flex items-center gap-1.5 text-xs text-core-muted">
-                <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
-                {missions.todayMission.title.length > 28
-                  ? missions.todayMission.title.slice(0, 28) + "..."
-                  : missions.todayMission.title}
+            {isNewUser ? (
+              <div className="w-full">
+                <p className="text-sm text-core-muted/80">Start your journey — take the quiz to unlock your intelligence dashboard.</p>
               </div>
+            ) : (
+              <>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-core-heading truncate max-w-[180px] sm:max-w-xs">
+                    {derived?.targetCareerTitle ?? "Your career intelligence"}
+                  </p>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs text-core-muted">
+                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-core-accent/15 text-[10px] font-bold text-core-accent">
+                    {achievements.level}
+                  </span>
+                  Level {achievements.level}
+                </div>
+                {missions && !derived?.todayComplete && (
+                  <div className="flex items-center gap-1.5 text-xs text-core-muted">
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+                    {missions.todayMission.title.length > 28
+                      ? missions.todayMission.title.slice(0, 28) + "..."
+                      : missions.todayMission.title}
+                  </div>
+                )}
+                {unreadCount > 0 && (
+                  <div className="flex items-center gap-1 text-xs text-red-400">
+                    <span className="flex h-2 w-2 rounded-full bg-red-400" />
+                    {unreadCount} unread
+                  </div>
+                )}
+                <div className="flex items-center gap-1.5 text-xs text-core-muted">
+                  <span
+                    className={`h-1.5 w-1.5 rounded-full ${
+                      (derived?.momentum ?? 0) >= 50 ? "bg-emerald-500" : (derived?.momentum ?? 0) >= 20 ? "bg-amber-500" : "bg-core-accent/60"
+                    }`}
+                  />
+                  {derived?.momentum ?? 0}% momentum
+                </div>
+              </>
             )}
-            {unreadCount > 0 && (
-              <div className="flex items-center gap-1 text-xs text-red-400">
-                <span className="flex h-2 w-2 rounded-full bg-red-400" />
-                {unreadCount} unread
-              </div>
-            )}
-            <div className="flex items-center gap-1.5 text-xs text-core-muted">
-              <span
-                className={`h-1.5 w-1.5 rounded-full ${
-                  (derived?.momentum ?? 0) >= 50 ? "bg-emerald-500" : (derived?.momentum ?? 0) >= 20 ? "bg-amber-500" : "bg-core-accent/60"
-                }`}
-              />
-              {derived?.momentum ?? 0}% momentum
-            </div>
           </div>
 
           <button

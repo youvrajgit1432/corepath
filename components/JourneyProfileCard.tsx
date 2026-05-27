@@ -24,7 +24,6 @@ import GrowthAnalyticsPanel from "./GrowthAnalyticsPanel";
 import JourneyReplayPanel from "./JourneyReplayPanel";
 import JourneyReplaySummaryCard from "./JourneyReplaySummaryCard";
 import CareerIdentityPanel from "./CareerIdentityPanel";
-import NotificationPanel from "./NotificationPanel";
 import DecisionAssistantPanel from "./DecisionAssistantPanel";
 import BehaviorInsightsPanel from "./BehaviorInsightsPanel";
 import PredictiveInsightsPanel from "./PredictiveInsightsPanel";
@@ -590,7 +589,6 @@ export default function JourneyProfileCard({ event, enhancedProfile, className =
               careerAId=""
               className="mt-0"
             />
-            <NotificationPanel className="mt-0" />
           </div>
         </>
       ) : (
@@ -623,7 +621,6 @@ export default function JourneyProfileCard({ event, enhancedProfile, className =
               careerAId=""
               className="mt-0"
             />
-            <NotificationPanel className="mt-0" />
           </div>
         </>
       )}

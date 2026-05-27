@@ -20,17 +20,20 @@ export const metadata = {
 
 import { Suspense } from "react";
 import RecommendationContent from "./RecommendationContent";
+import { ErrorBoundary } from "../../components/ErrorBoundary";
 
 export default function RecommendationPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="pt-28 text-center text-core-muted font-mono text-sm">
-          Calculating your path...
-        </div>
-      }
-    >
-      <RecommendationContent />
-    </Suspense>
+    <ErrorBoundary name="RecommendationPage">
+      <Suspense
+        fallback={
+          <div className="pt-28 text-center text-core-muted font-mono text-sm">
+            Calculating your path...
+          </div>
+        }
+      >
+        <RecommendationContent />
+      </Suspense>
+    </ErrorBoundary>
   );
 }
