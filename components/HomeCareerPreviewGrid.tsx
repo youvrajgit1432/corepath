@@ -3,14 +3,17 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import { careers as allCareers, aiImpactLabels, aiImpactColors, deriveBadges } from "../data/careers";
+import { useStaggeredFadeIn } from "../hooks/useStaggeredFadeIn";
 
 // ─── Compact card for the homepage grid ───
 
 interface CareerPreviewCardProps {
   career: (typeof allCareers)[number];
+  index: number;
 }
 
-function CareerPreviewCard({ career }: CareerPreviewCardProps) {
+function CareerPreviewCard({ career, index }: CareerPreviewCardProps) {
+  const { ref, style } = useStaggeredFadeIn(index);
   const badges = useMemo(() => deriveBadges(career), [career]);
   const futureProofBadge = badges.includes("Future-Proof") ? "Future-Proof" : null;
   const firstBadge = badges.length > 0 ? badges[0] : null;
@@ -33,6 +36,8 @@ function CareerPreviewCard({ career }: CareerPreviewCardProps) {
   return (
     <Link
       href={`/careers/${career.id}`}
+      ref={ref}
+      style={style}
       className="group relative flex flex-col rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.07] to-white/[0.03] p-5 shadow-soft backdrop-blur-md transition-all duration-300 hover:scale-105 hover:border-core-accent/40 hover:shadow-glow"
     >
       {/* Subtle glow on hover */}
@@ -126,8 +131,8 @@ export default function HomeCareerPreviewGrid() {
 
       {/* Grid: 2 cols mobile → 4 cols md → 5 cols xl */}
       <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-3">
-        {careers.map((career) => (
-          <CareerPreviewCard key={career.id} career={career} />
+        {careers.map((career, i) => (
+          <CareerPreviewCard key={career.id} career={career} index={i} />
         ))}
       </div>
     </section>

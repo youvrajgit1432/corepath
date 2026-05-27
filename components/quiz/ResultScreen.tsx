@@ -16,6 +16,38 @@ import { getProjectsForCareer } from "../../data/project-recommendations";
 import { saveQuizResult } from "../../data/quiz-history";
 import JourneyProfileCard from "../JourneyProfileCard";
 import SkillGapPanel from "../SkillGapPanel";
+import { useStaggeredFadeIn } from "../../hooks/useStaggeredFadeIn";
+
+// ─── Match card with stagger animation ───
+
+function MatchCard({ match, index }: { match: RankedCareer; index: number }) {
+  const { ref, style } = useStaggeredFadeIn(index);
+  return (
+    <Link
+      ref={ref}
+      style={style}
+      href={`/careers/${match.careerId}`}
+      onClick={() =>
+        logEvent("career_viewed", {
+          careerId: match.careerId,
+          category: match.career.category,
+          careerCategory: match.career.category,
+          source: "quiz_result_alternative",
+        })
+      }
+      className="group flex items-center justify-between rounded-3xl border border-[var(--border)] bg-[color:var(--surface)]/85 p-4 transition hover:border-core-accent/40 hover:bg-[color:var(--surface)]/90"
+    >
+      <div>
+        <p className="text-sm font-semibold text-[var(--heading)]">{match.career.title}</p>
+        <p className="text-xs text-[var(--muted)]">{match.career.tagline}</p>
+      </div>
+      <div className="text-right">
+        <p className="text-sm font-semibold text-core-accent">{match.percentage}%</p>
+        <p className="text-xs text-[var(--muted)]">match</p>
+      </div>
+    </Link>
+  );
+}
 
 // Lazy-load heavy visual panels
 const ProfileRadarChart = dynamic(() => import("../ProfileRadarChart"), { ssr: false });
@@ -231,27 +263,8 @@ export default function ResultScreen({ topMatch, allMatches, userProfile, enhanc
       </div>
 
       <div className="mt-8 space-y-4">
-        {allMatches.slice(1, 4).map((match) => (
-          <Link
-            key={match.careerId}
-            href={`/careers/${match.careerId}`}
-            onClick={() => logEvent("career_viewed", {
-              careerId: match.careerId,
-              category: match.career.category,
-              careerCategory: match.career.category,
-              source: "quiz_result_alternative",
-            })}
-            className="group flex items-center justify-between rounded-3xl border border-[var(--border)] bg-[color:var(--surface)]/85 p-4 transition hover:border-core-accent/40 hover:bg-[color:var(--surface)]/90"
-          >
-            <div>
-              <p className="text-sm font-semibold text-[var(--heading)]">{match.career.title}</p>
-              <p className="text-xs text-[var(--muted)]">{match.career.tagline}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-sm font-semibold text-core-accent">{match.percentage}%</p>
-              <p className="text-xs text-[var(--muted)]">match</p>
-            </div>
-          </Link>
+        {allMatches.slice(1, 4).map((match, i) => (
+          <MatchCard key={match.careerId} match={match} index={i} />
         ))}
       </div>
 
