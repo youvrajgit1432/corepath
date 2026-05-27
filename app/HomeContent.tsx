@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
-import CareerCard from "../components/CareerCard";
+import HomeCareerPreviewGrid from "../components/HomeCareerPreviewGrid";
 import GuidedOnboarding from "../components/GuidedOnboarding";
 import QuickStartPanel from "../components/QuickStartPanel";
 import TrustPanel from "../components/TrustPanel";
@@ -18,7 +18,6 @@ import CommunitySignalsPanel from "../components/CommunitySignalsPanel";
 import FloatingCommandCenter from "../components/FloatingCommandCenter";
 import { loadJourneyMemory } from "../data/journey-memory";
 import { getUnreadCount } from "../data/notification-engine";
-import { careers as allCareers } from "../data/careers";
 
 export default function HomeContent() {
   const [hasCompletedQuiz, setHasCompletedQuiz] = useState<boolean | null>(null);
@@ -37,13 +36,7 @@ export default function HomeContent() {
 
   const isNewUser = hasCompletedQuiz !== true; // null or false → show simplified view (safe)
 
-  const strategicCareers = useMemo(
-    () =>
-      allCareers
-        .filter((c) => c.futureDemand === "Exploding" || c.aiRelationship === "AI-Created")
-        .slice(0, 4),
-    [],
-  );
+
 
   return (
     <main className="page-shell py-16 px-4 sm:px-6 lg:px-8">
@@ -142,21 +135,8 @@ export default function HomeContent() {
         </section>
       )}
 
-      {/* ─── FEATURED CAREERS ─── */}
-      <section className="mt-16 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <p className="section-title">Career intelligence preview</p>
-          <h2 className="section-heading">A smarter way to compare careers.</h2>
-          <p className="text-core-muted max-w-3xl leading-relaxed">
-            Each role is presented with AI impact, future demand, remote potential, and how it fits a strategic specialization profile.
-          </p>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {strategicCareers.map((career) => (
-            <CareerCard key={career.id} career={career} />
-          ))}
-        </div>
-      </section>
+      {/* ─── TRENDING AI-ERA CAREERS ─── */}
+      <HomeCareerPreviewGrid />
 
       {/* ─── TAKE QUIZ CTA ─── */}
       <section className="mt-16 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
