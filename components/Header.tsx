@@ -114,7 +114,7 @@ export default function Header() {
         </div>
 
         {isMenuOpen && (
-          <div ref={menuRef} id="mobile-menu" className="w-full md:hidden rounded-[1.75rem] border border-core-border bg-core-surface p-4 shadow-soft backdrop-blur-xl overflow-x-hidden" role="dialog" aria-modal="true" aria-label="Navigation menu">
+          <div ref={menuRef} id="mobile-menu" className="w-full md:hidden rounded-[1.75rem] border border-core-border bg-core-surface p-4 shadow-soft backdrop-blur-xl" role="dialog" aria-modal="true" aria-label="Navigation menu">
             <div className="flex flex-col gap-3">
               <Link
                 href="/"

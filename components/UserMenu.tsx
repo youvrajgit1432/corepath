@@ -6,16 +6,26 @@ import { useState, useRef, useEffect } from "react";
 export default function UserMenu() {
   const { user, isLoaded, isSignedIn } = useUser();
   const { signOut } = useClerk();
+  const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  // Hydration guard — only render Clerk-dependent UI after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Close on outside click
   useEffect(() => {
     if (!isOpen) return;
     const handleClickOutside = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node) &&
-          buttonRef.current && !buttonRef.current.contains(e.target as Node)) {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(e.target as Node) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(e.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -36,6 +46,11 @@ export default function UserMenu() {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen]);
 
+  // Don't render anything during SSR to avoid hydration mismatch
+  if (!mounted) {
+    return <div className="h-8 w-8" />;
+  }
+
   if (!isLoaded) {
     return (
       <div className="h-8 w-8 animate-pulse rounded-full bg-core-border" />
@@ -54,16 +69,22 @@ export default function UserMenu() {
   }
 
   const initials = user.fullName
-    ? user.fullName.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+    ? user.fullName
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
     : user.emailAddresses?.[0]?.emailAddress?.charAt(0).toUpperCase() ?? "?";
 
   const avatarUrl = user.imageUrl;
 
   return (
-    <div className="relative">
+    <div className="relative z-40">
       <button
         ref={buttonRef}
-        onClick={() => setIsOpen(!isOpen)}
+        type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
         className="flex items-center gap-2 rounded-full border border-core-border p-0.5 pr-3 transition hover:bg-core-surface focus:outline-none focus:ring-2 focus:ring-core-accent"
         aria-expanded={isOpen}
         aria-haspopup="true"
@@ -84,7 +105,9 @@ export default function UserMenu() {
           {user.fullName ?? user.emailAddresses?.[0]?.emailAddress ?? "User"}
         </span>
         <svg
-          className={`h-3 w-3 text-core-muted transition-transform ${isOpen ? "rotate-180" : ""}`}
+          className={`h-3 w-3 text-core-muted transition-transform ${
+            isOpen ? "rotate-180" : ""
+          }`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -94,6 +117,15 @@ export default function UserMenu() {
         </svg>
       </button>
 
+      {/* Backdrop overlay for dismiss on mobile */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setIsOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {isOpen && (
         <div
           ref={menuRef}
@@ -102,11 +134,11 @@ export default function UserMenu() {
           aria-label="User menu options"
         >
           {/* User info header */}
-          <div className="px-3 py-2 border-b border-core-border/50 mb-1">
-            <p className="text-sm font-medium text-core-heading truncate">
+          <div className="mb-1 border-b border-core-border/50 px-3 py-2">
+            <p className="truncate text-sm font-medium text-core-heading">
               {user.fullName ?? "User"}
             </p>
-            <p className="text-xs text-core-muted truncate">
+            <p className="truncate text-xs text-core-muted">
               {user.emailAddresses?.[0]?.emailAddress ?? ""}
             </p>
           </div>
@@ -118,8 +150,18 @@ export default function UserMenu() {
             role="menuitem"
             onClick={() => setIsOpen(false)}
           >
-            <svg className="h-4 w-4 text-core-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+            <svg
+              className="h-4 w-4 text-core-muted"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+              />
             </svg>
             Dashboard
           </a>
@@ -130,13 +172,24 @@ export default function UserMenu() {
             role="menuitem"
             onClick={() => setIsOpen(false)}
           >
-            <svg className="h-4 w-4 text-core-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+            <svg
+              className="h-4 w-4 text-core-muted"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+              />
             </svg>
             My Journey
           </a>
 
           <button
+            type="button"
             onClick={() => {
               setIsOpen(false);
               signOut({ redirectUrl: "/" });
@@ -144,8 +197,18 @@ export default function UserMenu() {
             className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-red-400 transition hover:bg-red-500/10"
             role="menuitem"
           >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+              />
             </svg>
             Sign Out
           </button>
