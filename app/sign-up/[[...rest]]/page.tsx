@@ -2,10 +2,10 @@ import { SignUp } from "@clerk/nextjs";
 
 export const metadata = {
   title: "Create Account | CorePath",
-  description: "Create your CorePath account and start your personalized career journey.",
+  description: "Create your CorePath account.",
 };
 
-export default function SignUpPage() {
+export default function SignUpCatchAll() {
   return (
     <div className="flex min-h-[80vh] items-center justify-center px-4">
       <div className="w-full max-w-sm">

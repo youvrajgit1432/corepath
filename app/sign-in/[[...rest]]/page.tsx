@@ -2,10 +2,10 @@ import { SignIn } from "@clerk/nextjs";
 
 export const metadata = {
   title: "Sign In | CorePath",
-  description: "Sign in to your CorePath account to access your personalized career journey.",
+  description: "Sign in to your CorePath account.",
 };
 
-export default function SignInPage() {
+export default function SignInCatchAll() {
   return (
     <div className="flex min-h-[80vh] items-center justify-center px-4">
       <div className="w-full max-w-sm">
