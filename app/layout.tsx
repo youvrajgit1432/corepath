@@ -48,7 +48,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body className="min-h-screen bg-core-bg text-core-text">
-        <ClerkProvider>
+        <ClerkProvider
+          signInUrl="/sign-in"
+          signUpUrl="/sign-up"
+        >
           <a href="#main-content" className="skip-to-content">
             Skip to main content
           </a>

@@ -97,7 +97,7 @@ export default function UserMenu() {
       {isOpen && (
         <div
           ref={menuRef}
-          className="absolute right-0 top-full mt-2 w-56 overflow-hidden rounded-xl border border-core-border bg-core-surface p-1 shadow-soft backdrop-blur-xl"
+          className="absolute right-0 top-full mt-2 w-56 overflow-hidden rounded-xl border border-core-border bg-core-surface p-1 shadow-soft backdrop-blur-xl z-50"
           role="menu"
           aria-label="User menu options"
         >
