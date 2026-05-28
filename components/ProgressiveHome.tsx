@@ -306,10 +306,10 @@ function OverviewTab({
   // Returning user: show full overview with missions, stats, and progress
   if (isNewUser) {
     return (
-      <div className="space-y-5 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-        <div className="grid gap-4 sm:grid-cols-2">
+      <div className="space-y-4 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+        <div className="grid gap-3 sm:grid-cols-2">
           {/* Start Quiz CTA */}
-          <div className="rounded-2xl border border-core-accent/20 bg-gradient-to-br from-core-accent/5 to-transparent p-5 sm:p-6 shadow-soft">
+          <div className="rounded-2xl border border-core-accent/20 bg-gradient-to-br from-core-accent/5 to-transparent p-4 shadow-soft">
             <p className="text-[10px] uppercase tracking-[0.2em] text-core-accent font-semibold">First step</p>
             <p className="mt-2 text-sm font-semibold text-core-heading">Discover your career profile</p>
             <p className="mt-1 text-xs text-core-muted leading-relaxed">
@@ -325,7 +325,7 @@ function OverviewTab({
           </div>
 
           {/* Continue Journey */}
-          <div className="rounded-2xl border border-core-border bg-core-surface p-5 sm:p-6 shadow-soft">
+          <div className="rounded-2xl border border-core-border bg-core-surface p-4 shadow-soft">
             <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold">Next action</p>
             <p className="mt-2 text-sm font-semibold text-core-heading leading-snug">
               Explore your next career move
@@ -352,12 +352,11 @@ function OverviewTab({
   }
 
   // Returning user view
-  return (
-    <div className="space-y-5 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  return (      <div className="space-y-4 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 space-y-0">
         {/* Current Mission */}
         {missions && (
-          <div className="rounded-2xl border border-core-border bg-core-surface p-5 shadow-soft">
+          <div className="rounded-2xl border border-core-border bg-core-surface p-4 shadow-soft">
             <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold">Today&apos;s mission</p>
             <p className="mt-2 text-sm font-semibold text-core-heading leading-snug line-clamp-2">{missions.todayMission.title}</p>
             <div className="mt-2 flex items-center gap-3 text-xs text-core-muted">
@@ -380,7 +379,7 @@ function OverviewTab({
         )}
 
         {/* Continue Journey Card */}
-        <div className="rounded-2xl border border-core-border bg-core-surface p-5 shadow-soft">
+        <div className="rounded-2xl border border-core-border bg-core-surface p-4 shadow-soft">
           <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold">Next action</p>
           <p className="mt-2 text-sm font-semibold text-core-heading leading-snug">
             {sprint?.todayActions?.[0]?.title ?? "Explore your next career move"}
@@ -398,7 +397,7 @@ function OverviewTab({
         </div>
 
         {/* Quick Stats */}
-        <div className="rounded-2xl border border-core-border bg-core-surface p-5 shadow-soft">
+        <div className="rounded-2xl border border-core-border bg-core-surface p-4 shadow-soft">
           <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold">Your progress</p>
           <div className="mt-3 flex items-center gap-4">
             <ProgressStat value={missions?.completedMissionIds.length ?? 0} label="missions" />
@@ -450,7 +449,7 @@ function AchievementMiniCard() {
   const pct = levelProgressPercentage(achievements);
 
   return (
-    <div className="rounded-2xl border border-core-border bg-core-surface p-5 shadow-soft">
+    <div className="rounded-2xl border border-core-border bg-core-surface p-4 shadow-soft">
       <p className="text-[10px] uppercase tracking-[0.2em] text-core-muted font-semibold">Level & XP</p>
       <p className="mt-1.5 text-2xl font-bold text-core-heading">Lv.{achievements.level}</p>
       <p className="text-xs text-core-muted">{achievements.xp} XP · {achievements.unlockedAchievements.length} achievements</p>
@@ -465,9 +464,8 @@ function AchievementMiniCard() {
 // ─── JOURNEY TAB ─────────────────────────────────────────────────────────
 
 function JourneyTab({ onAction }: { onAction: () => void }) {
-  return (
-    <div className="space-y-5 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-      <div className="grid gap-4 sm:grid-cols-2">
+  return (      <div className="space-y-4 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+      <div className="grid gap-3 sm:grid-cols-2">
         <CareerIdentityPanel className="mt-0" />
         <div className="space-y-4">
           <RecentCareerHistoryPanel />
@@ -484,9 +482,8 @@ function JourneyTab({ onAction }: { onAction: () => void }) {
 // ─── GROWTH TAB ──────────────────────────────────────────────────────────
 
 function GrowthTab({ onAction }: { onAction: () => void }) {
-  return (
-    <div className="space-y-5 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  return (      <div className="space-y-4 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <GrowthSummaryCard className="mt-0" />
         <ActionSprintPanel className="mt-0" />
       </div>
@@ -497,9 +494,8 @@ function GrowthTab({ onAction }: { onAction: () => void }) {
 // ─── INTELLIGENCE TAB ────────────────────────────────────────────────────
 
 function IntelligenceTab({ onAction }: { onAction: () => void }) {
-  return (
-    <div className="space-y-5 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  return (      <div className="space-y-4 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <PredictiveInsightsPanel className="mt-0" />
         <FutureSelfPanel className="mt-0" />
       </div>
@@ -545,38 +541,38 @@ import ProgressStreakWidget from "./ProgressStreakWidget";
 
 function CompactHero({ hasCompletedQuiz }: { hasCompletedQuiz: boolean }) {
   return (
-    <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-3">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <p className="text-[10px] uppercase tracking-[0.26em] text-core-accent font-semibold">AI-era career intelligence</p>
-          <h1 className="mt-2 text-2xl sm:text-3xl font-semibold text-core-heading leading-tight max-w-2xl">
+          <p className="text-[9px] uppercase tracking-[0.26em] text-core-accent font-semibold">AI-era career intelligence</p>
+          <h1 className="mt-1.5 text-xl sm:text-2xl font-semibold text-core-heading leading-tight max-w-2xl">
             {hasCompletedQuiz
               ? "Your career intelligence dashboard"
               : "Find your AI-era specialization"}
           </h1>
-          <p className="mt-2 text-sm text-core-muted max-w-xl leading-relaxed">
+          <p className="mt-1.5 text-xs sm:text-sm text-core-muted max-w-xl leading-relaxed">
             {hasCompletedQuiz
               ? "Track your progress, explore recommendations, and deepen your career strategy."
               : "CorePath surfaces the specialization that gives you long-term advantage, future clarity, and a confident next move."}
           </p>
         </div>
-        <div className="flex flex-col sm:flex-row items-start gap-3 w-full sm:w-auto shrink-0">
+        <div className="flex flex-col sm:flex-row items-start gap-2 w-full sm:w-auto shrink-0">
           {/* Desktop: streak widget in top-right area */}
-          <div className="w-full sm:w-48">
+          <div className="w-full sm:w-44">
             <ProgressStreakWidget />
           </div>
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             {!hasCompletedQuiz && (
               <Link
                 href="/quiz"
-                className="inline-flex items-center justify-center rounded-full bg-core-accent px-5 py-2.5 text-xs font-semibold text-white shadow-glow transition hover:bg-indigo-500 w-full sm:w-auto"
+                className="inline-flex items-center justify-center rounded-full bg-core-accent px-4 py-2 text-xs font-semibold text-white shadow-glow transition hover:bg-indigo-500 w-full sm:w-auto"
               >
                 Start quiz
               </Link>
             )}
             <Link
               href="/careers"
-              className="inline-flex items-center justify-center rounded-full border border-core-border px-5 py-2.5 text-xs font-semibold text-core-heading transition hover:bg-white/10 w-full sm:w-auto"
+              className="inline-flex items-center justify-center rounded-full border border-core-border px-4 py-2 text-xs font-semibold text-core-heading transition hover:bg-white/10 w-full sm:w-auto"
             >
               Browse careers
             </Link>
@@ -585,7 +581,7 @@ function CompactHero({ hasCompletedQuiz }: { hasCompletedQuiz: boolean }) {
       </div>
 
       {/* Mobile: compact streak widget below hero text */}
-      <div className="sm:hidden mt-4">
+      <div className="sm:hidden mt-3">
         <ProgressStreakWidget compact />
       </div>
     </section>
@@ -677,7 +673,7 @@ export default function ProgressiveHome() {
   }
 
   return (
-    <main ref={mainRef} className="page-shell pb-16 sm:pb-24">
+    <main ref={mainRef} className="page-shell pb-8 sm:pb-12">
       {/* Compact Hero */}
       <CompactHero hasCompletedQuiz={hasCompletedQuiz} />
 
@@ -695,7 +691,7 @@ export default function ProgressiveHome() {
       )}
 
       {/* Tab Content */}
-      <div ref={contentRef} className={`mt-4 sm:mt-6 ${isNewUser ? "" : ""}`}>
+      <div ref={contentRef} className={`mt-3 sm:mt-4 ${isNewUser ? "" : ""}`}>
         {activeTab === "overview" && (
           <OverviewTab
             userStage={userStage}

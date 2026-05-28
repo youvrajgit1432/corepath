@@ -51,127 +51,136 @@ export default function CareerFilterBar({
   onClearFilter,
   onClearAll,
 }: Props) {
+  const filters = [
+    {
+      label: "AI Impact",
+      value: aiImpact,
+      onChange: onAiImpactChange,
+      options: [
+        { value: "any", label: "AI impact" },
+        { value: "low", label: "Low" },
+        { value: "moderate", label: "Moderate" },
+        { value: "high", label: "High" },
+        { value: "transformative", label: "Transformative" },
+      ],
+    },
+    {
+      label: "Depth",
+      value: difficulty,
+      onChange: onDifficultyChange,
+      options: [
+        { value: "any", label: "Depth preference" },
+        { value: "low", label: "Beginner-friendly" },
+        { value: "moderate", label: "Moderate depth" },
+        { value: "high", label: "Specialist" },
+      ],
+    },
+    {
+      label: "Outlook",
+      value: futureDemand,
+      onChange: onFutureDemandChange,
+      options: [
+        { value: "any", label: "Future demand" },
+        { value: "Exploding", label: "Exploding" },
+        { value: "High Growth", label: "High Growth" },
+        { value: "Stable", label: "Stable" },
+        { value: "Declining", label: "Declining" },
+      ],
+    },
+    {
+      label: "AI Rel.",
+      value: aiRelationship,
+      onChange: onAiRelationshipChange,
+      options: [
+        { value: "any", label: "AI relationship" },
+        { value: "AI-Assisted", label: "AI-Assisted" },
+        { value: "AI-Augmented", label: "AI-Augmented" },
+        { value: "AI-Created", label: "AI-Created" },
+        { value: "Automation-Heavy", label: "Automation-Heavy" },
+        { value: "Human-Centered", label: "Human-Centered" },
+      ],
+    },
+    {
+      label: "Remote",
+      value: remotePotential,
+      onChange: onRemotePotentialChange,
+      options: [
+        { value: "any", label: "Remote potential" },
+        { value: "High", label: "High" },
+        { value: "Medium", label: "Medium" },
+        { value: "Low", label: "Low" },
+      ],
+    },
+    {
+      label: "Startup",
+      value: startupFriendly,
+      onChange: onStartupFriendlyChange,
+      options: [
+        { value: "any", label: "Startup-friendly" },
+        { value: "yes", label: "Yes" },
+        { value: "no", label: "No" },
+      ],
+    },
+  ];
+
   return (
-    <div className="w-full rounded-3xl border border-core-border bg-core-surface/90 backdrop-blur-md p-3 sm:p-4 shadow-soft">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <div className="w-full rounded-2xl border border-core-border/60 bg-core-surface/80 backdrop-blur-md p-3 shadow-soft">
+      {/* Search + Filter pills row */}
+      <div className="flex flex-col sm:flex-row gap-2">
+        {/* Search */}
         <div className="flex-1 min-w-0">
           <input
             type="search"
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
             placeholder="Search paths..."
-            className="w-full rounded-2xl border border-core-border bg-core-bg/50 px-4 py-2.5 text-sm text-core-text placeholder:text-core-muted focus:outline-none focus:ring-2 focus:ring-core-accent/50 transition-all"
+            className="w-full rounded-xl border border-core-border/50 bg-core-bg/50 px-3 py-2 text-xs text-core-text placeholder:text-core-muted/50 focus:outline-none focus:ring-1 focus:ring-core-accent/40 transition-all"
             aria-label="Search careers"
           />
         </div>
 
-        <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-2">
-          <select
-            value={aiImpact}
-            onChange={(e) => onAiImpactChange(e.target.value)}
-            className="rounded-xl border border-core-border bg-core-bg/50 px-2 py-2 text-[13px] text-core-text focus:outline-none focus:border-core-accent"
-            aria-label="Filter by AI impact"
-          >
-            <option value="any">AI impact</option>
-            <option value="low">Low</option>
-            <option value="moderate">Moderate</option>
-            <option value="high">High</option>
-            <option value="transformative">Transformative</option>
-          </select>
-
-          <select
-            value={difficulty}
-            onChange={(e) => onDifficultyChange(e.target.value)}
-            className="rounded-xl border border-core-border bg-core-bg/50 px-2 py-2 text-[13px] text-core-text focus:outline-none focus:border-core-accent"
-            aria-label="Filter by depth preference"
-          >
-            <option value="any">Depth preference</option>
-            <option value="low">Beginner-friendly</option>
-            <option value="moderate">Moderate depth</option>
-            <option value="high">Specialist</option>
-          </select>
-
-          <select
-            value={futureDemand}
-            onChange={(e) => onFutureDemandChange(e.target.value)}
-            className="rounded-xl border border-core-border bg-core-bg/50 px-2 py-2 text-[13px] text-core-text focus:outline-none focus:border-core-accent"
-            aria-label="Filter by future demand"
-          >
-            <option value="any">Future demand</option>
-            <option value="Exploding">Exploding</option>
-            <option value="High Growth">High Growth</option>
-            <option value="Stable">Stable</option>
-            <option value="Declining">Declining</option>
-          </select>
-
-          <select
-            value={aiRelationship}
-            onChange={(e) => onAiRelationshipChange(e.target.value)}
-            className="rounded-xl border border-core-border bg-core-bg/50 px-2 py-2 text-[13px] text-core-text focus:outline-none focus:border-core-accent"
-            aria-label="Filter by AI relationship"
-          >
-            <option value="any">AI relationship</option>
-            <option value="AI-Assisted">AI-Assisted</option>
-            <option value="AI-Augmented">AI-Augmented</option>
-            <option value="AI-Created">AI-Created</option>
-            <option value="Automation-Heavy">Automation-Heavy</option>
-            <option value="Human-Centered">Human-Centered</option>
-          </select>
-
-          <select
-            value={remotePotential}
-            onChange={(e) => onRemotePotentialChange(e.target.value)}
-            className="rounded-xl border border-core-border bg-core-bg/50 px-2 py-2 text-[13px] text-core-text focus:outline-none focus:border-core-accent"
-            aria-label="Filter by remote potential"
-          >
-            <option value="any">Remote potential</option>
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-            <option value="Low">Low</option>
-          </select>
-
-          <select
-            value={startupFriendly}
-            onChange={(e) => onStartupFriendlyChange(e.target.value)}
-            className="rounded-xl border border-core-border bg-core-bg/50 px-2 py-2 text-[13px] text-core-text focus:outline-none focus:border-core-accent"
-            aria-label="Filter by startup friendly"
-          >
-            <option value="any">Startup-friendly</option>
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-          </select>
+        {/* Pill filters — horizontal scroll on mobile */}
+        <div className="flex gap-1.5 overflow-x-auto scrollbar-none -mx-1 px-1 sm:mx-0 sm:px-0">
+          {filters.map((filter) => (
+            <select
+              key={filter.label}
+              value={filter.value}
+              onChange={(e) => filter.onChange(e.target.value)}
+              className={`shrink-0 rounded-full border px-2.5 py-1.5 text-[10px] font-medium transition-all duration-200 focus:outline-none ${
+                filter.value !== "any"
+                  ? "border-core-accent/30 bg-core-accent/10 text-core-accent"
+                  : "border-white/10 bg-white/5 text-core-muted hover:border-white/20 hover:text-core-heading"
+              }`}
+              aria-label={`Filter by ${filter.label}`}
+            >
+              {filter.options.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          ))}
         </div>
       </div>
 
-      <div className="mt-3 hidden sm:flex sm:flex-wrap gap-2">
-        <span className="inline-flex items-center rounded-full border border-core-border bg-white/5 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-core-muted">
-          Analytical vs creative
-        </span>
-        <span className="inline-flex items-center rounded-full border border-core-border bg-white/5 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-core-muted">
-          Deep work vs collaboration
-        </span>
-        <span className="inline-flex items-center rounded-full border border-core-border bg-white/5 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-core-muted">
-          Market signal exploration
-        </span>
-      </div>
-
+      {/* Active filter chips */}
       {activeFilters.length > 0 && (
-        <div className="mt-4 flex flex-wrap items-center gap-2">
+        <div className="mt-2 flex flex-wrap items-center gap-1.5">
           {activeFilters.map((filter) => (
             <button
               key={filter.key}
               type="button"
               onClick={() => onClearFilter(filter.key)}
-              className="inline-flex items-center gap-2 rounded-full border border-core-border bg-white/10 px-3 py-2 text-sm text-core-heading transition hover:bg-white/20"
+              className="inline-flex items-center gap-1 rounded-full border border-core-accent/20 bg-core-accent/5 px-2 py-0.5 text-[10px] font-medium text-core-accent transition hover:bg-core-accent/15"
             >
               <span>{filter.label}: {filter.value}</span>
-              <span className="rounded-full bg-core-accent px-2 py-0.5 text-[0.65rem] font-semibold text-white">×</span>
+              <span className="text-core-accent/70 hover:text-core-accent">×</span>
             </button>
           ))}
           <button
             type="button"
             onClick={onClearAll}
-            className="ml-auto rounded-full border border-core-border bg-white/5 px-3 py-2 text-sm text-core-muted hover:bg-white/10"
+            className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-core-muted hover:bg-white/15"
           >
             Clear all
           </button>

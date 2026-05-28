@@ -288,6 +288,30 @@
   border-radius: 8px;
 }
 
+/* ─── Card shimmer effect ──────────────────────────────────────── */
+@keyframes card-shimmer {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+  }
+  100% {
+    transform: translateX(200%) skewX(-15deg);
+  }
+}
+
+.group:hover .card-shimmer-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.03) 50%,
+    transparent 100%
+  );
+  animation: card-shimmer 1.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
 /* ─── Mobile Optimisation ──────────────────────────────────────── */
 @media (max-width: 640px) {
   .panel-stack > * + * {

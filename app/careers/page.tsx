@@ -243,29 +243,29 @@ export default function CareersPage() {
   const compareLink = selectedCompare.length === 2 ? `/careers/compare?careerA=${selectedCompare[0]}&careerB=${selectedCompare[1]}` : undefined;
 
   return (
-    <div className="pt-20 pb-32 min-h-screen px-2 sm:px-6 py-8 overflow-x-hidden">
+    <div className="pt-16 pb-24 min-h-screen px-2 sm:px-6 overflow-x-hidden">
       <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
-          <p className="text-xs font-mono text-core-accent uppercase tracking-widest mb-3">Career Intelligence</p>
-          <h1 className="font-display text-4xl md:text-5xl text-core-heading mb-4">
+        <div className="mb-5">
+          <p className="text-[10px] font-mono text-core-accent uppercase tracking-widest mb-2">Career Intelligence</p>
+          <h1 className="font-display text-2xl sm:text-3xl text-core-heading mb-2">
             Explore future-ready specialization profiles.
           </h1>
-          <p className="text-core-muted max-w-3xl text-lg leading-relaxed">
+          <p className="text-core-muted max-w-3xl text-sm leading-relaxed">
             Use strategic filters to find roles by AI relationship, depth of work, remote potential, and startup alignment.
           </p>
-          <div className="mt-6 rounded-3xl border border-core-border bg-core-bg/70 p-5">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-4 rounded-2xl border border-core-border bg-core-bg/70 p-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-sm font-semibold text-core-heading">Compare mode</p>
-                <p className="mt-2 text-sm text-core-text">
-                  Select two careers while browsing, then review a side-by-side comparison with history saved automatically.
+                <p className="text-xs font-semibold text-core-heading">Compare mode</p>
+                <p className="mt-1 text-xs text-core-text">
+                  Select two careers to review a side-by-side comparison.
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
                   onClick={() => setCompareMode((prev) => !prev)}
-                  className="rounded-full border border-core-border bg-white/5 px-4 py-2 text-sm font-semibold text-core-heading hover:border-core-accent hover:bg-core-accent/10 transition"
+                  className="rounded-full border border-core-border bg-white/5 px-3 py-1.5 text-xs font-semibold text-core-heading hover:border-core-accent hover:bg-core-accent/10 transition"
                 >
                   {compareMode ? "Exit compare mode" : "Enable compare mode"}
                 </button>
@@ -273,7 +273,7 @@ export default function CareersPage() {
                   <button
                     type="button"
                     onClick={clearCompareSelection}
-                    className="rounded-full border border-core-border bg-white/5 px-4 py-2 text-sm font-semibold text-core-heading hover:border-core-accent hover:bg-core-accent/10 transition"
+                    className="rounded-full border border-core-border bg-white/5 px-3 py-1.5 text-xs font-semibold text-core-heading hover:border-core-accent hover:bg-core-accent/10 transition"
                   >
                     Clear compare basket
                   </button>
@@ -282,29 +282,29 @@ export default function CareersPage() {
             </div>
           </div>
         </div>
-        <JourneyTimelinePanel className="mb-8" />
+        <JourneyTimelinePanel className="mb-5" />
 
           {facets && (
-            <div className="mt-6 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="rounded-3xl border border-core-border bg-white/5 p-5 min-w-0">
-                <p className="text-xs uppercase tracking-[0.24em] text-core-muted">Total paths</p>
-                <p className="mt-3 text-3xl font-bold text-core-heading">{facets.total}</p>
+            <div className="mt-4 grid gap-3 grid-cols-2 sm:grid-cols-4">
+              <div className="rounded-2xl border border-core-border bg-white/5 p-4 min-w-0">
+                <p className="text-[9px] uppercase tracking-[0.2em] text-core-muted">Total paths</p>
+                <p className="mt-2 text-2xl font-bold text-core-heading">{facets.total}</p>
               </div>
-              <div className="rounded-3xl border border-core-border bg-white/5 p-5">
-                <p className="text-xs uppercase tracking-[0.24em] text-core-muted">AI-enabled</p>
-                <p className="mt-3 text-3xl font-bold text-core-heading">{(facets.aiRelationship["AI-Augmented"] ?? 0) + (facets.aiRelationship["AI-Assisted"] ?? 0) + (facets.aiRelationship["AI-Created"] ?? 0)}</p>
+              <div className="rounded-2xl border border-core-border bg-white/5 p-4">
+                <p className="text-[9px] uppercase tracking-[0.2em] text-core-muted">AI-enabled</p>
+                <p className="mt-2 text-2xl font-bold text-core-heading">{(facets.aiRelationship["AI-Augmented"] ?? 0) + (facets.aiRelationship["AI-Assisted"] ?? 0) + (facets.aiRelationship["AI-Created"] ?? 0)}</p>
               </div>
-              <div className="rounded-3xl border border-core-border bg-white/5 p-5">
-                <p className="text-xs uppercase tracking-[0.24em] text-core-muted">Fast-growth</p>
-                <p className="mt-3 text-3xl font-bold text-core-heading">{facets.futureDemand.Exploding ?? 0}</p>
+              <div className="rounded-2xl border border-core-border bg-white/5 p-4">
+                <p className="text-[9px] uppercase tracking-[0.2em] text-core-muted">Fast-growth</p>
+                <p className="mt-2 text-2xl font-bold text-core-heading">{facets.futureDemand.Exploding ?? 0}</p>
               </div>
-              <div className="rounded-3xl border border-core-border bg-white/5 p-5">
-                <p className="text-xs uppercase tracking-[0.24em] text-core-muted">Remote fit</p>
-                <p className="mt-3 text-3xl font-bold text-core-heading">{facets.remotePotential.High ?? 0}</p>
+              <div className="rounded-2xl border border-core-border bg-white/5 p-4">
+                <p className="text-[9px] uppercase tracking-[0.2em] text-core-muted">Remote fit</p>
+                <p className="mt-2 text-2xl font-bold text-core-heading">{facets.remotePotential.High ?? 0}</p>
               </div>
             </div>
           )}
-        <div className="mb-4">
+        <div className="mb-3">
           <CareerCategoryTabs categories={CATEGORIES} selected={category} onSelect={(c) => { setCategory(c); setVisible(PAGE_SIZE); }} />
         </div>
 
@@ -364,7 +364,7 @@ export default function CareersPage() {
         )}
       </div>
       {selectedCompare.length > 0 ? (
-        <div className="fixed inset-x-0 bottom-0 z-50 border-t border-core-border bg-core-surface/95 backdrop-blur-xl px-4 sm:px-6 py-4 shadow-soft">
+        <div        className="fixed inset-x-0 bottom-0 z-50 border-t border-core-border bg-core-surface/95 backdrop-blur-xl px-4 sm:px-6 py-3 shadow-soft">
           <div className="mx-auto flex max-w-6xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-col gap-2">
               <p className="text-sm font-semibold text-core-heading">Compare basket</p>
