@@ -7,7 +7,8 @@
  */
 
 function createPassthrough() {
-  return () => new Response(null, { status: 200 });
+  // Return undefined so the request passes through to the actual page handler
+  return () => undefined;
 }
 
 function createClerkHandler() {
