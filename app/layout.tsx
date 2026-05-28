@@ -1,7 +1,9 @@
 import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import AnalyticsSession from "../components/AnalyticsSession";
+import AnalyticsPageViewTracker from "../components/AnalyticsPageViewTracker";
 import RootErrorWrapper from "../components/RootErrorWrapper";
 
 export const metadataBase = new URL("https://corepath.io");
@@ -46,19 +48,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body className="min-h-screen bg-core-bg text-core-text">
-        <a href="#main-content" className="skip-to-content">
-          Skip to main content
-        </a>
-        <AnalyticsSession />
-        <Header />
+        <ClerkProvider>
+          <a href="#main-content" className="skip-to-content">
+            Skip to main content
+          </a>
+          <AnalyticsSession />
+          <AnalyticsPageViewTracker />
+          <Header />
 
-        <main id="main-content" className="pt-20 overflow-x-hidden w-full" role="main">
-          <RootErrorWrapper>
-            {children}
-          </RootErrorWrapper>
-        </main>
+          <main id="main-content" className="pt-20 overflow-x-hidden w-full" role="main">
+            <RootErrorWrapper>
+              {children}
+            </RootErrorWrapper>
+          </main>
 
-        <Footer />
+          <Footer />
+        </ClerkProvider>
       </body>
     </html>
   );

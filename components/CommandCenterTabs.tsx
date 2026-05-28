@@ -88,6 +88,8 @@ function savePersistedTab(id: TabId) {
   } catch { /* ignore */ }
 }
 
+import ProgressStreakWidget from "./ProgressStreakWidget";
+
 // ─── Overview Tab ───────────────────────────────────────────────────────
 
 function OverviewTab() {
@@ -115,16 +117,27 @@ function OverviewTab() {
 
   return (
     <div className="space-y-5 pb-24 md:pb-8">
-      {/* Title */}
-      <div>
-        <h1 className="text-xl sm:text-2xl font-semibold text-core-heading">
-          {hasCompletedQuiz ? "Your career intelligence dashboard" : "Find your AI-era specialization"}
-        </h1>
-        <p className="mt-1 text-sm text-core-muted">
-          {hasCompletedQuiz
-            ? "Track your progress, explore recommendations, and deepen your career strategy."
-            : "Take the quiz to discover your ideal specialization."}
-        </p>
+      {/* Title + Streak Widget */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <h1 className="text-xl sm:text-2xl font-semibold text-core-heading">
+            {hasCompletedQuiz ? "Your career intelligence dashboard" : "Find your AI-era specialization"}
+          </h1>
+          <p className="mt-1 text-sm text-core-muted">
+            {hasCompletedQuiz
+              ? "Track your progress, explore recommendations, and deepen your career strategy."
+              : "Take the quiz to discover your ideal specialization."}
+          </p>
+        </div>
+        {/* Desktop streak widget */}
+        <div className="hidden sm:block w-48 shrink-0">
+          <ProgressStreakWidget />
+        </div>
+      </div>
+
+      {/* Mobile streak widget */}
+      <div className="sm:hidden">
+        <ProgressStreakWidget compact />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

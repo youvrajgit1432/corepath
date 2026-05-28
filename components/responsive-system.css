@@ -1,0 +1,50 @@
+/**
+ * CorePath Global Responsive System
+ * Standardizes layout constraints across all devices.
+ */
+
+:root {
+  --mobile-gutter: 1rem;
+  --desktop-gutter: 2rem;
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --nav-height-mobile: 4.5rem;
+}
+
+.responsive-container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--mobile-gutter);
+  padding-right: var(--mobile-gutter);
+  max-width: 1280px;
+}
+
+@media (min-width: 768px) {
+  .responsive-container {
+    padding-left: var(--desktop-gutter);
+    padding-right: var(--desktop-gutter);
+  }
+}
+
+/* Standardized card spacing to prevent layout shifts */
+.intelligence-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) {
+  .intelligence-grid {
+    gap: 2rem;
+  }
+}
+
+/* Safe spacing for sticky mobile navigation */
+.content-with-bottom-nav {
+  padding-bottom: calc(var(--nav-height-mobile) + var(--safe-area-bottom) + 1rem);
+}
+
+/* Text scaling utility */
+.text-balance-safe {
+  text-wrap: balance;
+}

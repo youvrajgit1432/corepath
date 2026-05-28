@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
 import NotificationBell from "./NotificationBell";
+import UserMenu from "./UserMenu";
 
 export default function Header() {
   const pathname = usePathname();
@@ -105,6 +106,10 @@ export default function Header() {
 
           <NotificationBell />
 
+          <div className="hidden md:flex items-center">
+            <UserMenu />
+          </div>
+
           <ThemeToggle />
         </div>
 
@@ -144,6 +149,12 @@ export default function Header() {
               >
                 Quiz
               </Link>
+
+              <hr className="border-core-border/50 my-1" />
+
+              <div className="px-1">
+                <UserMenu />
+              </div>
             </div>
           </div>
         )}

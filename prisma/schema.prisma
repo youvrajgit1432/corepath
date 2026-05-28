@@ -1,0 +1,146 @@
+// Prisma schema for CorePath SaaS
+// Compatible with PostgreSQL (Prisma v7)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ── User ─────────────────────────────────────
+model User {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  email     String?
+  firstName String?
+  lastName  String?
+  imageUrl  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  quizResults       QuizResult[]
+  careerWorkspaces  CareerWorkspace[]
+  missionProgress   MissionProgress[]
+  journeyMemories   JourneyMemory[]
+  analyticsEvents   AnalyticsEvent[]
+  streakData        StreakData[]
+  keyValueStore     KeyValueStore[]
+
+  @@map("users")
+}
+
+// ── Quiz Result ──────────────────────────────
+model QuizResult {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  answers   Json     // User's quiz answers
+  traits    Json     // Calculated trait scores
+  matches   Json?    // Career matches
+  report    Json?    // Full result report
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("quiz_results")
+}
+
+// ── Career Workspace ─────────────────────────
+model CareerWorkspace {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  careerId    String
+  phase       String   @default("exploration")
+  milestones  Json     @default("[]")
+  projects    Json     @default("[]")
+  studySessions Json   @default("[]")
+  readiness   Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@unique([userId, careerId])
+  @@map("career_workspaces")
+}
+
+// ── Mission Progress ─────────────────────────
+model MissionProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  missionId   String
+  status      String   @default("pending") // pending | in_progress | completed
+  progress    Json     @default("{}")
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@unique([userId, missionId])
+  @@map("mission_progress")
+}
+
+// ── Journey Memory ───────────────────────────
+model JourneyMemory {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  data      Json     // Full journey memory data blob
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("journey_memories")
+}
+
+// ── Analytics Event ──────────────────────────
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  sessionId String?
+  eventType String
+  payload   Json     @default("{}")
+  page      String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([eventType])
+  @@index([createdAt])
+  @@map("analytics_events")
+}
+
+// ── Streak Data ──────────────────────────────
+model StreakData {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentStreak  Int      @default(0)
+  longestStreak  Int      @default(0)
+  lastActiveDate DateTime?
+  activityLog    Json     @default("[]")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId])
+  @@map("streak_data")
+}
+
+// ── Key-Value Store (Persistence Layer) ──────
+model KeyValueStore {
+  id        String   @id @default(cuid())
+  namespace String   // e.g. "user:clerk_user_id"
+  key       String
+  value     String   // JSON-serialized data
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([namespace, key])
+  @@index([namespace])
+  @@map("key_value_store")
+}

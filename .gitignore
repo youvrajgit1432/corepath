@@ -52,3 +52,6 @@ Desktop.ini
 /temp
 /cache
 nul
+
+# clerk configuration (can include secrets)
+/.clerk/

@@ -539,13 +539,15 @@ function FloatingContinueButton({ visible, onScroll }: { visible: boolean; onScr
   );
 }
 
+import ProgressStreakWidget from "./ProgressStreakWidget";
+
 // ─── HERO SECTION (compact) ────────────────────────────────────────────
 
 function CompactHero({ hasCompletedQuiz }: { hasCompletedQuiz: boolean }) {
   return (
     <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="flex-1 min-w-0">
           <p className="text-[10px] uppercase tracking-[0.26em] text-core-accent font-semibold">AI-era career intelligence</p>
           <h1 className="mt-2 text-2xl sm:text-3xl font-semibold text-core-heading leading-tight max-w-2xl">
             {hasCompletedQuiz
@@ -558,22 +560,33 @@ function CompactHero({ hasCompletedQuiz }: { hasCompletedQuiz: boolean }) {
               : "CorePath surfaces the specialization that gives you long-term advantage, future clarity, and a confident next move."}
           </p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto min-w-0">
-          {!hasCompletedQuiz && (
+        <div className="flex flex-col sm:flex-row items-start gap-3 w-full sm:w-auto shrink-0">
+          {/* Desktop: streak widget in top-right area */}
+          <div className="w-full sm:w-48">
+            <ProgressStreakWidget />
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            {!hasCompletedQuiz && (
+              <Link
+                href="/quiz"
+                className="inline-flex items-center justify-center rounded-full bg-core-accent px-5 py-2.5 text-xs font-semibold text-white shadow-glow transition hover:bg-indigo-500 w-full sm:w-auto"
+              >
+                Start quiz
+              </Link>
+            )}
             <Link
-              href="/quiz"
-              className="inline-flex items-center justify-center rounded-full bg-core-accent px-5 py-2.5 text-xs font-semibold text-white shadow-glow transition hover:bg-indigo-500 w-full sm:w-auto"
+              href="/careers"
+              className="inline-flex items-center justify-center rounded-full border border-core-border px-5 py-2.5 text-xs font-semibold text-core-heading transition hover:bg-white/10 w-full sm:w-auto"
             >
-              Start quiz
+              Browse careers
             </Link>
-          )}
-          <Link
-            href="/careers"
-            className="inline-flex items-center justify-center rounded-full border border-core-border px-5 py-2.5 text-xs font-semibold text-core-heading transition hover:bg-white/10 w-full sm:w-auto"
-          >
-            Browse careers
-          </Link>
+          </div>
         </div>
+      </div>
+
+      {/* Mobile: compact streak widget below hero text */}
+      <div className="sm:hidden mt-4">
+        <ProgressStreakWidget compact />
       </div>
     </section>
   );

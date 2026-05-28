@@ -27,7 +27,14 @@ export type EventType =
   | "onboarding_choice_selected"
   | "journey_progress_viewed"
   | "session_started"
-  | "session_ended";
+  | "session_ended"
+  | "continue_journey_clicked"
+  | "next_step_clicked"
+  | "journey_step_completed"
+  | "streak_started"
+  | "streak_resumed"
+  | "streak_broken"
+  | "streak_freeze_used";
 
 export interface AnalyticsEvent {
   type: EventType;
