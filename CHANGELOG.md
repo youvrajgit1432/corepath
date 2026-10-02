@@ -2,6 +2,30 @@
 
 All notable changes to the CorePath project are documented in this file.
 
+## [2026-10-02] — Portfolio Documentation Refresh
+
+### Added
+
+- Professional product screenshot gallery (14 curated screenshots)
+- Visual feature showcase in README with feature-specific screenshots
+- Responsive mobile experience screenshots
+- Dark mode presentation
+- Screenshot disclosure note for portfolio transparency
+
+### Improved
+
+- README transformed into polished product page with feature gallery
+- Corrected project structure documentation (removed stale `middleware.ts`, added `proxy.ts`)
+- Fixed setup instructions (corrected `cd corepath-frontend` → `cd corepath`)
+- Updated project structure to reflect actual App Router directories
+- Added `docs/images/corepath/` as permanent GitHub image directory
+
+### Documentation
+
+- All screenshots use fictional local demonstration data (no production credentials)
+- Local capture artifacts (`frame-probe/`, `portfolio-screenshots/`, `portfolio-screenshots-final/`) added to `.gitignore`
+- No application behavior changed by this documentation update
+
 ## [3.0.0] — 2026-05-25 — Career Intelligence Evolution
 
 ### Added

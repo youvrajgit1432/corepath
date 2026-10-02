@@ -55,3 +55,8 @@ nul
 
 # clerk configuration (can include secrets)
 /.clerk/
+
+# local portfolio capture artifacts
+/frame-probe/
+/portfolio-screenshots/
+/portfolio-screenshots-final/
